@@ -1,0 +1,459 @@
+---
+title: "Statistics for CSAI II - Sampling Theory"
+author: Travis J. Wiltshire, Ph.D.
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: "paper"
+    css: css/style.css
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+## libraries1
+library(learnr)
+library(googlesheets4)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(scales)
+gs4_auth()
+g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+
+## options
+knitr::opts_chunk$set(echo = FALSE)
+tutorial_options(exercise.eval = FALSE)
+
+## recording data
+new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+  
+
+  
+g_tibble <- tibble::tibble(
+user_id  = user_id, 
+event = event,
+label = data$label,
+correct = data$correct,
+question = data$question,
+answer = data$answer
+  )
+
+# write to google sheets
+sheet_append(g_sheet, g_tibble, sheet = 1)
+
+}
+
+options(tutorial.event_recorder = new_recorder)
+```
+
+## 1. Introduction
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("images/banner.png")  
+```
+
+
+### Outline
+
+1. Understand linear regression with one predictor
+2. Understand how we assess the fit of a regression model
+    - Total sum of squares
+    - Model sum of squares
+    - Residual sum of squares
+    - $F$
+    - $R^2$
+3. Know how to do regression using **R**
+4. Interpret a regression model
+
+## Quiz
+
+
+### Question 1
+
+```{r Quiz1}
+  question("Which of the following types of correlation would you use if you want to examine the relationship between x and y, while controlling for the relationship of z on both x and y?",
+    answer("Pearson correlation", correct = TRUE),
+    answer("Partial correlation"),
+    answer("Spearman correlaton"),
+    answer("Semi-partial correlation"),
+    incorrect = "Hint: Try again, you can pick another answer!",
+    allow_retry = TRUE
+    )
+```
+
+
+### Question 2
+```{r Quiz2}
+  question("What correlation would be most appropriate for examining the relationship between ranking inagaming competition and age, when the sample size is small? ",
+    answer("Pearson correlation", correct = TRUE),
+    answer("Partial correlation"),
+    answer("Spearman correlaton"),
+    answer("Semi-partial correlation"),
+    incorrect = "Hint: Try again, you can pick another answer!",
+    allow_retry = TRUE
+    )
+```
+### Question 3
+```{r Quiz3}
+ question("Which letter is always used to specify the outcome variable in linear regression models? ",
+    answer("b"),
+    answer("β", correct = TRUE),
+    answer("x"),
+    answer("y"),
+    incorrect = "Hint: Try again, you can pick another answer!",
+    allow_retry = TRUE
+    )
+```
+
+## 2. Linear regression
+
+### Table of info
+
+<img src="images/s4.png" 
+     style="max-width: 100%;" />
+
+List of common parametric (P) non-parametric (N) tests and equivalent linear models. The notationy-1+xisRshorthand fory=1-b+ax which most of us leamed in school. Models in similar colors are highly similar, but
+really, notice how similar they all are across colors! For non-parametric models, the linear models are reasonable approximations for non-small sample sizes (see "Exact" column and click links to see simulations). Other less
+accurate approximations exist, e.g., Wilcoxon for the sign test and Goodness-of-fit for the binomial test. The signed rank function is $signed_rank-function(x) = sign (x)*rank (abs (x) )$. The variables G, and S, are "dummy
+coded" indicator variables (either 0 or 1) exploiting the fact that when $\Delta x=1$ between categories the difference equals the slope. Subscripts (e.g, $G_2$ or $Y_1$.) indicate different columns in data. LM requires long-format data for all non-continuous models. All of this is exposed in greater detail and worked examples at [https://lindeloev.github.io/tests-as-linear](https://lindeloev.github.io/tests-as-linear)
+
+### Different types of correlation relationships
+
+<img src="images/s5.png" 
+     style="max-width: 100%;" />
+
+### What is Regression?
+
+- A way of predicting the value of one variable from another.
+  - It is a hypothetical model of the relationship between two variables.
+    - Typically, both are interval scale variables
+  - The model used is a **linear one.**
+  - Therefore, we describe the relationship using **the equation of a straight line.**
+  
+![](images/s61.png)
+
+![](images/s62.png)
+
+
+
+### Describing a Straight Line
+
+$$Y_i = b_0 +b_iX_i+\epsilon_i$$
+
+- $b_i$
+  - Regression coefficient for the predictor
+  - Gradient (slope) of the regression line
+  - Direction/strength of relationship
+- $b_0$
+  - Intercept (value of Y when X = 0)
+  - Point at which the regression line crosses the Y-axis (ordinate)
+
+![](images/s7.png)
+
+### Four different types of slopes
+
+<img src="images/s8.png" 
+     style="max-width: 100%;" />
+
+
+
+### Ordinary Least Squares
+
+- Our coefficient **estimates** $b_0$ and $b_i$ are determined based on minimizing the difference between the observed data and the value predicted by the linear approximation
+  - **Minimizing the sum of square residuals**
+- **Other methods exist (e.g., loglikelihood, maximum likelihood)**
+
+
+This graph shows a scatterplot of some data with a line representing the general trend. The vertical lines (dotted) represent the differences (or residuals) between the line and the actual data:
+
+<img src="images/s9.png" 
+     style="max-width: 100%;" />
+
+### How Good Is the Model?
+
+- The regression line is only a model based on the data.
+- **This model might not reflect reality.**
+  - We need to test how well the model fits the observed data.
+  
+<img src="images/s10.png" 
+     style="max-width: 100%;" />
+     
+![](images/s101.png)
+
+
+### Sum of Squares
+
+Diagram showing from where the regression sums of squares derive:
+
+<img src="images/s11.png" 
+     style="max-width: 100%;" />
+
+
+### Standardized vs unstandardized regression coefficients
+
+- Unstandardized
+  - $\beta$ coef is amount by which our dependent variable changes if we change the independent variable by one unit while keeping other independent variables constant.
+
+- Standardize Beta
+  - Measured in units of standard deviation. A beta value of 1.25 indicates that a change of one standard deviation in the independent variable results in a 1.25 standard deviations increase in the dependent variable.
+  - Similar to partial r
+
+**Beta:** $$\beta_{x_1}=\frac{r_{yx_1}-r_{yx_2}r_{x_1x_2}}{1-r^2_{x_1x_2}}$$
+
+**Partial r:** $$r_{yx_1x_2}=\frac{r_{yx_1}-r_{yx_2}r_{x_1x_2}}{\sqrt{(1-r^2_{x_1x_2})(1-r^2_{yx_2})}}$$
+
+
+### Sum of Squares Types
+
+- $SS_{Total}$
+  - **Total** variability (variability between scores and the mean).
+  ![](images/s131.png)
+- $SS_{Residual}$
+  - **Residual**/error variability (variability between the regression model and the actual data).
+  ![](images/s132.png)
+- $SS_{Model}$ 
+  - **Model** variability (difference in variability between the model and the mean).
+  ![](images/s133.png)
+
+### Testing the Model: ANOVA
+
+
+<img src="images/s14.png" 
+     style="max-width: 100%;" />
+
+If the model results in better prediction than using the mean, then we expect $SS_M$ to be much greater than $SS_R$
+
+### Testing the Model: ANOVA
+
+- Mean squared error
+  - Sums of squares are total values.
+  - They can be expressed as averages.
+  - These are called mean squares, **MS**.
+
+$$F=\frac{MS_M}{MS_R}$$  
+$$MS_{mod}=\frac{SS_{mod}}{df_{mod}}$$
+$$MS_{res}=\frac{SS_{res}}{df_{res}}$$
+$$df_{mod}=K$$
+$$df_{res}=N-K-1$$
+
+K = Number of predictor variables in model
+
+### Testing the Model: R squared
+
+- $R^2$
+  - The proportion of variance accounted for by the regression model.
+  - Pearson Correlation Coefficient Squared
+
+$$R^2=\frac{SS_M}{SS_T}$$
+$$R^2=1-\frac{SS_{res}}{SS_{tot}}$$
+
+### Regression: An Example
+
+- A record company boss was interested in predicting record sales from advertising.
+- Data
+  - 200 different album releases
+- Outcome variable:
+  - Sales (CDs and downloads) in the week after release
+- Predictor variable:
+  - The amount (in units of £1000) spent promoting the record before release.
+
+![](images/s17.png)
+
+### An Example hypothesis
+
+- Testing the whole model
+  - Null hypothesis: There is no 	relationship between the 	predictors and the outcome.
+- Testing individual coefficients
+  - Null hypothesis: The true 	population regression	coefficient is 0.
+
+$$H_0: Y_i = b_0 + \epsilon_i$$
+$$H_0: b=0$$
+$$H_1: b\neq0$$
+$$\hat{t}=\frac{\hat{b}}{SE(\hat{b})}$$
+
+### Regression in R
+
+- We run a regression analysis using the lm() function – lm stands for ‘linear model’. This function takes the general form:
+  - newModel<-lm(outcome ~ predictor(s), data = dataFrame, na.action = an action)) 
+
+  - albumSales.1 <- lm(album1$sales ~ album1$adverts)
+
+- Or we can tell R what dataframe to use (using data = nameOfDataFrame), and then specify the variables without the dataFrameName$ before them:
+
+  - albumSales.1 <- lm(sales ~ adverts, data = album1)
+
+### Load the data
+
+```{r ex11, exercise=TRUE}
+#Load the data 
+```
+```{r ex11-hint}
+albumsales1<-read.delim("Album Sales 1.dat",header=TRUE)
+```
+```{r ex11-check}
+#store
+```
+
+### Output of a Simple Regression 
+
+- We have created an object called albumSales.1 that contains the results of our analysis. We can show the object by executing:
+  - summary(albumSales.1)
+
+>Coefficients:
+                   Estimate        Std. Error     t value      Pr(>|t|)    
+(Intercept) 1.341e+02   7.537e+00   17.799       <2e-16 ***
+adverts       9.612e-02    9.632e-03    9.979         <2e-16 ***
+
+    - Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+- Residual standard error: 65.99 on 198 degrees of freedom
+- Multiple R-squared: 0.3346, Adjusted R-squared: 0.3313 
+- F-statistic: 99.59 on 1 and 198 DF,  p-value: < 2.2e-16
+
+### 2. Run a linear regression model
+
+```{r ex12, exercise=TRUE}
+#run linear regression model
+
+```
+```{r ex12-hint}
+albumsalesmod1<-lm(sales~adverts,data=albumsales1)
+summary(albumsalesmod1)
+```
+```{r ex12-check}
+#store
+```
+
+### Standardizing in R
+
+- Standardizing using a function:
+  - QuantPsyc::lm.beta(albumsalesmod1)
+
+- Standardize in our model:
+  - albumsalesmod2<-lm(scale(sales)~scale(adverts),data=albumsales1)
+  - summary(albumsalesmod2)
+  
+### 3. Standardizing the coefficients
+
+```{r ex13, exercise=TRUE}
+#standarize
+
+```
+```{r ex13-hint}
+
+QuantPsyc::lm.beta(albumsalesmod1)
+albumsalesmod2<-lm(scale(sales)~scale(adverts),data=albumsales1)
+summary(albumsalesmod2)
+
+```
+```{r ex13-check}
+#store
+```
+
+### 4. Make a nice plot
+
+```{r ex14, exercise=TRUE}
+#make a plot using ggplot2
+
+```
+```{r ex14-hint}
+
+require(ggplot2)
+scatter <- ggplot(albumsales1, aes(adverts, sales))
+scatter + geom_point() + geom_smooth(method = "lm", colour = "salmon",alpha = 0.1, fill = "Red") + labs(title="Regression Example",x = "Amount Spent on Advertisement in units of ?1000",y = "Sales of CDs and Downloads")
+
+```
+```{r ex14-check}
+#store
+```
+
+### Making predictions with our Model
+
+$$Record\ Sales_i = b_0+b_1Advertising\ Budget_i\\
+=134.14+(0.09612\times Advertising\ Budget_i)$$
+
+$$Record\ Sales_i = 134.14+(0.09612\times Advertising\ Budget_i)\\
+=134.14+(0.09612\times 100)\\
+=143.75$$
+
+
+### Example Regression Write Up
+
+The amounts of money spent on advertising not only explained a significant 33% of the variance in record sales ($R^2$ = .33, F(1, 198) = 99.59, p < .001), but it also significantly predicted album sales, b = .096, t(198) = 9.98, p < .001. 
+
+
+### Exercise 2: Run your own regression on exam anxiety data
+
+- Load the Exam Anxiety.dat file into R.
+- Make a prediction about the relationship between exam anxiety and exam performance
+- Run a linear regression using the lm() function
+- Interpret the output
+- Get the standardized beta coefficients
+- Bonus create a scatter plot with the regression line
+- Write a summary report of the results
+
+### 1. Load the data
+
+### 1. Creating two variables
+
+```{r ex21, exercise=TRUE}
+#Require 
+```
+```{r ex21-hint}
+
+exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
+```
+```{r ex21-check}
+#store
+```
+
+### 2. Run a linear regression model
+
+```{r ex22, exercise=TRUE}
+#Require 
+```
+```{r ex22-hint}
+
+exam_data$Exam <- as.numeric(exam_data$Exam)
+exam_datamod<-lm(Exam ~ Anxiety,data=exam_data)
+summary(exam_datamod)
+```
+```{r ex22-check}
+#store
+```
+
+### 3. Make a nice plot
+
+```{r ex23, exercise=TRUE}
+#make a plot, use ggplot2, and quantpsyc:: 
+```
+```{r ex23-hint}
+
+require(ggplot2)
+scatter <- ggplot(exam_data, aes(Anxiety, Exam))
+scatter + geom_point() + geom_smooth(method = "lm", colour = "salmon",alpha = 0.1, fill = "Red") + labs(title="Regression Exercise",x = "Anxiety about the Exam",y = "Exam Performance %")
+
+QuantPsyc::lm.beta(exam_datamod)
+
+plot(exam_data$Anxiety,exam_data$Exam)
+abline(exam_datamod)
+```
+```{r ex23-check}
+#store
+```
+
+
+## Suming Up
+
+- Understand linear regression with one predictor
+- Understand how we assess the fit of a regression model
+  - Total sum of squares
+  - Model sum of squares
+  - Residual sum of squares
+  - $F$
+  - $R^2$
+- Know how to do regression using **R**
+- Interpret a regression model
