@@ -735,19 +735,19 @@ data('trees')
 ```{r ex80-check}
 #store
 ```
-### Trees
+### Trees Data
 
- You can write code for tree part of the exercise
+ In the code blocks below, you can write, run, and submit code for the tree part of the exercise.
  
-### Tree Grith: mean, sd and CI(95% and 99%)
+### Tree Girth: mean, sd and CI(95% and 99%)
 
 ```{r ex81, exercise=TRUE}
-#Find values for mean, sd and both confidence intervals
+#Find values for mean, SD, and both confidence intervals
 
 
 ```
 ```{r ex81-hint}
-#calculate requred values
+#calculate required values
 mean(trees$Girth)
 sd(trees$Girth)
 ciMean(x=trees$Girth,conf=.95)
@@ -766,7 +766,7 @@ ciMean(x=trees$Girth,conf=.99)
 
 ```
 ```{r ex82-hint}
-#calculate requred values
+#calculate required values
 mean(trees$Height)
 sd(trees$Height)
 ciMean(x=trees$Height,conf=.95)
@@ -777,7 +777,7 @@ ciMean(x=trees$Height,conf=.99)
 #store
 ```
 
-### Tree Volume: mean, sd and CI(95% and 99%)
+### Tree Volume: mean, SD, and CI(95% and 99%)
 
 ```{r ex83, exercise=TRUE}
 #Find values for mean, sd and both confidence intervals
@@ -785,7 +785,7 @@ ciMean(x=trees$Height,conf=.99)
 
 ```
 ```{r ex83-hint}
-#calculate requred values
+#calculate required values
 mean(trees$Volume)
 sd(trees$Volume)
 ciMean(x=trees$Volume,conf=.95)
@@ -809,7 +809,7 @@ Assume it is a sample and  estimate the population mean and sd
 
 ```
 ```{r ex84-hint}
-#calculate requred values
+#calculate required values
 mean(discoveries[1:100])
 sd(discoveries[1:100])
 ciMean(x=discoveries[1:100],conf=.95)
