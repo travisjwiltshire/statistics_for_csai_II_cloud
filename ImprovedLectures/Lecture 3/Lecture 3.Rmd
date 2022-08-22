@@ -53,12 +53,11 @@ options(tutorial.event_recorder = new_recorder)
 
 ## 1. Introduction
 
-
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
 ## HEADER ###
 HTML("  <div class='jumbotron jumbotron-fluid'>
     <div class='container'>
-    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Correlation</u></h2>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Correlation II</u></h2>
     <h4 class='mb-3'>Statistics for CSAI II</h4>
     <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
     </div>
