@@ -61,3 +61,4 @@ ethel, section_skipped,, ,
 ethel, section_skipped,, , 
 ethel, question_submission,Quiz5, 2, FALSE
 ethel, section_skipped,, , 
+ethel, session_start,, , 
