@@ -1,5 +1,5 @@
 ---
-title: "Statistics for CSAI II - Correlation"
+title: "Statistics for CSAI II - Correlation II"
 date: |
   <center>
     ![](images/logo.png){width=2in}
