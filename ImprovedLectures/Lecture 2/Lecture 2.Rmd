@@ -14,8 +14,71 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
+## libraries
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(RMariaDB)
+library(DBI)
+library(ggwordcloud)
+
+
+conn = dbConnect(MariaDB(), user='p543343_ethelp', password='Tupsu333...', dbname='p543343_Statistics2', host='91.184.19.135')
+
+history = c("a")
+
+## options
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.eval = FALSE)
+
+## recording data
+new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+  
+d_tibble <- tibble::tibble(
+user_id  = user_id, 
+event = event,
+label = data$label,
+correct = data$correct,
+question = data$question,
+answer = data$answer
+  )
+
+## send to mysql
+dbWriteTable(conn, "module1", d_tibble, append=TRUE, row.names = FALSE)}
+
+
+tutorial_options(exercise.checker = function(
+  label,
+  user_code,
+  solution_code,
+  check_code,
+  envir_result,
+  evaluate_result,
+  envir_prep,
+  ...
+)
+  {
+  #Take all the variables that existed locally in the code block's environment
+  vars <- ls(envir = envir_result, all = TRUE)
+  for (i in 1:length(vars)){
+    #We need to make sure the following two variables are not changed:
+      #And add the local variables to the global environment, so that future code blocks can use this code.
+      assign(vars[i], get(vars[i]), envir = .GlobalEnv)
+  }
+ 
+})
+
+
+options(tutorial.event_recorder = new_recorder)
+
+
+## exercises
+pop<-base::letters[1:10]
+samp2<-sample(pop,size=4,replace=TRUE)
+
 ```
 
 ## 1. Introduction
@@ -43,17 +106,16 @@ What we will cover today:
 4. Estimating population parameters from sample statistics 
 5. Confidence intervals
 
-
-
 ## Quiz
 
 ### What do you know about sampling so far?
 
 ### Question 1
-```{r Quiz1}
-  question("What type of sampling is most commonly used in university settings?",
-    answer("Snowball", correct = TRUE),
-    answer("Convenience"),
+
+```{r Quiz1,  echo=FALSE}
+question("What type of sampling is most commonly used in university settings?",
+    answer("Snowball"),
+    answer("Convenience", correct = TRUE),
     answer("Random"),
     answer("Volunteer"),
     answer("Opportunity"),
@@ -62,20 +124,94 @@ What we will cover today:
     )
 ```
 
+### Results
+
+#### 1. What type of sampling is most commonly used in university settings?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Convenience", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 2
-```{r Quiz2}
-  question("We use sample statistics to do which of the following regarding population parameters? ",
-    answer("Prove"),
-    answer("Guess"),
-    answer("Differentiate"),
-    answer("Estimate", correct = TRUE),
+
+```{r Quiz2,  echo=FALSE}
+  question("What is the common goal of doing empirical work utilizing statistics in CSAI?",
+    answer("Become famous"),
+    answer("Earn a degree"),
+    answer("Use knowledge of sample to make inference", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 2. What is the common goal of doing empirical work utilizing statistics in CSAI?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Use knowledge of sample to make inference", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
 ### Question 3
-```{r Quiz3}
- question("We use sample statistics to do which of the following regarding population parameters? ",
+```{r Quiz3, echo = FALSE}
+  question("We use sample statistics to do which of the following regarding population parameters?",
     answer("Prove"),
     answer("Guess"),
     answer("Differentiate"),
@@ -84,8 +220,45 @@ What we will cover today:
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 3. We use sample statistics to do which of the following regarding population parameters?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Estimate", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 4
-```{r Quiz4}
+```{r Quiz4, echo = FALSE}
 question("As we increase the sample size, the sampling distribution of the mean becomes:",
     answer("More normal"),
     answer("Wider"),
@@ -95,8 +268,45 @@ question("As we increase the sample size, the sampling distribution of the mean 
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 4. As we increase the sample size, the sampling distribution of the mean becomes:
+
+```{r, Quiz4O, echo = FALSE}
+plotOutput("Q4")
+```
+
+```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q4 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 5
-```{r Quiz5}
+```{r Quiz5, echo = FALSE}
   question("If I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?",
     answer("1", correct = TRUE),
     answer("2"),
@@ -105,6 +315,42 @@ question("As we increase the sample size, the sampling distribution of the mean 
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
+```
+
+### Results
+
+#### 5. If I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?
+
+```{r, Quiz5O, echo = FALSE}
+plotOutput("Q5")
+```
+
+```{r, Quiz5R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q5 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz5",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "1", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 ```
 
 ## 2. Populations and Samples
@@ -287,7 +533,7 @@ samp3<-sample(pop,size=4,prob = bias,replace=FALSE)
 - People’s levels of stress after arriving to work after taking public transit
 
 
-## 5. Estimating Population Parameters
+## 5. Population Parameters
 
 ### Sample statistics vs. Population parameters
 
