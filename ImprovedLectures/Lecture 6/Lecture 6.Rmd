@@ -1,6 +1,9 @@
 ---
-title: "Statistics for CSAI II - Sampling Theory"
-author: Travis J. Wiltshire, Ph.D.
+title: "Statistics for CSAI II - Linear Regression II"
+date: |
+  <center>
+    ![](images/logo.png){width=2in}
+  </center>
 output: 
   learnr::tutorial:
     progressive: true
@@ -9,7 +12,6 @@ output:
     css: css/style.css
 runtime: shiny_prerendered
 ---
-
 ```{r setup, include=FALSE}
 ## libraries1
 library(learnr)
