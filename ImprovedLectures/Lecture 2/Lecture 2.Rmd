@@ -1086,7 +1086,7 @@ ciMean(x=trees$Volume,conf=.99)
 
 ### Discoveries
 
-Do you think this is  sample or a population? Why? Preform some analysis on the dataset to give better answer.
+Do you think this is  sample or a population? Why? Preform some analysis on the dataset to give a better answer.
 
 Assume it is a sample and  estimate the population mean and sd
 
