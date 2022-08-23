@@ -13,7 +13,7 @@
 <meta name="progressive" content="true" />
 <meta name="allow-skip" content="true" />
 
-<title>Statistics for CSAI II - Hypothesis Testing</title>
+<title>Statistics for CSAI II - Correlation II</title>
 
 
 <!-- highlightjs -->
@@ -121,7 +121,7 @@ $(document).ready(function () {
 <h2>1. Introduction</h2>
   <div class='jumbotron jumbotron-fluid'>
     <div class='container'>
-    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Hypothesis Testing</u></h2>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Correlation II</u></h2>
     <h4 class='mb-3'>Statistics for CSAI II</h4>
     <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
     </div>
@@ -422,8 +422,8 @@ summary(cd)  #summarize the output</code></pre>
 <p><img src="images/advert-package.png" /></p>
 <p><span class="math inline">\(cov_{x,y}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}\\=\frac{(-0.4)(-3)+(-1.4)(-2)+(-1.4)(-1)+(0.6)(2)+(2.6)(4)}{4}\\=\frac{1.2+2.8+1.4+1.2+10.4}{4}\\=\frac{17}{4}\\=4.25\)</span></p>
 </div>
-<div id="section-covariance-in-r" class="section level3">
-<h3>Covariance in R</h3>
+<div id="section-covariance-exercises" class="section level3">
+<h3>Covariance Exercises</h3>
 <ul>
 <li>Create two variables in R:
 <ul>
@@ -436,16 +436,11 @@ summary(cd)  #summarize the output</code></pre>
 <div id="section-creating-two-variables" class="section level3">
 <h3>1. Creating two variables</h3>
 <div class="tutorial-exercise" data-label="ex21" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>#Require </code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<div class="tutorial-exercise-support" data-label="ex21-hint" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>ads&lt;-c(5,4,4,6,8)
+<pre class="r"><code>ads&lt;-c(5,4,4,6,8)
 packets&lt;-c(8,9,10,13,15)</code></pre>
-</div>
-<div class="tutorial-exercise-support" data-label="ex21-check" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>#store</code></pre>
-</div>
+<pre class="r"><code>#store</code></pre>
 </div>
 <div id="section-calculating-the-covariance-of-two-variables" class="section level3">
 <h3>2. Calculating the covariance of two variables</h3>
@@ -480,8 +475,8 @@ packets&lt;-c(8,9,10,13,15)</code></pre>
 <p><span class="math display">\[ r =\frac{ cov_{xy} }{s_{x}s_{y}}\]</span></p>
 <p><span class="math inline">\(r = \frac{ cov_{xy} }{s_{x}s_{y}}\\=\frac{4.25}{1.67 \times 2.29}\\= .87\)</span></p>
 </div>
-<div id="section-standardizing-and-correlation-in-r" class="section level3">
-<h3>Standardizing and Correlation in R</h3>
+<div id="section-standardizing-and-correlation-exercises" class="section level3">
+<h3>Standardizing and Correlation Exercises</h3>
 <ul>
 <li>Create new variables by standardizing both variables below using the <code>scale()</code> function:
 <ul>
@@ -560,8 +555,8 @@ cov(std_ads,std_packets)</code></pre>
 <li>Also provides p-values, and CIs</li>
 </ul>
 </div>
-<div id="section-correlation-testing-in-r" class="section level3">
-<h3>Correlation Testing in R</h3>
+<div id="section-correlation-testing-exercises" class="section level3">
+<h3>Correlation Testing Exercises</h3>
 <ul>
 <li>Use the <code>cor.test()</code> function to calculate the correlation of ads and packets</li>
 <li>Use the <code>cor.test()</code> function to calculate the correlation of ads and packets predict a negative association</li>
@@ -599,8 +594,8 @@ cor.test(ads,packets, method=&quot;pearson&quot;,alternative = &quot;greater&quo
 <p>Check <a href="https://tylervigen.com/discover">this</a> out for some interesting spurious correlations: <a href="https://tylervigen.com/discover" class="uri">https://tylervigen.com/discover</a></p>
 <p><img src="images/corcominc.png" /></p>
 </div>
-<div id="section-more-correlation-testing-in-r" class="section level3">
-<h3>More Correlation Testing in R</h3>
+<div id="section-more-correlation-testing-exercises" class="section level3">
+<h3>More Correlation Testing Exercises</h3>
 <ul>
 <li>Load the Exam Anxiety.dat file into R using <code>read.delim()</code> function
 <ul>
@@ -613,16 +608,16 @@ cor.test(ads,packets, method=&quot;pearson&quot;,alternative = &quot;greater&quo
 <li>Generate an exploratory correlation matrix using the <code>correlate()</code> function from the <code>lsr</code> package. How do you interpret this?</li>
 </ul>
 </div>
-<div id="section-loading-exam-anxiety-data-amd-correlation-test" class="section level3">
-<h3>1. Loading Exam Anxiety data amd correlation test</h3>
-<p>In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer</p>
+<div id="section-load-the-exam-anxiety-dataset-and-do-a-correlation-test" class="section level3">
+<h3>1. Load the Exam Anxiety dataset and do a correlation test</h3>
+<p>The exam anxiety dataset is pre-loaded in a variable called exam_data.</p>
+<p>In this online coding environment data and libraries are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer</p>
 <div class="tutorial-exercise" data-label="ex31" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code># your code here</code></pre>
+<pre class="text"><code>exam_data</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="ex31-hint" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>exam_data&lt;-read.delim(file=&quot;Exam Anxiety.dat&quot;,header=TRUE)
-cor.test(exam_data$Exam, exam_data$Anxiety, method = &quot;pearson&quot;, alternative=&#39;less&#39;)</code></pre>
+<pre class="text"><code>cor.test(exam_data$Exam, exam_data$Anxiety, method = &quot;pearson&quot;, alternative=&#39;less&#39;)</code></pre>
 </div>
 <div class="tutorial-exercise-support" data-label="ex31-check" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#store</code></pre>
@@ -682,41 +677,24 @@ correlate(exam_data)</code></pre>
 <h3>Summing Up</h3>
 
 <script type="application/shiny-prerendered" data-context="server-start">
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
-library(ggplot2)
-library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
 
-## options
-knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+# no quizzes here yet?
 
-## recording data
-new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
-  
 
-  
-g_tibble <- tibble::tibble(
-user_id  = user_id, 
-event = event,
-label = data$label,
-correct = data$correct,
-question = data$question,
-answer = data$answer
-  )
+## exercise setup
+library(lsr)
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
+ads<-c(5,4,4,6,8)
+packets<-c(8,9,10,13,15)
+std_ads<-scale(ads)
+std_packets<-scale(packets)
+cov(std_ads,std_packets)
+exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
 
-}
-
-options(tutorial.event_recorder = new_recorder)
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -826,7 +804,7 @@ output$`tutorial-exercise-ex33-output` <- renderUI({
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73]}},"value":[{"type":"character","attributes":{},"value":["askpass","assertthat","base","bslib","cellranger","cli","colorspace","compiler","crayon","curl","datasets","DBI","digest","dplyr","ellipsis","evaluate","fansi","fastmap","fs","gargle","generics","ggplot2","glue","googledrive","googlesheets4","graphics","grDevices","grid","gtable","htmltools","htmlwidgets","httpuv","httr","jquerylib","jsonlite","knitr","later","learnr","lifecycle","magrittr","markdown","methods","mime","munsell","openssl","pillar","pkgconfig","promises","purrr","R6","rappdirs","Rcpp","rlang","rmarkdown","rprojroot","rstudioapi","sass","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tools","utf8","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["1.1","0.2.1","4.1.1","0.3.1","1.1.0","3.1.0","2.0-2","4.1.1","1.4.1","4.3.2","4.1.1","1.1.3","0.6.28","1.0.7","0.3.2","0.14","0.5.0","1.1.0","1.5.0","1.2.0","0.1.1","3.3.5","1.4.2","2.0.0","1.0.0","4.1.1","4.1.1","4.1.1","0.3.0","0.5.2","1.5.4","1.6.3","1.4.2","0.1.4","1.7.2","1.36","1.3.0","0.10.1","1.0.1","2.0.1","1.1","4.1.1","0.12","0.5.0","2.0.0","1.6.4","2.0.3","1.2.0.1","0.3.4","2.5.1","0.3.3","1.0.7","1.0.2","2.11","2.0.2","0.13","0.4.0","1.2.0","1.7.1","4.1.1","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","4.1.1","1.2.2","4.1.1","0.3.8","2.5.0","0.26","1.8-4","2.2.1"]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58]}},"value":[{"type":"character","attributes":{},"value":["assertthat","base","bslib","cli","compiler","crayon","datasets","DBI","digest","dplyr","ellipsis","evaluate","fansi","fastmap","generics","glue","graphics","grDevices","htmltools","htmlwidgets","httpuv","jquerylib","jsonlite","knitr","later","learnr","lifecycle","lsr","magrittr","markdown","methods","mime","pillar","pkgconfig","promises","purrr","R6","Rcpp","rlang","rmarkdown","rprojroot","rstudioapi","sass","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tools","utf8","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["0.2.1","4.1.1","0.3.1","3.1.0","4.1.1","1.4.1","4.1.1","1.1.3","0.6.28","1.0.7","0.3.2","0.14","0.5.0","1.1.0","0.1.1","1.4.2","4.1.1","4.1.1","0.5.2","1.5.4","1.6.3","0.1.4","1.7.2","1.36","1.3.0","0.10.1","1.0.1","0.5.2","2.0.1","1.1","4.1.1","0.12","1.6.4","2.0.3","1.2.0.1","0.3.4","2.5.1","1.0.7","1.0.2","2.11","2.0.2","0.13","0.4.0","1.7.1","4.1.1","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","4.1.1","1.2.2","4.1.1","0.3.8","2.5.0","0.26","1.8-4","2.2.1"]}]}]}
 </script>
 <!--/html_preserve-->
 </div>
@@ -841,7 +819,7 @@ output$`tutorial-exercise-ex33-output` <- renderUI({
 
 <!-- begin doc-metadata -->
 <div id="doc-metadata">
-<h2 class="title toc-ignore" style="display:none;">Statistics for CSAI II - Hypothesis Testing</h2>
+<h2 class="title toc-ignore" style="display:none;">Statistics for CSAI II - Correlation II</h2>
 <h4 class="date"><em><center>
 <img src="images/logo.png" style="width:2in" />
 </center></em></h4>

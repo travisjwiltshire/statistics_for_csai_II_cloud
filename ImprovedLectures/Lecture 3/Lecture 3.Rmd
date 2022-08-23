@@ -14,41 +14,24 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
-library(ggplot2)
-library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
 
-## options
-knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+# no quizzes here yet?
 
-## recording data
-new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
-  
 
-  
-g_tibble <- tibble::tibble(
-user_id  = user_id, 
-event = event,
-label = data$label,
-correct = data$correct,
-question = data$question,
-answer = data$answer
-  )
+## exercise setup
+library(lsr)
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
+ads<-c(5,4,4,6,8)
+packets<-c(8,9,10,13,15)
+std_ads<-scale(ads)
+std_packets<-scale(packets)
+cov(std_ads,std_packets)
+exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
 
-}
-
-options(tutorial.event_recorder = new_recorder)
 ```
 
 ## 1. Introduction
@@ -334,7 +317,7 @@ $$cov_{x,y}=\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}$$
 
 $cov_{x,y}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}\\=\frac{(-0.4)(-3)+(-1.4)(-2)+(-1.4)(-1)+(0.6)(2)+(2.6)(4)}{4}\\=\frac{1.2+2.8+1.4+1.2+10.4}{4}\\=\frac{17}{4}\\=4.25$
 
-### Covariance in R
+### Covariance Exercises
 
 - Create two variables in R:
   + **Ads** with values 5,4,4,6,8
@@ -345,7 +328,6 @@ $cov_{x,y}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}\\=\frac{(-0.4)(-3)+(-1
 ### 1. Creating two variables
 
 ```{r ex21, exercise=TRUE}
-#Require 
 ```
 ```{r ex21-hint}
 
@@ -383,15 +365,13 @@ $$ r =\frac{ cov_{xy} }{s_{x}s_{y}}$$
 $r = \frac{ cov_{xy} }{s_{x}s_{y}}\\=\frac{4.25}{1.67 \times 2.29}\\= .87$  
 
 
-### Standardizing and Correlation in R
+### Standardizing and Correlation Exercises
 
 - Create new variables by standardizing both variables below using the `scale()` function:
   + Ads
   + Packets
 - Use the `cov()` function to calculate the covariance of the **standardized versions** of ads and packets
 - Use the `cor()` function to calculate the correlation of ads and packets
-
-
 
 ### Testing out standardization of variables
 ```{r ex23, exercise=TRUE}
@@ -449,7 +429,7 @@ cor(ads,packets, method="pearson")
 - And we can also specify our alternative for whether there should be a negative relationship **(alternative =‘less’)** or positive association **(alternative=‘greater’)**
 - Also provides p-values, and CIs
 
-### Correlation Testing in R
+### Correlation Testing Exercises
 
 - Use the `cor.test()` function to calculate the correlation of ads and packets
 - Use the `cor.test()` function to calculate the correlation of ads and packets predict a negative association
@@ -484,7 +464,7 @@ Check [this](https://tylervigen.com/discover) out for some interesting spurious 
 ![](images/corcominc.png)
 
 
-### More Correlation Testing in R
+### More Correlation Testing Exercises
 
 - Load the Exam Anxiety.dat file into R using `read.delim()` function
   - 103 participants, variables indicated Time spent revising (hours), Exam performance (%), Exam Anxiety (the EAQ, score out of 100), Gender
@@ -494,15 +474,16 @@ Check [this](https://tylervigen.com/discover) out for some interesting spurious 
 - Generate an exploratory correlation matrix using the `correlate()` function from the `lsr` package. How do you interpret this?
 
 
-### 1. Loading Exam Anxiety data amd correlation test
+### 1. Load the Exam Anxiety dataset and do a correlation test
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
+The exam anxiety dataset is pre-loaded in a variable called exam_data.
+
+In this online coding environment data and libraries are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
 
 ```{r ex31, exercise=TRUE}
-# your code here
+exam_data
 ```
 ```{r ex31-hint}
-exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
 cor.test(exam_data$Exam, exam_data$Anxiety, method = "pearson", alternative='less')
 ```
 ```{r ex31-check}
