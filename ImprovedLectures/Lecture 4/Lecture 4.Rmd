@@ -22,7 +22,6 @@ library(ggplot2)
 library(scales)
 library(RMariaDB)
 library(DBI)
-library(ggwordcloud)
 
 conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
@@ -51,6 +50,12 @@ dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)}
 options(tutorial.event_recorder = new_recorder)
 
 ## exercise setup
+library(ppcor)
+#library(ggm)
+library(correlation)
+library(see)
+liar_data <- read.delim("The Biggest Liar.dat")
+exam_data2<-read.delim(file="Exam Anxiety.dat",header=TRUE)
 
 ```
 
@@ -358,10 +363,11 @@ $$r =\frac{ cov_{xy} }{s_{x}s_{y}}=\\ =\frac{ 4.25 }{1.67\times2.92 } = \\= .87$
 
 ### 1. Loading The Biggest Liar data
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
+Load the dataset and store it in a variable called liar_data.
+
 
 ```{r ex21, exercise=TRUE}
-#Require 
+liar_data <- read.delim("The Biggest Liar.dat")
 ```
 ```{r ex21-hint}
 
@@ -371,33 +377,17 @@ liar_data <- read.delim("The Biggest Liar.dat")
 #store
 ```
 
-### 2. Add exact argument to avoid warning
+### 2. Make a prediction about the relationship between position in the competition and creativity and test it using the `cor.test()` function. Use the spearman and kendall methods.
 
 ```{r ex22, exercise=TRUE}
-#Require 
+#Your code here 
 ```
 ```{r ex22-hint}
-
+#Add exact argument to avoid warning
 cor.test(liar_data$Position, liar_data$Creativity,method="spearman", alternative = 'less', exact=FALSE)
 cor.test(liar_data$Creativity,liar_data$Position, method="kendall", alternative = 'less')
 ```
 ```{r ex22-check}
-#store
-```
-
-### 3. Partial and semi-partial correlation
-
-- How would you report your findings? Try to summarize your results in a write up.
-
-
-```{r ex23, exercise=TRUE}
-#Require 
-```
-```{r ex23-hint}
-require(ppcor)
-exam_data2<-exam_data[,c("Exam","Anxiety","Revise")]
-```
-```{r ex23-check}
 #store
 ```
 
@@ -462,13 +452,15 @@ Need more details? Watch [this video](https://www.youtube.com/watch?v=OpAf4N582b
 
 ### 1. Run individual tests
 
- In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
+Store the data in a variable called exam_data2.
 
 ```{r ex31, exercise=TRUE}
-#Require pcor, spcor
+library(ppcor)
+exam_data2 <-read.delim(file="Exam Anxiety.dat",header=TRUE)
+
+#Your code here
 ```
 ```{r ex31-hint}
-
 pcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 spcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 ```
@@ -479,7 +471,9 @@ spcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 ### 2. Test them all at once
 
 ```{r ex32, exercise=TRUE}
-#Require pcor, spcor
+library(ppcor)
+
+#Your code here
 ```
 ```{r ex32-hint}
 
@@ -491,16 +485,19 @@ spcor(exam_data2)
 #store
 ```
 
-### 3. An alternative method
+### 3. Alternative methods
 
 ```{r ex33, exercise=TRUE}
-#Require ggm
+#library(ggm)
+
+pc<-pcor(c("Exam","Anxiety","Revise"),var(exam_data2))
+pcor.test(pc,1,103) 
+
+#The 1 indicates we are only controlling for 1 variable, and the 103 is the sample size
 ```
 ```{r ex33-hint}
 
-require(ggm)
-pc<-pcor(c("Exam","Anxiety","Revise"),var(exam_data2))
-pcor.test(pc,1,103) #The 1 indicates we are only controlling for 1 variable, and the 103 is the sample size
+
 ```
 ```{r ex33-check}
 #store
@@ -512,15 +509,13 @@ pcor.test(pc,1,103) #The 1 indicates we are only controlling for 1 variable, and
 
 ### 1. Load packages
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
-
 ```{r ex41, exercise=TRUE}
-#Require pcor, spcor
-```
-```{r ex41-hint}
-require(correlation)
+library(correlation)
 library(dplyr)
 library(see)
+```
+```{r ex41-hint}
+#library pcor, spcor
 
 ```
 ```{r ex41-check}
@@ -530,7 +525,7 @@ library(see)
 ### 2. Plot results
 
 ```{r ex42, exercise=TRUE}
-#Require pcor, spcor
+#library pcor, spcor
 ```
 ```{r ex42-hint}
 results <- correlation(exam_data)
