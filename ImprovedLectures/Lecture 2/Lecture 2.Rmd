@@ -1012,9 +1012,9 @@ In this online coding environment the libraries are pre-installed However, do no
  
  
 ```{r ex80, exercise=TRUE}
+#Call datasets with function data() and load libraries with library()
 ```
 ```{r ex80-hint}
-#Call datasets with function data() and load libraries with library()
 library('datasets')
 data("discoveries")
 data('trees')

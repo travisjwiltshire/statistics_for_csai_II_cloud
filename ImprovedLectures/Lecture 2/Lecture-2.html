@@ -1003,18 +1003,13 @@ qt( p = .975, df = N-1)</code></pre>
 <p>Load the library ‘datasets’ and the ‘discoveries’ and ‘trees’ datasets.</p>
 <p>In this online coding environment the libraries are pre-installed However, do not forget to install and load any new libraries when running R studio on your computer!</p>
 <div class="tutorial-exercise" data-label="ex80" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>library(&#39;datasets&#39;)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":["function (label, user_code, solution_code, check_code, envir_result, ","    evaluate_result, envir_prep, ...) ","{","    vars <- ls(envir = envir_result, all = TRUE)","    for (i in 1:length(vars)) {","        assign(vars[i], get(vars[i]), envir = .GlobalEnv)","    }","}"]}</script>
 </div>
-<div class="tutorial-exercise-support" data-label="ex80-hint" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>#Call datasets with function data() and load libraries with library()
+<pre class="r"><code>#Call datasets with function data() and load libraries with library()
 library(&#39;datasets&#39;)
 data(&quot;discoveries&quot;)
 data(&#39;trees&#39;)</code></pre>
-</div>
-<div class="tutorial-exercise-support" data-label="ex80-check" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>#store</code></pre>
-</div>
+<pre class="r"><code>#store</code></pre>
 </div>
 <div id="section-trees-data" class="section level3">
 <h3>Trees Data</h3>
@@ -1073,7 +1068,7 @@ ciMean(x=trees$Volume,conf=.99)</code></pre>
 </div>
 <div id="section-discoveries" class="section level3">
 <h3>Discoveries</h3>
-<p>Do you think this is sample or a population? Why? Preform some analysis on the dataset to give better answer.</p>
+<p>Do you think this is sample or a population? Why? Preform some analysis on the dataset to give a better answer.</p>
 <p>Assume it is a sample and estimate the population mean and sd</p>
 <div class="tutorial-exercise" data-label="ex84" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#Find values for mean, SD and Confidence interval(95% and 99%)</code></pre>
@@ -1326,7 +1321,7 @@ nonhonors.samp</code></pre>
 </div>
 <div id="section-combine-the-two-samples" class="section level3">
 <h3>Combine the two samples</h3>
-<p>Combine the two samples to create sample that proprtionally represents the distribution of honor/non-honor popuation and calculate GPA mean</p>
+<p>Combine the two samples to create sample that proportionally represents the distribution of honor/non-honor population and calculate GPA mean</p>
 <div class="tutorial-exercise" data-label="ex68" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#Create non-honors subset
 ?rbind</code></pre>
