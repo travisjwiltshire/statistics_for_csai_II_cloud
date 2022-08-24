@@ -75,8 +75,6 @@ What we will cover today:
 
 
 <img src="images/SteveFiore.jpg"style="max-width: 100%;" /> | <img src="images/TeamCognition.png"  style="max-width: 100%;" />
-
-
      
 **Dr. Jonathan Butner**
     
@@ -128,14 +126,9 @@ What we will cover today:
 - Assistant Professor at TiU since August 2020
 
 
-
 **Research:** Already in my BSc I had an interest in both biology and psychology. Cognitive Neuroscience/neuroimaging has both of these represented which is why I chose that field. I study memory, and in particular episodic memory, using cognitive tasks and functional MRI. I find it intriguing to discover how people remember the world around them and their experiences, and how they learn from it. 
 
 **Personal:** In my spare time I enjoy reading, pretty much anything from detectives to romance to sci-fi, and I like to bake, cakes, cookies, etc :)
-
-
-
-
 
 ## Course Expectations
 
@@ -144,12 +137,8 @@ What we will cover today:
 - Read the Syllabus!
 - Follow the course schedule. 
 
-
-
 <img src="images/syllabus.png" 
      style="max-width: 100%;" />
-
-
 
 ### Course Expectations
 
@@ -186,8 +175,6 @@ What we will cover today:
   - (Optional) Complete Associated Open Stats Lab)
 
 - Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students’ learning with effective learning techniques: Promising directions from cognitive and educational psychology. Psychological Science in the Public Interest, 14(1), 4-58.
-
-
 
 
 ### Course Expectations

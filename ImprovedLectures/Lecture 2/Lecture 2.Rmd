@@ -24,7 +24,7 @@ library(RMariaDB)
 library(DBI)
 library(ggwordcloud)
 
-conn = dbConnect(MariaDB(), user='p543343_ethelp', password='Tupsu333...', dbname='p543343_Statistics2', host='91.184.19.135')
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
 history = c("a")
 
@@ -1225,7 +1225,7 @@ set.seed(23325)
 #store
 ```
 
-### Generate a simple random sample of size 7
+### Generate a simple random sample of size 7 and store it in a variable called simplerandomsample
 
 ```{r ex63, exercise=TRUE}
 #Use popsamp and FakeSchool data
@@ -1242,7 +1242,7 @@ simplerandomsample
 #store
 ```
 
-### Check the mean GPA of the population
+### Check the mean GPA of the population and store it in a variable called mean.pop
 
 ```{r ex64, exercise=TRUE}
 #Use FakeSchool data to find mean and create variable: mean.pop

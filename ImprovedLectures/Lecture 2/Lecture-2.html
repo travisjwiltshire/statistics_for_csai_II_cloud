@@ -1003,13 +1003,17 @@ qt( p = .975, df = N-1)</code></pre>
 <p>Load the library ‘datasets’ and the ‘discoveries’ and ‘trees’ datasets.</p>
 <p>In this online coding environment the libraries are pre-installed However, do not forget to install and load any new libraries when running R studio on your computer!</p>
 <div class="tutorial-exercise" data-label="ex80" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>#Call datasets with function data() and load libraries with library()</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":["function (label, user_code, solution_code, check_code, envir_result, ","    evaluate_result, envir_prep, ...) ","{","    vars <- ls(envir = envir_result, all = TRUE)","    for (i in 1:length(vars)) {","        assign(vars[i], get(vars[i]), envir = .GlobalEnv)","    }","}"]}</script>
 </div>
-<pre class="r"><code>#Call datasets with function data() and load libraries with library()
-library(&#39;datasets&#39;)
+<div class="tutorial-exercise-support" data-label="ex80-hint" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>library(&#39;datasets&#39;)
 data(&quot;discoveries&quot;)
 data(&#39;trees&#39;)</code></pre>
-<pre class="r"><code>#store</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="ex80-check" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>#store</code></pre>
+</div>
 </div>
 <div id="section-trees-data" class="section level3">
 <h3>Trees Data</h3>
@@ -1197,8 +1201,8 @@ set.seed(23325)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-generate-a-simple-random-sample-of-size-7" class="section level3">
-<h3>Generate a simple random sample of size 7</h3>
+<div id="section-generate-a-simple-random-sample-of-size-7-and-store-it-in-a-variable-called-simplerandomsample" class="section level3">
+<h3>Generate a simple random sample of size 7 and store it in a variable called simplerandomsample</h3>
 <div class="tutorial-exercise" data-label="ex63" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#Use popsamp and FakeSchool data
 popsamp</code></pre>
@@ -1213,8 +1217,8 @@ simplerandomsample</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-check-the-mean-gpa-of-the-population" class="section level3">
-<h3>Check the mean GPA of the population</h3>
+<div id="section-check-the-mean-gpa-of-the-population-and-store-it-in-a-variable-called-mean.pop" class="section level3">
+<h3>Check the mean GPA of the population and store it in a variable called mean.pop</h3>
 <div class="tutorial-exercise" data-label="ex64" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#Use FakeSchool data to find mean and create variable: mean.pop</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":["function (label, user_code, solution_code, check_code, envir_result, ","    evaluate_result, envir_prep, ...) ","{","    vars <- ls(envir = envir_result, all = TRUE)","    for (i in 1:length(vars)) {","        assign(vars[i], get(vars[i]), envir = .GlobalEnv)","    }","}"]}</script>
@@ -1467,7 +1471,7 @@ library(RMariaDB)
 library(DBI)
 library(ggwordcloud)
 
-conn = dbConnect(MariaDB(), user='p543343_ethelp', password='Tupsu333...', dbname='p543343_Statistics2', host='91.184.19.135')
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
 history = c("a")
 
