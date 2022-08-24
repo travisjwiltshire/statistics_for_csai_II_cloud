@@ -1493,7 +1493,7 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(conn, "module1", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(conn, "module2", d_tibble, append=TRUE, row.names = FALSE)}
 
 
 tutorial_options(exercise.checker = function(
@@ -1582,7 +1582,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 
 output$Q1 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz1",)
@@ -1614,7 +1614,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 
 output$Q2 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz2",)
@@ -1646,7 +1646,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 
 output$Q3 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz3",)
@@ -1678,7 +1678,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 
 output$Q4 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz4",)
@@ -1710,7 +1710,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 
 output$Q5 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz5",)

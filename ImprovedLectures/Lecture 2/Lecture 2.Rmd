@@ -46,7 +46,7 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(conn, "module1", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(conn, "module2", d_tibble, append=TRUE, row.names = FALSE)}
 
 
 tutorial_options(exercise.checker = function(
@@ -172,7 +172,7 @@ plotOutput("Q1")
 
 output$Q1 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz1",)
@@ -220,7 +220,7 @@ plotOutput("Q2")
 
 output$Q2 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz2",)
@@ -269,7 +269,7 @@ plotOutput("Q3")
 
 output$Q3 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz3",)
@@ -317,7 +317,7 @@ plotOutput("Q4")
 
 output$Q4 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz4",)
@@ -365,7 +365,7 @@ plotOutput("Q5")
 
 output$Q5 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz5",)

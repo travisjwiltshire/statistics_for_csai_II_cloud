@@ -98,3 +98,34 @@ ethel, section_skipped,, ,
 ethel, question_submission,Quiz1, Random, FALSE
 ethel, section_skipped,, , 
 ethel, section_skipped,, , 
+ethel, session_start,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz2, Use knowledge of sample to make inference, TRUE
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz3, Guess, FALSE
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz4, Wider, FALSE
+ethel, section_skipped,, , 
+ethel, session_stop,, , 
+ethel, session_start,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, session_start,, , 
+ethel, question_submission,Quiz1, Convenience, TRUE
+ethel, session_stop,, , 
+ethel, session_start,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz1, Opportunity, FALSE
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz2, Become famous, FALSE
+ethel, question_submission,Quiz2, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
