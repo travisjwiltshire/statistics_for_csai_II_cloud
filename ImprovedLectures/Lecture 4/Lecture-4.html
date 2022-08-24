@@ -158,15 +158,6 @@ $(document).ready(function () {
 <h2>Quiz</h2>
 <div id="section-question-1" class="section level3">
 <h3>Question 1</h3>
-<pre class="r"><code>  question(&quot;How do you estimate the amount of overlap in variance between two variables using the
-correlation (r)?&quot;,
-    answer(&quot;Divide it by 2&quot;, correct = TRUE),
-    answer(&quot;Square it&quot;),
-    answer(&quot;Take the square root&quot;),
-    answer(&quot;Divide by standard error&quot;),
-    incorrect = &quot;Hint: Try again, you can pick another answer!&quot;,
-    allow_retry = TRUE
-    )</code></pre>
 <div class="panel panel-default">
 <div data-label="Quiz1" class="tutorial-question panel-body">
 <div id="Quiz1-answer_container" class="shiny-html-output"></div>
@@ -176,17 +167,15 @@ correlation (r)?&quot;,
 </div>
 </div>
 </div>
+<div id="section-results" class="section level3">
+<h3>Results</h3>
+<div id="section-how-do-you-estimate-the-amount-of-overlap-in-variance-between-two-variables-using-the-correlation-r" class="section level4">
+<h4>1. How do you estimate the amount of overlap in variance between two variables using the correlation (r)?</h4>
+<p><div id="Q1" class="shiny-plot-output" style="width:100%;height:400px;"></div></p>
+</div>
+</div>
 <div id="section-question-2" class="section level3">
 <h3>Question 2</h3>
-<pre class="r"><code>  question(&quot;An estimate of the the correlation between Scoville Heat Units in various chili peppers and
-perceived pain is .7. What size effect is this? &quot;,
-    answer(&quot;Small&quot;),
-    answer(&quot;Medium&quot;),
-    answer(&quot;Large&quot;, correct = TRUE),
-    answer(&quot;No idea&quot;),
-    incorrect = &quot;Hint: Try again, you can pick another answer!&quot;,
-    allow_retry = TRUE
-    )</code></pre>
 <div class="panel panel-default">
 <div data-label="Quiz2" class="tutorial-question panel-body">
 <div id="Quiz2-answer_container" class="shiny-html-output"></div>
@@ -196,16 +185,15 @@ perceived pain is .7. What size effect is this? &quot;,
 </div>
 </div>
 </div>
+<div id="section-results-1" class="section level3">
+<h3>Results</h3>
+<div id="section-an-estimate-of-the-the-correlation-between-scoville-heat-units-in-various-chili-peppers-and-perceived-pain-is-.7.-what-size-effect-is-this" class="section level4">
+<h4>2. An estimate of the the correlation between Scoville Heat Units in various chili peppers and perceived pain is .7. What size effect is this?</h4>
+<p><div id="Q2" class="shiny-plot-output" style="width:100%;height:400px;"></div></p>
+</div>
+</div>
 <div id="section-question-3" class="section level3">
 <h3>Question 3</h3>
-<pre class="r"><code> question(&quot;The null hypothesis for a correlation test is which of the following? &quot;,
-    answer(&quot;The correlation is positive&quot;),
-    answer(&quot;The correlation is negative&quot;),
-    answer(&quot;The correlation is different than 0&quot;),
-    answer(&quot;The correlation is equal to 0&quot;, correct = TRUE),
-    incorrect = &quot;Hint: Try again, you can pick another answer!&quot;,
-    allow_retry = TRUE
-    )</code></pre>
 <div class="panel panel-default">
 <div data-label="Quiz3" class="tutorial-question panel-body">
 <div id="Quiz3-answer_container" class="shiny-html-output"></div>
@@ -215,22 +203,15 @@ perceived pain is .7. What size effect is this? &quot;,
 </div>
 </div>
 </div>
+<div id="section-results-2" class="section level3">
+<h3>Results</h3>
+<div id="section-the-null-hypothesis-for-a-correlation-test-is-which-of-the-following" class="section level4">
+<h4>3. The null hypothesis for a correlation test is which of the following?</h4>
+<p><div id="Q3" class="shiny-plot-output" style="width:100%;height:400px;"></div></p>
+</div>
+</div>
 <div id="section-question-4" class="section level3">
 <h3>Question 4</h3>
-<pre class="r"><code>question(&quot;How glad are you to have the option to attend lectures on campus?&quot;,
-    answer(&quot;1&quot;),
-    answer(&quot;2&quot;),
-    answer(&quot;3&quot;),
-    answer(&quot;4&quot;),
-    answer(&quot;5&quot;, correct=TRUE),
-    answer(&quot;6&quot;),
-    answer(&quot;7&quot;),
-    answer(&quot;8&quot;),
-    answer(&quot;9&quot;),
-    answer(&quot;10&quot;),
-    incorrect = &quot;Hint: Try again, you can pick another answer!&quot;,
-    allow_retry = TRUE
-    )</code></pre>
 <div class="panel panel-default">
 <div data-label="Quiz4" class="tutorial-question panel-body">
 <div id="Quiz4-answer_container" class="shiny-html-output"></div>
@@ -238,6 +219,13 @@ perceived pain is .7. What size effect is this? &quot;,
 <div id="Quiz4-action_button_container" class="shiny-html-output"></div>
 <script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
 </div>
+</div>
+</div>
+<div id="section-results-3" class="section level3">
+<h3>Results</h3>
+<div id="section-how-glad-are-you-to-have-the-option-to-attend-lectures-on-campus" class="section level4">
+<h4>4. How glad are you to have the option to attend lectures on campus?</h4>
+<p><div id="Q4" class="shiny-plot-output" style="width:100%;height:400px;"></div></p>
 </div>
 </div>
 </div>
@@ -559,15 +547,19 @@ summary()</code></pre>
 <p>See you next week! <strong>Questions?</strong></p>
 
 <script type="application/shiny-prerendered" data-context="server-start">
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+library(ggwordcloud)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+
+history = c("a")
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -577,9 +569,7 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -588,12 +578,13 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -607,19 +598,131 @@ session$onSessionEnded(function() {
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("How do you estimate the amount of overlap in variance between two variables using the\ncorrelation (r)?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_4beda5d",     option = "Divide it by 2", value = "Divide it by 2", label = structure("Divide it by 2", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_961dd9e",     option = "Square it", value = "Square it", label = structure("Square it", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_322d7c8",     option = "Take the square root", value = "Take the square root",     label = structure("Take the square root", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a1cb712",     option = "Divide by standard error", value = "Divide by standard error",     label = structure("Divide by standard error", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz1-answer", question = "Quiz1"), loading = structure("<strong>Loading:<\u002fstrong> \nHow do you estimate the amount of overlap in variance between two variables using the\ncorrelation (r)?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1021521008.52432, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("How do you estimate the amount of overlap in variance between two variables using the correlation (r)?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_2f4e6ad",     option = "Divide it by 2", value = "Divide it by 2", label = structure("Divide it by 2", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_fe87ae9",     option = "Square it", value = "Square it", label = structure("Square it", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_f3eaed4",     option = "Take the square root", value = "Take the square root",     label = structure("Take the square root", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_bc4a757",     option = "Divide by standard error", value = "Divide by standard error",     label = structure("Divide by standard error", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz1-answer", question = "Quiz1"), loading = structure("<strong>Loading:<\u002fstrong> \nHow do you estimate the amount of overlap in variance between two variables using the correlation (r)?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1878664074.12518, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz2", question = structure("An estimate of the the correlation between Scoville Heat Units in various chili peppers and\nperceived pain is .7. What size effect is this? ", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_cc5c1f9",     option = "Small", value = "Small", label = structure("Small", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_d72a812",     option = "Medium", value = "Medium", label = structure("Medium", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_71190a8",     option = "Large", value = "Large", label = structure("Large", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_fb65d75",     option = "No idea", value = "No idea", label = structure("No idea", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz2-answer", question = "Quiz2"), loading = structure("<strong>Loading:<\u002fstrong> \nAn estimate of the the correlation between Scoville Heat Units in various chili peppers and\nperceived pain is .7. What size effect is this? \n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 948888942.058139, options = list()), class = c("learnr_radio", "tutorial_question")))
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Square it", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz3", question = structure("The null hypothesis for a correlation test is which of the following? ", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_1a6744d",     option = "The correlation is positive", value = "The correlation is positive",     label = structure("The correlation is positive", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_4060836",     option = "The correlation is negative", value = "The correlation is negative",     label = structure("The correlation is negative", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_4954808",     option = "The correlation is different than 0", value = "The correlation is different than 0",     label = structure("The correlation is different than 0", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_adcfbe3",     option = "The correlation is equal to 0", value = "The correlation is equal to 0",     label = structure("The correlation is equal to 0", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz3-answer", question = "Quiz3"), loading = structure("<strong>Loading:<\u002fstrong> \nThe null hypothesis for a correlation test is which of the following? \n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1820082788.15246, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz2", question = structure("An estimate of the the correlation between Scoville Heat Units in various chili peppers and\nperceived pain is .7. What size effect is this?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_f536e5f",     option = "Small", value = "Small", label = structure("Small", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c8018a3",     option = "Medium", value = "Medium", label = structure("Medium", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_d3809db",     option = "Large", value = "Large", label = structure("Large", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_99e8871",     option = "No idea", value = "No idea", label = structure("No idea", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz2-answer", question = "Quiz2"), loading = structure("<strong>Loading:<\u002fstrong> \nAn estimate of the the correlation between Scoville Heat Units in various chili peppers and\nperceived pain is .7. What size effect is this?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1879888951.12461, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz4", question = structure("How glad are you to have the option to attend lectures on campus?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_49ec29b",     option = "1", value = "1", label = structure("1", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9aa11e5",     option = "2", value = "2", label = structure("2", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_65b66c0",     option = "3", value = "3", label = structure("3", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_15f68ea",     option = "4", value = "4", label = structure("4", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3e7f190",     option = "5", value = "5", label = structure("5", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b542dd1",     option = "6", value = "6", label = structure("6", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_833e986",     option = "7", value = "7", label = structure("7", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_d721a9d",     option = "8", value = "8", label = structure("8", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_fb18305",     option = "9", value = "9", label = structure("9", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c796438",     option = "10", value = "10", label = structure("10", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz4-answer", question = "Quiz4"), loading = structure("<strong>Loading:<\u002fstrong> \nHow glad are you to have the option to attend lectures on campus?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1186167559.94765, options = list()), class = c("learnr_radio", "tutorial_question")))
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Large", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz3", question = structure("The null hypothesis for a correlation test is which of the following?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_4bdd7",     option = "The correlation is positive", value = "The correlation is positive",     label = structure("The correlation is positive", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_cfc5954",     option = "The correlation is negative", value = "The correlation is negative",     label = structure("The correlation is negative", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_cc455fb",     option = "The correlation is different than 0", value = "The correlation is different than 0",     label = structure("The correlation is different than 0", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_aefd166",     option = "The correlation is equal to 0", value = "The correlation is equal to 0",     label = structure("The correlation is equal to 0", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz3-answer", question = "Quiz3"), loading = structure("<strong>Loading:<\u002fstrong> \nThe null hypothesis for a correlation test is which of the following?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1566771476.27042, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The correlation is equal to 0", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz4", question = structure("How glad are you to have the option to attend lectures on campus?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_9fbf0ac",     option = "1", value = "1", label = structure("1", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_599a191",     option = "2", value = "2", label = structure("2", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9722f7b",     option = "3", value = "3", label = structure("3", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_2e48385",     option = "4", value = "4", label = structure("4", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_6c36c15",     option = "5", value = "5", label = structure("5", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_5210404",     option = "6", value = "6", label = structure("6", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ca1dd03",     option = "7", value = "7", label = structure("7", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_256f4b8",     option = "8", value = "8", label = structure("8", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_406f3da",     option = "9", value = "9", label = structure("9", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_2f3ffca",     option = "10", value = "10", label = structure("10", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Answer recorded", html = TRUE, class = c("html", "character")), incorrect = structure("Answer recorded", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz4-answer", question = "Quiz4"), loading = structure("<strong>Loading:<\u002fstrong> \nHow glad are you to have the option to attend lectures on campus?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1652342441.23057, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+
+output$Q4 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -691,7 +794,7 @@ output$`tutorial-exercise-ex43-output` <- renderUI({
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]}},"value":[{"type":"character","attributes":{},"value":["askpass","assertthat","backports","base","bslib","cellranger","checkmate","cli","colorspace","compiler","crayon","curl","datasets","DBI","digest","dplyr","ellipsis","evaluate","fansi","fastmap","fs","gargle","generics","ggplot2","glue","googledrive","googlesheets4","graphics","grDevices","grid","gtable","htmltools","htmlwidgets","httpuv","httr","jquerylib","jsonlite","knitr","later","learnr","lifecycle","magrittr","markdown","methods","mime","munsell","openssl","pillar","pkgconfig","promises","purrr","R6","rappdirs","Rcpp","rlang","rmarkdown","rprojroot","rstudioapi","sass","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tools","utf8","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["1.1","0.2.1","1.2.1","4.1.1","0.3.1","1.1.0","2.0.0","3.1.0","2.0-2","4.1.1","1.4.1","4.3.2","4.1.1","1.1.3","0.6.28","1.0.7","0.3.2","0.14","0.5.0","1.1.0","1.5.0","1.2.0","0.1.1","3.3.5","1.4.2","2.0.0","1.0.0","4.1.1","4.1.1","4.1.1","0.3.0","0.5.2","1.5.4","1.6.3","1.4.2","0.1.4","1.7.2","1.36","1.3.0","0.10.1","1.0.1","2.0.1","1.1","4.1.1","0.12","0.5.0","2.0.0","1.6.4","2.0.3","1.2.0.1","0.3.4","2.5.1","0.3.3","1.0.7","1.0.2","2.11","2.0.2","0.13","0.4.0","1.2.0","1.7.1","4.1.1","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","4.1.1","1.2.2","4.1.1","0.3.8","2.5.0","0.26","1.8-4","2.2.1"]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","bit","bit64","bslib","checkmate","cli","colorspace","compiler","crayon","datasets","DBI","digest","dplyr","ellipsis","evaluate","fansi","fastmap","generics","ggplot2","ggwordcloud","glue","graphics","grDevices","grid","gtable","hms","htmltools","htmlwidgets","httpuv","jquerylib","jsonlite","knitr","later","learnr","lifecycle","lubridate","magrittr","markdown","methods","mime","munsell","pillar","pkgconfig","png","promises","purrr","R6","Rcpp","rlang","RMariaDB","rmarkdown","rprojroot","rstudioapi","sass","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tools","utf8","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["0.2.1","1.2.1","4.1.1","4.0.4","4.0.5","0.3.1","2.0.0","3.1.0","2.0-2","4.1.1","1.4.1","4.1.1","1.1.3","0.6.28","1.0.7","0.3.2","0.14","0.5.0","1.1.0","0.1.1","3.3.5","0.5.0","1.4.2","4.1.1","4.1.1","4.1.1","0.3.0","1.1.1","0.5.2","1.5.4","1.6.3","0.1.4","1.7.2","1.36","1.3.0","0.10.1","1.0.1","1.8.0","2.0.1","1.1","4.1.1","0.12","0.5.0","1.6.4","2.0.3","0.1-7","1.2.0.1","0.3.4","2.5.1","1.0.7","1.0.2","1.2.2","2.11","2.0.2","0.13","0.4.0","1.2.0","1.7.1","4.1.1","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","4.1.1","1.2.2","4.1.1","0.3.8","2.5.0","0.26","1.8-4","2.2.1"]}]}]}
 </script>
 <!--/html_preserve-->
 </div>

@@ -13,17 +13,20 @@ output:
 runtime: shiny_prerendered
 ---
 
-
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+library(ggwordcloud)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+
+history = c("a")
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -33,9 +36,7 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -44,12 +45,13 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+
 ```
 
 ## Introduction
@@ -90,13 +92,11 @@ What we will cover today:
 
 ## Quiz
 
-
 ### Question 1
-```{r Quiz1}
-  question("How do you estimate the amount of overlap in variance between two variables using the
-correlation (r)?",
-    answer("Divide it by 2", correct = TRUE),
-    answer("Square it"),
+```{r Quiz1, echo=FALSE}
+  question("How do you estimate the amount of overlap in variance between two variables using the correlation (r)?",
+    answer("Divide it by 2"),
+    answer("Square it", correct = TRUE),
     answer("Take the square root"),
     answer("Divide by standard error"),
     incorrect = "Hint: Try again, you can pick another answer!",
@@ -104,11 +104,46 @@ correlation (r)?",
     )
 ```
 
+### Results
+
+#### 1. How do you estimate the amount of overlap in variance between two variables using the correlation (r)?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Square it", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
 
 ### Question 2
-```{r Quiz2}
+```{r Quiz2, echo=FALSE}
   question("An estimate of the the correlation between Scoville Heat Units in various chili peppers and
-perceived pain is .7. What size effect is this? ",
+perceived pain is .7. What size effect is this?",
     answer("Small"),
     answer("Medium"),
     answer("Large", correct = TRUE),
@@ -117,9 +152,46 @@ perceived pain is .7. What size effect is this? ",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 2. An estimate of the the correlation between Scoville Heat Units in various chili peppers and perceived pain is .7. What size effect is this?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Large", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 3
-```{r Quiz3}
- question("The null hypothesis for a correlation test is which of the following? ",
+```{r Quiz3, echo=FALSE}
+ question("The null hypothesis for a correlation test is which of the following?",
     answer("The correlation is positive"),
     answer("The correlation is negative"),
     answer("The correlation is different than 0"),
@@ -128,22 +200,95 @@ perceived pain is .7. What size effect is this? ",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 3. The null hypothesis for a correlation test is which of the following?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The correlation is equal to 0", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 4
-```{r Quiz4}
+```{r Quiz4, echo=FALSE}
 question("How glad are you to have the option to attend lectures on campus?",
     answer("1"),
     answer("2"),
     answer("3"),
     answer("4"),
-    answer("5", correct=TRUE),
+    answer("5"),
     answer("6"),
     answer("7"),
     answer("8"),
     answer("9"),
-    answer("10"),
-    incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    answer("10", correct=TRUE),
+    incorrect = "Answer recorded",
+    allow_retry = FALSE
     )
+```
+
+### Results
+
+#### 4. How glad are you to have the option to attend lectures on campus?
+
+```{r, Quiz4O, echo = FALSE}
+plotOutput("Q4")
+```
+
+```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q4 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 ```
 
 ## 1. Correlation (revisited)

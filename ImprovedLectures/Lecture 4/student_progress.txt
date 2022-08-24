@@ -129,3 +129,22 @@ Zan, section_skipped,, ,
 Zan, section_skipped,, , 
 Zan, section_skipped,, , 
 ethel, session_start,, , 
+ethel, session_start,, , 
+ethel, section_skipped,, , 
+ethel, session_start,, , 
+ethel, question_submission,Quiz1, Square it, TRUE
+ethel, session_start,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz2, Large, TRUE
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz3, The correlation is equal to 0, TRUE
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz4, 7, FALSE
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
+ethel, section_skipped,, , 
