@@ -25,8 +25,6 @@ library(DBI)
 
 conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
-history = c("a")
-
 ## options
 knitr::opts_chunk$set(echo = TRUE)
 tutorial_options(exercise.eval = FALSE)
@@ -50,7 +48,6 @@ dbWriteTable(conn, "module5", d_tibble, append=TRUE, row.names = FALSE)}
 options(tutorial.event_recorder = new_recorder)
 
 ## exercise setup
-
 
 ```
 

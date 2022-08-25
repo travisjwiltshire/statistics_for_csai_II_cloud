@@ -13,27 +13,26 @@ output:
 runtime: shiny_prerendered
 ---
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
 ## options
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 tutorial_options(exercise.eval = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -42,12 +41,13 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(conn, "module6", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+
 ```
 
 ## Introduction
@@ -75,21 +75,53 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 ## Quiz
 
-
 ### Question 1
 ```{r Quiz1}
   question("If you observeda-0.03 correlation between hours of daylight and mood, which are you most likely to include?",
-    answer("There is a negative relationship between hours of daylight and mood.", correct = TRUE),
+    answer("There is a negative relationship between hours of daylight and mood."),
     answer("There is a positive relationship between hours of daylight and mood."),
     answer("There is no relationship between hours of daylight and mood."),
-    answer("Not enough information is provided"),
+    answer("Not enough information is provided", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 3. If you observeda-0.03 correlation between hours of daylight and mood, which are you most likely to include?
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module6")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Not enough information is provided", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 2
 ```{r Quiz2}
-  question("Inaregression equation, b0 describes which of the following? ",
+  question("In a regression equation, b0 describes which of the following?",
     answer("The x intercept"),
     answer("The regression coefficient of the predictor"),
     answer("The correlation coefficients"),
@@ -99,41 +131,185 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
     )
 ```
 
+### Results
+
+#### 2. In a regression equation, b0 describes which of the following?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module6")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The y intercept", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
 ### Question 3
 ```{r Quiz3}
- question("All regression models useastraight line to describe the data. ",
-    answer("Yes"),
+ question("All regression models use a straight line to describe the data.",
+    answer("Yes", correct = TRUE),
     answer("No", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
 
+### Results
+
+#### 3. All regression models use a straight line to describe the data.
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module6")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer != " ", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
 ### Question 4
 ```{r Quiz4}
-question("The slope ofaregression line can be:",
-    answer("Positive"),
-    answer("Negative"),
+question("The slope of a regression line can be:",
+    answer("Positive", correct = TRUE),
+    answer("Negative", correct = TRUE),
     answer("Zero", correct = TRUE),
-    answer("Undefined"),
+    answer("Undefined", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
 
+### Results
+
+#### 4. The slope of a regression line can be:
+
+```{r, Quiz4O, echo = FALSE}
+plotOutput("Q4")
+```
+
+```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q4 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module6")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer != " ", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 5
 ```{r Quiz5}
   question("The R-squared value tells you",
-    answer("If there is a relationship between your predictor and your outcome", correct = TRUE),
+    answer("If there is a relationship between your predictor and your outcome"),
     answer("How much error is in your model"),
-    answer("How much of the variance your overall model accounts for"),
+    answer("How much of the variance your overall model accounts for", correct = TRUE),
     answer("If your regression summary is valid "),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
 
+### Results
+
+#### 5. The R-squared value tells you
+
+```{r, Quiz5O, echo = FALSE}
+plotOutput("Q5")
+```
+
+```{r, Quiz5R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q5 <- renderPlot({
   
+  res <- dbSendQuery(conn, "SELECT * FROM module6")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz5",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "How much of the variance your overall model accounts for", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
   
 ## Understanding regression
 
