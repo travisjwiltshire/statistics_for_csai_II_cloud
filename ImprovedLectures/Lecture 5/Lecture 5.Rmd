@@ -91,7 +91,7 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 ### Question 1
 
-```{r Quiz1}
+```{r Quiz1, echo = FALSE}
   question("Which of the following types of correlation would you use if you want to examine the relationship between x and y, while controlling for the relationship of z on both x and y?",
     answer("Pearson correlation"),
     answer("Partial correlation", correct = TRUE),
@@ -139,7 +139,7 @@ output$Q1 <- renderPlot({
 ```
 
 ### Question 2
-```{r Quiz2}
+```{r Quiz2, echo = FALSE}
   question("What correlation would be most appropriate for examining the relationship between ranking in a gaming competition and age, when the sample size is small?",
     answer("Pearson correlation"),
     answer("Partial correlation"),
@@ -188,7 +188,7 @@ output$Q2 <- renderPlot({
 
 
 ### Question 3
-```{r Quiz3}
+```{r Quiz3, echo = FALSE}
  question("Which letter is always used to specify the outcome variable in linear regression models?",
     answer("b"),
     answer("β"),
