@@ -77,7 +77,7 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 ### Question 1
 ```{r Quiz1}
-  question("If you observeda-0.03 correlation between hours of daylight and mood, which are you most likely to include?",
+  question("If you observed a-0.03 correlation between hours of daylight and mood, which are you most likely to include?",
     answer("There is a negative relationship between hours of daylight and mood."),
     answer("There is a positive relationship between hours of daylight and mood."),
     answer("There is no relationship between hours of daylight and mood."),
