@@ -1,6 +1,9 @@
 ---
 title: "Statistics for CSAI II - Sampling Theory"
-author: Travis J. Wiltshire, Ph.D.
+date: |
+  <center>
+    ![](images/logo.png){width=2in}
+  </center>
 output: 
   learnr::tutorial:
     progressive: true
@@ -11,17 +14,121 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
+## libraries
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(RMariaDB)
+library(DBI)
+library(ggwordcloud)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+
+history = c("a")
+
+## options
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.eval = FALSE)
+
+## recording data
+new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+  
+d_tibble <- tibble::tibble(
+user_id  = user_id, 
+event = event,
+label = data$label,
+correct = data$correct,
+question = data$question,
+answer = data$answer
+  )
+
+## send to mysql
+dbWriteTable(conn, "module2", d_tibble, append=TRUE, row.names = FALSE)}
+
+
+tutorial_options(exercise.checker = function(
+  label,
+  user_code,
+  solution_code,
+  check_code,
+  envir_result,
+  evaluate_result,
+  envir_prep,
+  ...
+)
+  {
+  #Take all the variables that existed locally in the code block's environment
+  vars <- ls(envir = envir_result, all = TRUE)
+  for (i in 1:length(vars)){
+    #We need to make sure the following two variables are not changed:
+      #And add the local variables to the global environment, so that future code blocks can use this code.
+      assign(vars[i], get(vars[i]), envir = .GlobalEnv)
+  }
+ 
+})
+
+
+options(tutorial.event_recorder = new_recorder)
+
+
+## exercise setup
+pop<-base::letters[1:10]
+samp2<-sample(pop,size=4,replace=TRUE)
+bias<-c(1,1,0,0,0,0,1,1,0,0) #add a bias to letters a,b,g,h
+samp3<-sample(pop,size=4,prob = bias,replace=FALSE)
+
+library(lsr)
+library(tigerstats)
+data(FakeSchool)
+library('datasets')
+data("discoveries")
+data('trees')
+
+set.seed(1837)
+honors=subset(FakeSchool,Honors=="Yes")
+honors.samp=popsamp(3,honors)
+honors.samp
+
+nonhonors=subset(FakeSchool,Honors=="No") 
+nonhonors.samp=popsamp(4,nonhonors) 
+
+stratifiedsample<-rbind(honors.samp,nonhonors.samp)
+
+x.100<-NULL
+for (i in 1:100){
+  srs<-popsamp(7,FakeSchool)
+  x.100[i]<-mean(srs$GPA)
+}
+
+x.1000<-NULL
+for (i in 1:1000){
+  srs<-popsamp(7,FakeSchool)
+  x.1000[i]<-mean(srs$GPA)
+}
+
+x.10000<-NULL
+for (i in 1:10000){
+  srs<-popsamp(7,FakeSchool)
+  x.10000[i]<-mean(srs$GPA)
+}
+
 ```
 
 ## 1. Introduction
 
-
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-knitr::include_graphics("images/banner.png")  
+## HEADER ###
+HTML("  <div class='jumbotron jumbotron-fluid'>
+    <div class='container'>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Sampling Theory</u></h2>
+    <h4 class='mb-3'>Statistics for CSAI II</h4>
+    <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
+    </div>
+  </div>")
 ```
-
 
 In this tutorial, we'll learn about sampling theory.
 
@@ -35,17 +142,16 @@ What we will cover today:
 4. Estimating population parameters from sample statistics 
 5. Confidence intervals
 
-
-
 ## Quiz
 
 ### What do you know about sampling so far?
 
 ### Question 1
-```{r Quiz1}
-  question("What type of sampling is most commonly used in university settings?",
-    answer("Snowball", correct = TRUE),
-    answer("Convenience"),
+
+```{r Quiz1,  echo=FALSE}
+question("What type of sampling is most commonly used in university settings?",
+    answer("Snowball"),
+    answer("Convenience", correct = TRUE),
     answer("Random"),
     answer("Volunteer"),
     answer("Opportunity"),
@@ -54,20 +160,94 @@ What we will cover today:
     )
 ```
 
+### Results
+
+#### 1. What type of sampling is most commonly used in university settings?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Convenience", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 2
-```{r Quiz2}
-  question("We use sample statistics to do which of the following regarding population parameters? ",
-    answer("Prove"),
-    answer("Guess"),
-    answer("Differentiate"),
-    answer("Estimate", correct = TRUE),
+
+```{r Quiz2,  echo=FALSE}
+  question("What is the common goal of doing empirical work utilizing statistics in CSAI?",
+    answer("Become famous"),
+    answer("Earn a degree"),
+    answer("Use knowledge of sample to make inference", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 2. What is the common goal of doing empirical work utilizing statistics in CSAI?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Use knowledge of sample to make inference", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
 ### Question 3
-```{r Quiz3}
- question("We use sample statistics to do which of the following regarding population parameters? ",
+```{r Quiz3, echo = FALSE}
+  question("We use sample statistics to do which of the following regarding population parameters?",
     answer("Prove"),
     answer("Guess"),
     answer("Differentiate"),
@@ -76,8 +256,45 @@ What we will cover today:
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 3. We use sample statistics to do which of the following regarding population parameters?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Estimate", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 4
-```{r Quiz4}
+```{r Quiz4, echo = FALSE}
 question("As we increase the sample size, the sampling distribution of the mean becomes:",
     answer("More normal"),
     answer("Wider"),
@@ -87,8 +304,45 @@ question("As we increase the sample size, the sampling distribution of the mean 
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 4. As we increase the sample size, the sampling distribution of the mean becomes:
+
+```{r, Quiz4O, echo = FALSE}
+plotOutput("Q4")
+```
+
+```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q4 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 5
-```{r Quiz5}
+```{r Quiz5, echo = FALSE}
   question("If I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?",
     answer("1", correct = TRUE),
     answer("2"),
@@ -97,6 +351,42 @@ question("As we increase the sample size, the sampling distribution of the mean 
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
+```
+
+### Results
+
+#### 5. If I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?
+
+```{r, Quiz5O, echo = FALSE}
+plotOutput("Q5")
+```
+
+```{r, Quiz5R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q5 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz5",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "1", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 ```
 
 ## 2. Populations and Samples
@@ -129,8 +419,6 @@ question("As we increase the sample size, the sampling distribution of the mean 
 <img src="images/sampling.png"
      alt="Markdown Monster icon"
      style="max-width: 100%;"/> 
-
-
      
 ### Our goal while doing empirical work in CS&AI
 
@@ -167,7 +455,7 @@ question("As we increase the sample size, the sampling distribution of the mean 
 
 <p><img src="images/figure10.3.png" style="max-width: 100%;" /></p>
 
-### Exercise 1: Sample in R
+### Exercise 2: Sample in R
 
 - Create a variable called pop that includes the letters a-j
 - Create a variable called samp1 by sampling the population using the sample() function
@@ -211,7 +499,6 @@ samp1<-sample(pop,size=4,replace=FALSE)
 
 ```{r ex3, exercise=TRUE}
 #Create a variable called samp2 by sampling the population using the sample() function with replacement
-
 
 ```
 ```{r ex3-hint}
@@ -279,7 +566,7 @@ samp3<-sample(pop,size=4,prob = bias,replace=FALSE)
 - People’s levels of stress after arriving to work after taking public transit
 
 
-## 5. Estimating Population Parameters
+## 5. Population Parameters
 
 ### Sample statistics vs. Population parameters
 
@@ -699,7 +986,7 @@ iment in which we measure the IQs of 10 people. The dot marks the location of th
 ## 6. Exercises
 
 
-### Exercise 5: Calculating the CI in R
+### Exercise 1: Calculating the CI in R
 
 - Install and load the lsr package
 - Install and load the R datasets package and load the ‘trees’ and ‘discoveries’ data sets
@@ -715,20 +1002,20 @@ iment in which we measure the IQs of 10 people. The dot marks the location of th
   - Use the `ciMean()` function to find out 95% CI of the population mean
   - Assume it is your population and draw a sample of various sizes (e.g., 5, 10, 30, 60), without replacement and see how the sample mean and SD compare to the original estimates you got. 
 
-**Make sure lsr package is installed**
+**If you're running this locally, make sure the lsr package is installed**
 
 ### 1. Load packages and data
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
+Load the library 'datasets' and the 'discoveries' and 'trees' datasets.
+
+In this online coding environment the libraries are pre-installed However, do not forget to install and load any new libraries when running R studio on your computer! 
  
  
 ```{r ex80, exercise=TRUE}
-#Install this package if you haven't already
-install.packages('datasets.load')
+#Call datasets with function data() and load libraries with library()
 ```
 ```{r ex80-hint}
-#Call datasets with function data()
-require('datasets')
+library('datasets')
 data("discoveries")
 data('trees')
 ```
@@ -799,7 +1086,7 @@ ciMean(x=trees$Volume,conf=.99)
 
 ### Discoveries
 
-Do you think this is  sample or a population? Why? Preform some analysis on the dataset to give better answer.
+Do you think this is  sample or a population? Why? Preform some analysis on the dataset to give a better answer.
 
 Assume it is a sample and  estimate the population mean and sd
 
@@ -904,11 +1191,9 @@ sd(disc_samp4)
 
 ### Load the FakeSchool dataset from tigerstats
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
+In this online coding environment the packages you need are pre-installed and loaded. Don't forget to install and load the packages you need.
 
 ```{r ex61, exercise=TRUE}
-#You might have to install package before running this inside tutorial
-if (!require('tigerstats')) install.packages('tigerstats')
 require(tigerstats)
 data(FakeSchool)
 
@@ -940,7 +1225,7 @@ set.seed(23325)
 #store
 ```
 
-### Generate a simple random sample of size 7
+### Generate a simple random sample of size 7 and store it in a variable called simplerandomsample
 
 ```{r ex63, exercise=TRUE}
 #Use popsamp and FakeSchool data
@@ -957,7 +1242,7 @@ simplerandomsample
 #store
 ```
 
-### Check the mean GPA of the population
+### Check the mean GPA of the population and store it in a variable called mean.pop
 
 ```{r ex64, exercise=TRUE}
 #Use FakeSchool data to find mean and create variable: mean.pop
@@ -978,11 +1263,11 @@ mean.pop
 It's the sample you generated in part 3 of this exercise.
 
 ```{r ex65, exercise=TRUE}
-#Use randomsample from before  data to create variable: mean.srs
+#Use randomsample from previous data to create variable: mean.srs
 
 ```
 ```{r ex65-hint}
-#Use randomsample from before  data to create variable: mean.srs
+#Use randomsample from previiys data to create variable: mean.srs
 mean.srs<- mean(simplerandomsample$GPA)
 mean.srs
 
@@ -992,8 +1277,6 @@ mean.srs
 ```
 
 **Compare the two means**
-
-
 
 ### Exercise 7: Simulate a stratified sample
 
@@ -1064,7 +1347,7 @@ honors.samp
 ```{r ex67-hint}
 #Create non-honors subset
 
-set.seed(17365)
+set.seed(1837)
 nonhonors=subset(FakeSchool,Honors=="No") 
 nonhonors.samp=popsamp(4,nonhonors) 
 nonhonors.samp
@@ -1076,7 +1359,7 @@ nonhonors.samp
 
 ### Combine the two samples 
 
-Combine the two samples to create sample that proprtionally represents the distribution of honor/non-honor popuation and calculate GPA mean
+Combine the two samples to create sample that proportionally represents the distribution of honor/non-honor population and calculate GPA mean
 
 ```{r ex68, exercise=TRUE}
 #Create non-honors subset
@@ -1104,20 +1387,7 @@ stratifiedsample.mean
 
 ### Create sampling distribution of the mean and CIs for 1000 simple random samples
 
- In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
-
-
-```{r ex70, exercise=TRUE}
-#Only run this if you haven't installed lsr before
-#install.packages("lsr") 
-require('lsr')
-```
-```{r ex70-hint}
-library(lsr)
-```
-```{r ex70-check}
-#store
-```
+In this online coding environment it’s not needed to load libraries, because they are pre-loaded. However, do not forget to load libraries when running R studio on your computer! In this case, we would use library(lsr).
 
 ### For 100, 1000, and 10,000 samples, create a sample of size 7 from population and visualize with histogram
 
@@ -1167,8 +1437,7 @@ hist(x.10000, freq=FALSE,col='gray')
 #store
 ```
 
-### Calculate mean and confidence interval of sampling distribution of the means
- From the 3 sample sets(100, 1000, 10000) that you've just created
+### Calculate mean and confidence interval of sampling distribution of the means from the 3 sample sets(100, 1000, 10000) that you've just created
 
 ```{r ex74, exercise=TRUE}
 #100 samples dataset mean and confidence interval
@@ -1214,8 +1483,6 @@ ciMean(x.10000)
 - Sample statistics vs population parameters
 - Estimating population parameters from sample statistics 
 - Confidence intervals
-
-
 
 ### Thanks!
 

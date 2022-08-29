@@ -1,6 +1,9 @@
 ---
-title: "Statistics for CSAI II - Sampling Theory"
-author: Travis J. Wiltshire, Ph.D.
+title: "Statistics for CSAI II - Introduction"
+date: |
+  <center>
+    ![](images/logo.png){width=2in}
+  </center>
 output: 
   learnr::tutorial:
     progressive: true
@@ -9,54 +12,33 @@ output:
     css: css/style.css
 runtime: shiny_prerendered
 ---
-
 ```{r setup, include=FALSE}
 ## libraries1
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
 tutorial_options(exercise.eval = FALSE)
 
-## recording data
-new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
-  
-
-  
-g_tibble <- tibble::tibble(
-user_id  = user_id, 
-event = event,
-label = data$label,
-correct = data$correct,
-question = data$question,
-answer = data$answer
-  )
-
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
-
-# write to function to plot a graph of tibble data
-
-options(tutorial.event_recorder = new_recorder)
+# no quizzes in this lecture
 ```
 
 ## Introduction
 
-
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-knitr::include_graphics("images/banner.png")  
+## HEADER ###
+HTML("  <div class='jumbotron jumbotron-fluid'>
+    <div class='container'>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Introduction</u></h2>
+    <h4 class='mb-3'>Statistics for CSAI II</h4>
+    <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
+    </div>
+  </div>")
 ```
-
 
 ### Outline
 
@@ -93,8 +75,6 @@ What we will cover today:
 
 
 <img src="images/SteveFiore.jpg"style="max-width: 100%;" /> | <img src="images/TeamCognition.png"  style="max-width: 100%;" />
-
-
      
 **Dr. Jonathan Butner**
     
@@ -146,14 +126,9 @@ What we will cover today:
 - Assistant Professor at TiU since August 2020
 
 
-
 **Research:** Already in my BSc I had an interest in both biology and psychology. Cognitive Neuroscience/neuroimaging has both of these represented which is why I chose that field. I study memory, and in particular episodic memory, using cognitive tasks and functional MRI. I find it intriguing to discover how people remember the world around them and their experiences, and how they learn from it. 
 
 **Personal:** In my spare time I enjoy reading, pretty much anything from detectives to romance to sci-fi, and I like to bake, cakes, cookies, etc :)
-
-
-
-
 
 ## Course Expectations
 
@@ -162,12 +137,8 @@ What we will cover today:
 - Read the Syllabus!
 - Follow the course schedule. 
 
-
-
 <img src="images/syllabus.png" 
      style="max-width: 100%;" />
-
-
 
 ### Course Expectations
 
@@ -204,8 +175,6 @@ What we will cover today:
   - (Optional) Complete Associated Open Stats Lab)
 
 - Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students’ learning with effective learning techniques: Promising directions from cognitive and educational psychology. Psychological Science in the Public Interest, 14(1), 4-58.
-
-
 
 
 ### Course Expectations
@@ -567,7 +536,7 @@ $\chi^2$
 
 ## Exercises
 
-### Questions (use R if you need it)
+### Questions (use R below if you need it)
 
 - What is the probability of drawing the queen of hearts from a deck of cards?
 - What is the probability that I will draw a card with a black figure on it?
@@ -578,14 +547,13 @@ $\chi^2$
 
 
 ```{r ex15, exercise=TRUE}
-#code
+# Your code here
 
 ```
 ```{r ex15-hint}
 queen<-dbinom(x=1,size=1,prob=1/52)
 blck<-dbinom(x=1,size=1,prob=1/2)
 jack<-dbinom(x=5,size=30,prob=1/52)
-print(queen)
 ```
 ```{r ex15-check}
 #store
@@ -605,34 +573,28 @@ print(queen)
   - https://www.cyclismo.org/tutorial/R/probability.html
   - http://www.r-tutor.com/elementary-statistics/probability-distributions
 
-### Generate 1000 random numbers with a mean of 5 and an sd of 2
+### Generate 1000 random numbers with a mean of 5 and an sd of 2 and plot a histogram of these values.
 
 ```{r ex16, exercise=TRUE}
-# Generate 1000 random numbers with a mean of 5 and an sd of 2
+# Your code here
 
 ```
 ```{r ex16-hint}
-queen<-dbinom(x=1,size=1,prob=1/52)
-blck<-dbinom(x=1,size=1,prob=1/2)
-jack<-dbinom(x=5,size=30,prob=1/52)
-print(queen)
+
 ```
 ```{r ex16-check}
 #store
 ```
 
 
-### Find the cumulative probability of getting 25 soft tacos when I order 50 (hard or soft only)
+### Find the cumulative probability of getting 25 soft tacos when I order 50 (hard or soft only) and plot the distribution.
 
 ```{r ex17, exercise=TRUE}
-# Generate 1000 random numbers with a mean of 5 and an sd of 2
+# Your code here
 
 ```
 ```{r ex17-hint}
-queen<-dbinom(x=1,size=1,prob=1/52)
-blck<-dbinom(x=1,size=1,prob=1/2)
-jack<-dbinom(x=5,size=30,prob=1/52)
-print(queen)
+
 ```
 ```{r ex17-check}
 #store
@@ -644,7 +606,6 @@ print(queen)
 
 - Complete Module 1 readings, tutorials
 - Complete Module 2 readings (CH 10 (Navarro)) and Tutorials
-
 
 ### Thanks!
 

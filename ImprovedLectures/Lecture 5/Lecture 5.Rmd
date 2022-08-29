@@ -1,6 +1,9 @@
 ---
-title: "Statistics for CSAI II - Sampling Theory"
-author: Travis J. Wiltshire, Ph.D.
+title: "Statistics for CSAI II - Linear Regression"
+date: |
+  <center>
+    ![](images/logo.png){width=2in}
+  </center>
 output: 
   learnr::tutorial:
     progressive: true
@@ -11,27 +14,26 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
 ## options
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 tutorial_options(exercise.eval = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -40,20 +42,28 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(conn, "module5", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+
 ```
 
 ## Introduction
 
-
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-knitr::include_graphics("images/banner.png")  
+## HEADER ###
+HTML("  <div class='jumbotron jumbotron-fluid'>
+    <div class='container'>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Linear Regression</u></h2>
+    <h4 class='mb-3'>Statistics for CSAI II</h4>
+    <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
+    </div>
+  </div>")
 ```
+
 
 ### Course Admin
 - PEs
@@ -78,10 +88,10 @@ knitr::include_graphics("images/banner.png")
 
 ### Question 1
 
-```{r Quiz1}
+```{r Quiz1, echo = FALSE}
   question("Which of the following types of correlation would you use if you want to examine the relationship between x and y, while controlling for the relationship of z on both x and y?",
-    answer("Pearson correlation", correct = TRUE),
-    answer("Partial correlation"),
+    answer("Pearson correlation"),
+    answer("Partial correlation", correct = TRUE),
     answer("Spearman correlaton"),
     answer("Semi-partial correlation"),
     incorrect = "Hint: Try again, you can pick another answer!",
@@ -89,28 +99,137 @@ knitr::include_graphics("images/banner.png")
     )
 ```
 
+### Results
+
+#### 1. Which of the following types of correlation would you use if you want to examine the relationship between x and y, while controlling for the relationship of z on both x and y?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module5")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Partial correlation", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
 
 ### Question 2
-```{r Quiz2}
-  question("What correlation would be most appropriate for examining the relationship between ranking inagaming competition and age, when the sample size is small? ",
-    answer("Pearson correlation", correct = TRUE),
+```{r Quiz2, echo = FALSE}
+  question("What correlation would be most appropriate for examining the relationship between ranking in a gaming competition and age, when the sample size is small?",
+    answer("Pearson correlation"),
     answer("Partial correlation"),
-    answer("Spearman correlaton"),
+    answer("Spearman correlaton", correct = TRUE),
     answer("Semi-partial correlation"),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 2. What correlation would be most appropriate for examining the relationship between ranking in a gaming competition and age, when the sample size is small?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module5")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Spearman correlaton", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
 ### Question 3
-```{r Quiz3}
- question("Which letter is always used to specify the outcome variable in linear regression models? ",
+```{r Quiz3, echo = FALSE}
+ question("Which letter is always used to specify the outcome variable in linear regression models?",
     answer("b"),
-    answer("β", correct = TRUE),
+    answer("β"),
     answer("x"),
-    answer("y"),
+    answer("y", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
+```
+
+### Results
+
+#### 3. Which letter is always used to specify the outcome variable in linear regression models?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module5")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "y", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 ```
 
 ## Linear regression

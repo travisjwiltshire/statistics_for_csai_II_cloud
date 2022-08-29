@@ -1,6 +1,9 @@
 ---
-title: "Statistics for CSAI II - Sampling Theory"
-author: Travis J. Wiltshire, Ph.D.
+title: "Statistics for CSAI II - Correlation II"
+date: |
+  <center>
+    ![](images/logo.png){width=2in}
+  </center>
 output: 
   learnr::tutorial:
     progressive: true
@@ -11,15 +14,18 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+
+history = c("a")
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -29,9 +35,7 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -40,19 +44,33 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+library(ppcor)
+#library(ggm)
+library(correlation)
+library(see)
+liar_data <- read.delim("The Biggest Liar.dat")
+exam_data2<-read.delim(file="Exam Anxiety.dat",header=TRUE)
+
 ```
 
 ## Introduction
 
 
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-knitr::include_graphics("images/banner.png")  
+## HEADER ###
+HTML("  <div class='jumbotron jumbotron-fluid'>
+    <div class='container'>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Correlation II</u></h2>
+    <h4 class='mb-3'>Statistics for CSAI II</h4>
+    <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
+    </div>
+  </div>")
 ```
 
 
@@ -79,13 +97,11 @@ What we will cover today:
 
 ## Quiz
 
-
 ### Question 1
-```{r Quiz1}
-  question("How do you estimate the amount of overlap in variance between two variables using the
-correlation (r)?",
-    answer("Divide it by 2", correct = TRUE),
-    answer("Square it"),
+```{r Quiz1, echo=FALSE}
+  question("How do you estimate the amount of overlap in variance between two variables using the correlation (r)?",
+    answer("Divide it by 2"),
+    answer("Square it", correct = TRUE),
     answer("Take the square root"),
     answer("Divide by standard error"),
     incorrect = "Hint: Try again, you can pick another answer!",
@@ -93,11 +109,46 @@ correlation (r)?",
     )
 ```
 
+### Results
+
+#### 1. How do you estimate the amount of overlap in variance between two variables using the correlation (r)?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Square it", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
 
 ### Question 2
-```{r Quiz2}
+```{r Quiz2, echo=FALSE}
   question("An estimate of the the correlation between Scoville Heat Units in various chili peppers and
-perceived pain is .7. What size effect is this? ",
+perceived pain is .7. What size effect is this?",
     answer("Small"),
     answer("Medium"),
     answer("Large", correct = TRUE),
@@ -106,9 +157,46 @@ perceived pain is .7. What size effect is this? ",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 2. An estimate of the the correlation between Scoville Heat Units in various chili peppers and perceived pain is .7. What size effect is this?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Large", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 3
-```{r Quiz3}
- question("The null hypothesis for a correlation test is which of the following? ",
+```{r Quiz3, echo=FALSE}
+ question("The null hypothesis for a correlation test is which of the following?",
     answer("The correlation is positive"),
     answer("The correlation is negative"),
     answer("The correlation is different than 0"),
@@ -117,22 +205,95 @@ perceived pain is .7. What size effect is this? ",
     allow_retry = TRUE
     )
 ```
+
+### Results
+
+#### 3. The null hypothesis for a correlation test is which of the following?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The correlation is equal to 0", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 ### Question 4
-```{r Quiz4}
+```{r Quiz4, echo=FALSE}
 question("How glad are you to have the option to attend lectures on campus?",
     answer("1"),
     answer("2"),
     answer("3"),
     answer("4"),
-    answer("5", correct=TRUE),
+    answer("5"),
     answer("6"),
     answer("7"),
     answer("8"),
     answer("9"),
-    answer("10"),
-    incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    answer("10", correct=TRUE),
+    incorrect = "Answer recorded",
+    allow_retry = FALSE
     )
+```
+
+### Results
+
+#### 4. How glad are you to have the option to attend lectures on campus?
+
+```{r, Quiz4O, echo = FALSE}
+plotOutput("Q4")
+```
+
+```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q4 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module4")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 ```
 
 ## 1. Correlation (revisited)
@@ -202,10 +363,11 @@ $$r =\frac{ cov_{xy} }{s_{x}s_{y}}=\\ =\frac{ 4.25 }{1.67\times2.92 } = \\= .87$
 
 ### 1. Loading The Biggest Liar data
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
+Load the dataset and store it in a variable called liar_data.
+
 
 ```{r ex21, exercise=TRUE}
-#Require 
+liar_data <- read.delim("The Biggest Liar.dat")
 ```
 ```{r ex21-hint}
 
@@ -215,33 +377,17 @@ liar_data <- read.delim("The Biggest Liar.dat")
 #store
 ```
 
-### 2. Add exact argument to avoid warning
+### 2. Make a prediction about the relationship between position in the competition and creativity and test it using the `cor.test()` function. Use the spearman and kendall methods.
 
 ```{r ex22, exercise=TRUE}
-#Require 
+#Your code here 
 ```
 ```{r ex22-hint}
-
+#Add exact argument to avoid warning
 cor.test(liar_data$Position, liar_data$Creativity,method="spearman", alternative = 'less', exact=FALSE)
 cor.test(liar_data$Creativity,liar_data$Position, method="kendall", alternative = 'less')
 ```
 ```{r ex22-check}
-#store
-```
-
-### 3. Partial and semi-partial correlation
-
-- How would you report your findings? Try to summarize your results in a write up.
-
-
-```{r ex23, exercise=TRUE}
-#Require 
-```
-```{r ex23-hint}
-require(ppcor)
-exam_data2<-exam_data[,c("Exam","Anxiety","Revise")]
-```
-```{r ex23-check}
 #store
 ```
 
@@ -306,13 +452,15 @@ Need more details? Watch [this video](https://www.youtube.com/watch?v=OpAf4N582b
 
 ### 1. Run individual tests
 
- In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
+Store the data in a variable called exam_data2.
 
 ```{r ex31, exercise=TRUE}
-#Require pcor, spcor
+library(ppcor)
+exam_data2 <-read.delim(file="Exam Anxiety.dat",header=TRUE)
+
+#Your code here
 ```
 ```{r ex31-hint}
-
 pcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 spcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 ```
@@ -323,7 +471,9 @@ spcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 ### 2. Test them all at once
 
 ```{r ex32, exercise=TRUE}
-#Require pcor, spcor
+library(ppcor)
+
+#Your code here
 ```
 ```{r ex32-hint}
 
@@ -335,16 +485,19 @@ spcor(exam_data2)
 #store
 ```
 
-### 3. An alternative method
+### 3. Alternative methods
 
 ```{r ex33, exercise=TRUE}
-#Require ggm
+#library(ggm)
+
+pc<-pcor(c("Exam","Anxiety","Revise"),var(exam_data2))
+pcor.test(pc,1,103) 
+
+#The 1 indicates we are only controlling for 1 variable, and the 103 is the sample size
 ```
 ```{r ex33-hint}
 
-require(ggm)
-pc<-pcor(c("Exam","Anxiety","Revise"),var(exam_data2))
-pcor.test(pc,1,103) #The 1 indicates we are only controlling for 1 variable, and the 103 is the sample size
+
 ```
 ```{r ex33-check}
 #store
@@ -356,15 +509,13 @@ pcor.test(pc,1,103) #The 1 indicates we are only controlling for 1 variable, and
 
 ### 1. Load packages
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
-
 ```{r ex41, exercise=TRUE}
-#Require pcor, spcor
-```
-```{r ex41-hint}
-require(correlation)
+library(correlation)
 library(dplyr)
 library(see)
+```
+```{r ex41-hint}
+#library pcor, spcor
 
 ```
 ```{r ex41-check}
@@ -374,7 +525,7 @@ library(see)
 ### 2. Plot results
 
 ```{r ex42, exercise=TRUE}
-#Require pcor, spcor
+#library pcor, spcor
 ```
 ```{r ex42-hint}
 results <- correlation(exam_data)
