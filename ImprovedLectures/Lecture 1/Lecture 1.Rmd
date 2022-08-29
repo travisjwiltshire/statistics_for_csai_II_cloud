@@ -280,7 +280,59 @@ What we will cover today:
 
 **Asking questions in encouraged**
 
+## Quiz
 
+### What do you remember from stats I?
+
+### Question 1
+
+```{r Quiz1,  echo=FALSE}
+question("If I measure your knowledge of statistics before and at the end of the course, and I wan't to see if you improved, what would be an appropriate test to make this comparison?",
+    answer("Factorial ANOVA"),
+    answer("Paired-samples t-test", correct = TRUE),
+    answer("Chi-square"),
+    answer("Independent samples t-test"),
+    answer("Correlation"),
+    incorrect = "Hint: Try again, you can pick another answer!",
+    allow_retry = TRUE
+    )
+```
+
+### Results
+
+#### 1. If I measure your knowledge of statistics before and at the end of the course, and I wan't to see if you improved, what would be an appropriate test to make this comparison?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  res <- dbSendQuery(conn, "SELECT * FROM module2")
+  data = dbFetch(res)
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Paired-samples t-test", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
 
 ## Probability Basics
 
