@@ -470,7 +470,7 @@ output$Q2 <- renderPlot({
 ### Binomial distribution
 
 
-- Based on **success probability**
+- Based on $\theta$ **success probability** 
   - E.g., number of successful tails in a coin flip, number during a dice roll
 - N = number of observations or size parameter
 - X is generated randomly from the distribution
@@ -498,7 +498,7 @@ dbinom(x=4,size=20, prob=1/6)
 | What it does   | Prefix   | Normal distribution  | Binomial distribution |
 | ----------------- |:-------------:|:-----:|--------|
 | probability(density) of  | d      | `dnorm()`    | `dbinom()` |
-| comulative probability of  | p         | `pnorm()` | `pbinom()` |
+| cumulative probability of  | p         | `pnorm()` | `pbinom()` |
 | generate random number from | r        | `rnorm()` |  `rbinom()` |
 | quantile of      | q  | `qnorm()` | `qbinom()` |
 
@@ -512,6 +512,9 @@ dbinom(x=4,size=20, prob=1/6)
 ```
 ```{r ex11-hint}
 #run the code
+x <- seq(0,50,by=1) #Generate a series of values 0-50
+y <- dbinom(x,50,prob=1/2)
+plot(x,y, type='h', col='blue')
 
 ```
 ```{r ex11-check}
@@ -533,7 +536,7 @@ dbinom(x=4,size=20, prob=1/6)
 
 
 ```{r ex12, exercise=TRUE}
-#V
+
 
 ```
 ```{r ex12-hint}
@@ -551,7 +554,7 @@ print(y)
 - I want to have a pizza party and order 20 pizzas. Pizzas can either have meat on them or not meat. What is the probability that 6 of the pizzas are vegetarian friendly?
 
 ```{r ex13, exercise=TRUE}
-# For start Generate a series of values 0-20
+
 
 ```
 ```{r ex13-hint}
@@ -574,7 +577,7 @@ print(y)
 
 
 ```{r ex14, exercise=TRUE}
-#For start Generate a series of values of 0-50
+
 
 ```
 ```{r ex14-hint}
