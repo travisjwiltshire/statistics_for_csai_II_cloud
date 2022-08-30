@@ -450,7 +450,7 @@ output$Q2 <- renderPlot({
 ### Probability Distributions
 
 
-- Elementary events – For a given observation, there outcome will be one and only one of these events. 
+- Elementary events – For a given observation, the outcome will be one and only one of these events. 
 - Sample space – the set of total possible events
 
 - P(X) = 0-1
