@@ -238,3 +238,7 @@ ethel, session_start,, ,
 ethel, session_start,, , 
 ethel, session_stop,, , 
 ethel, session_stop,, , 
+ethel, session_start,, , 
+ethel, section_skipped,, , 
+ethel, question_submission,Quiz1, Chi-square, FALSE
+ethel, session_stop,, , 

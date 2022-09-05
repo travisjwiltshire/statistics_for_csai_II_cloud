@@ -13,7 +13,7 @@ output:
 runtime: shiny_prerendered
 ---
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
 library(tidyr)
 library(dplyr)
@@ -21,14 +21,14 @@ library(ggplot2)
 library(scales)
 library(RMariaDB)
 library(DBI)
+library(ggwordcloud)
+
+conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
 tutorial_options(exercise.eval = FALSE)
-
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
-
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
@@ -43,10 +43,37 @@ question = data$question,
 answer = data$answer
   )
 
-options(tutorial.event_recorder = new_recorder)
-
 ## send to mysql
 dbWriteTable(conn, "module1", d_tibble, append=TRUE, row.names = FALSE)}
+
+
+tutorial_options(exercise.checker = function(
+  label,
+  user_code,
+  solution_code,
+  check_code,
+  envir_result,
+  evaluate_result,
+  envir_prep,
+  ...
+)
+  {
+  #Take all the variables that existed locally in the code block's environment
+  vars <- ls(envir = envir_result, all = TRUE)
+  for (i in 1:length(vars)){
+    #We need to make sure the following two variables are not changed:
+      #And add the local variables to the global environment, so that future code blocks can use this code.
+      assign(vars[i], get(vars[i]), envir = .GlobalEnv)
+  }
+ 
+})
+
+
+options(tutorial.event_recorder = new_recorder)
+
+
+## exercise setup
+
 
 ```
 
@@ -284,10 +311,11 @@ What we will cover today:
 
 ## R, R studio
 
-### Make sure R, R studio, and Swirl working on your computers!
+### Make sure R, R studio, and Swirl are working on your computers!
 
 - Go here and follow the directions:
-  - https://swirlstats.com/students.html
+  - 
+  - https://swirlstats.com/students.html (Do we still use swirl?)
 
 **Complete the required reading! **
 
