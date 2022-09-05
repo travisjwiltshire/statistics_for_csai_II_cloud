@@ -137,3 +137,5 @@ ethel, question_submission,Quiz3, Estimate, TRUE
 ethel, section_skipped,, , 
 ethel, section_skipped,, , 
 ethel, question_submission,Quiz4, Wider, FALSE
+ethel, session_start,, , 
+ethel, question_submission,Quiz1, Random, FALSE
