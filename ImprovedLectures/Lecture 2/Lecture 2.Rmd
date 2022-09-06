@@ -1458,7 +1458,7 @@ ciMean(x.10000)
 ```
 
 
-## Conculsion
+## Conclusion
 
 ### Summing up
 
