@@ -308,8 +308,9 @@ $(document).ready(function () {
 <img src="images/figure10.3.png" style="max-width: 100%;" />
 </p>
 </div>
-<div id="section-exercise-2-sample-in-r" class="section level3">
-<h3>Exercise 2: Sample in R</h3>
+</div>
+<div id="section-sampling-in-r" class="section level2">
+<h2>Sampling in R</h2>
 <ul>
 <li>Create a variable called pop that includes the letters a-j</li>
 <li>Create a variable called samp1 by sampling the population using the sample() function</li>
@@ -317,7 +318,6 @@ $(document).ready(function () {
 <li>Try to figure out how to add a bias to your sample that only draws the ‘black’ letters a, b, g, and h and then make a samp3 variable with the biased sample.</li>
 </ul>
 <p><strong>Remember: Figure 10.2</strong></p>
-</div>
 <div id="section-create-a-variable-called-pop-that-includes-the-letters-a-j" class="section level3">
 <h3>Create a variable called pop that includes the letters a-j</h3>
 <div class="tutorial-exercise" data-label="ex1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -530,8 +530,11 @@ samp3&lt;-sample(pop,size=4,prob = bias,replace=FALSE)</code></pre>
 </tbody>
 </table>
 </div>
-<div id="section-exercise-2-sample-statistics-vs.-population-parameters" class="section level3">
-<h3>Exercise 2: Sample statistics vs. Population parameters</h3>
+</div>
+<div id="section-exercises-in-r" class="section level2">
+<h2>Exercises in R</h2>
+<div id="section-sample-statistics-vs.-population-parameters-1" class="section level3">
+<h3>Sample statistics vs. Population parameters</h3>
 <ul>
 <li>Let’s generate some data:
 <ul>
@@ -613,8 +616,9 @@ plot(c(sd(IQ.1),sd(IQ.2),sd(IQ.3)),type=&#39;l&#39;)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-law-of-large-numbers" class="section level3">
-<h3>Law of large numbers</h3>
+</div>
+<div id="section-law-of-large-numbers" class="section level2">
+<h2>6. Law of large numbers</h2>
 <ul>
 <li><p><strong>We get more ‘accurate’ numbers from larger samples.</strong></p></li>
 <li><p><strong>With the roll of a six sided die we see:</strong></p></li>
@@ -625,7 +629,6 @@ plot(c(sd(IQ.1),sd(IQ.2),sd(IQ.3)),type=&#39;l&#39;)</code></pre>
 <li>With sample statistics, as our sample size increases (<span class="math inline">\(N \to Inf\)</span>), the sample mean approaches the population mean.</li>
 <li>So our sample statistics are often have a degree of inaccuracy, but this tells us with more data, we can move closer and closer to the true population parameters</li>
 </ul>
-</div>
 <div id="section-iq-score-sampling-distribution" class="section level3">
 <h3>IQ score sampling distribution</h3>
 <div class="figure">
@@ -634,8 +637,11 @@ plot(c(sd(IQ.1),sd(IQ.2),sd(IQ.3)),type=&#39;l&#39;)</code></pre>
 </div>
 <p>Figure 10.5: The sampling distribution of the mean for the “five IQ scores experiment”. If you sample 5 people at random and calculate their average IQ, you’ll almost certainly get a number between 80 and 120, even though there are quite a lot of individuals who have IQs above 120 or below 80. For comparison, the black line plots the population distribution of IQ scores.</p>
 </div>
-<div id="section-exercise-3-sampling-distribution-of-the-mean" class="section level3">
-<h3>Exercise 3: Sampling distribution of the mean</h3>
+</div>
+<div id="section-exercises-in-r-1" class="section level2">
+<h2>Exercises in R</h2>
+<div id="section-sampling-distribution-of-the-mean" class="section level3">
+<h3>Sampling distribution of the mean</h3>
 <ul>
 <li>Using the same sample information from before (M = 100, SD = 15)
 <ul>
@@ -730,14 +736,14 @@ hist(x, freq=FALSE,col=&#39;gray&#39;)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-sampling-distribution-of-the-mean" class="section level3">
+<div id="section-sampling-distribution-of-the-mean-1" class="section level3">
 <h3>Sampling distribution of the mean</h3>
 <p>In panel a, each data set contained only a single observation, so the mean of each sample is just one person’s IQ score. As a consequence, the sampling distribution of the mean is of course identical to the population distribution of IQ scores. However, when we raise the sample size to 2, the mean of any one sample tends to be closer to the population mean than a one person’s IQ score, and so the histogram (i.e., the sampling distribution) is a bit narrower than the population distribution. By the time we raise the sample size to 10 (panel c), we can see that the distribution of sample means tend to be fairly tightly clustered around the true population mean.</p>
 <p><img src="images/meandistribtuion.png" 
      style="max-width: 100%;" /></p>
 </div>
-<div id="section-exercise-4-standard-error" class="section level3">
-<h3>Exercise 4: Standard error</h3>
+<div id="section-exercise-standard-error" class="section level3">
+<h3>Exercise: Standard error</h3>
 <ul>
 <li>Using the same sample information from before (M = 100, SD = 15)
 <ul>
@@ -792,8 +798,9 @@ hist(x, freq=FALSE,col=&#39;gray&#39;)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-central-limit-theorem" class="section level3">
-<h3>Central limit theorem</h3>
+</div>
+<div id="section-central-limit-theorem" class="section level2">
+<h2>7. Central limit theorem</h2>
 <ul>
 <li>Given a sufficiently sized sample, the following claims are typically true:
 <ul>
@@ -808,7 +815,6 @@ hist(x, freq=FALSE,col=&#39;gray&#39;)</code></pre>
 <li>Why the normal distribution is normal</li>
 </ul></li>
 </ul>
-</div>
 <div id="section-estemating-population-parameters" class="section level3">
 <h3>Estemating population parameters</h3>
 <ul>
@@ -920,8 +926,8 @@ hist(x, freq=FALSE,col=&#39;gray&#39;)</code></pre>
 <p class="caption">Normal distribution</p>
 </div>
 </div>
-<div id="section-try-to-find-the-boundaries-with-code" class="section level3">
-<h3>Try to find the boundaries with code</h3>
+<div id="section-finding-the-boundaries-in-r" class="section level3">
+<h3>Finding the boundaries in R</h3>
 <p>Run the code to find lower and upper limit:</p>
 <div class="tutorial-exercise" data-label="qnorm" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#This is two tailed z test distribution
@@ -961,8 +967,8 @@ qt( p = .975, df = N-1)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-how-to-interpret-a-confidence-interval" class="section level3">
-<h3>How to interpret a confidence interval</h3>
+<div id="section-interpreting-a-confidence-interval" class="section level3">
+<h3>Interpreting a confidence interval</h3>
 <ul>
 <li>If we replicated the experiment over and over again and computed a 95% confidence interval for each replication, then 95% of those intervals would contain the true mean.</li>
 </ul>
@@ -973,10 +979,10 @@ qt( p = .975, df = N-1)</code></pre>
 <p>Figure 10.11: 95% confidence intervals. The top (panel a) shows 50 simulated replications of an exper- iment in which we measure the IQs of 10 people. The dot marks the location of the sample mean, and the line shows the 95% confidence interval. In total 47 of the 50 confidence intervals do contain the true mean (i.e., 100), but the three intervals marked with asterisks do not. The lower graph (panel b) shows a similar simulation, but this time we simulate replications of an experiment that measures the IQs of 25 people.</p>
 </div>
 </div>
-<div id="section-exercises" class="section level2">
-<h2>6. Exercises</h2>
-<div id="section-exercise-1-calculating-the-ci-in-r" class="section level3">
-<h3>Exercise 1: Calculating the CI in R</h3>
+<div id="section-exercise-1" class="section level2">
+<h2>Exercise 1</h2>
+<div id="section-calculating-the-ci-in-r" class="section level3">
+<h3>Calculating the CI in R</h3>
 <ul>
 <li>Install and load the lsr package</li>
 <li>Install and load the R datasets package and load the ‘trees’ and ‘discoveries’ data sets</li>
@@ -1157,8 +1163,11 @@ sd(disc_samp4)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-exercise-6-simulate-a-simple-random-sample" class="section level3">
-<h3>Exercise 6: Simulate a simple random sample</h3>
+</div>
+<div id="section-exercise-2" class="section level2">
+<h2>Exercise 2</h2>
+<div id="section-simulate-a-simple-random-sample" class="section level3">
+<h3>Simulate a simple random sample</h3>
 <ul>
 <li>Install and load the ‘tigerstats’ package</li>
 <li>Load the FakeSchool data include in the package and check out the data frame</li>
@@ -1249,8 +1258,11 @@ mean.srs</code></pre>
 </div>
 <p><strong>Compare the two means</strong></p>
 </div>
-<div id="section-exercise-7-simulate-a-stratified-sample" class="section level3">
-<h3>Exercise 7: Simulate a stratified sample</h3>
+</div>
+<div id="section-exercise-3" class="section level2">
+<h2>Exercise 3</h2>
+<div id="section-simulate-a-stratified-sample" class="section level3">
+<h3>Simulate a stratified sample</h3>
 <ul>
 <li>Using the FakeSchool data there are Honors and non-Honors students:</li>
 <li>Create a sample of size 7 that proportionally represents the honors and non-honors students in the population (the whole FakeSchool data frame)</li>
@@ -1341,8 +1353,11 @@ stratifiedsample.mean</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-exercise-8-calculate-many-simple-random-samples" class="section level3">
-<h3>Exercise 8: Calculate many simple random samples</h3>
+</div>
+<div id="section-exercise-4" class="section level2">
+<h2>Exercise 4</h2>
+<div id="section-calculate-many-simple-random-samples" class="section level3">
+<h3>Calculate many simple random samples</h3>
 <ul>
 <li>Using the FakeSchool data :</li>
 <li>For 100, 1000, and 10,000 samples, create a sample of size 7 from population (the whole FakeSchool data frame)</li>
@@ -1552,7 +1567,7 @@ session$onSessionEnded(function() {
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("What type of sampling is most commonly used in university settings?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_aef0680",     option = "Snowball", value = "Snowball", label = structure("Snowball", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_bc316a3",     option = "Convenience", value = "Convenience", label = structure("Convenience", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_101fdb",     option = "Random", value = "Random", label = structure("Random", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_55c5a39",     option = "Volunteer", value = "Volunteer", label = structure("Volunteer", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b0f1f2c",     option = "Opportunity", value = "Opportunity", label = structure("Opportunity", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz1-answer", question = "Quiz1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat type of sampling is most commonly used in university settings?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1527624715.78864, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("What type of sampling is most commonly used in university settings?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_aef0680",     option = "Snowball", value = "Snowball", label = structure("Snowball", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_bc316a3",     option = "Convenience", value = "Convenience", label = structure("Convenience", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_101fdb",     option = "Random", value = "Random", label = structure("Random", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_55c5a39",     option = "Volunteer", value = "Volunteer", label = structure("Volunteer", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b0f1f2c",     option = "Opportunity", value = "Opportunity", label = structure("Opportunity", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz1-answer", question = "Quiz1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat type of sampling is most commonly used in university settings?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1527624715.78864, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1584,7 +1599,7 @@ output$Q1 <- renderPlot({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz2", question = structure("What is the common goal of doing empirical work utilizing statistics in CSAI?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_d108b6d",     option = "Become famous", value = "Become famous", label = structure("Become famous", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9ebd786",     option = "Earn a degree", value = "Earn a degree", label = structure("Earn a degree", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ce70e42",     option = "Use knowledge of sample to make inference", value = "Use knowledge of sample to make inference",     label = structure("Use knowledge of sample to make inference", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz2-answer", question = "Quiz2"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat is the common goal of doing empirical work utilizing statistics in CSAI?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 2076231025.53318, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz2", question = structure("What is the common goal of doing empirical work utilizing statistics in CSAI?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_d108b6d",     option = "Become famous", value = "Become famous", label = structure("Become famous", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9ebd786",     option = "Earn a degree", value = "Earn a degree", label = structure("Earn a degree", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ce70e42",     option = "Use knowledge of sample to make inference", value = "Use knowledge of sample to make inference",     label = structure("Use knowledge of sample to make inference", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz2-answer", question = "Quiz2"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat is the common goal of doing empirical work utilizing statistics in CSAI?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 2076231025.53318, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1616,7 +1631,7 @@ output$Q2 <- renderPlot({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz3", question = structure("We use sample statistics to do which of the following regarding population parameters?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_1747758",     option = "Prove", value = "Prove", label = structure("Prove", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_17ea1d8",     option = "Guess", value = "Guess", label = structure("Guess", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_d49e732",     option = "Differentiate", value = "Differentiate", label = structure("Differentiate", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c37cc1f",     option = "Estimate", value = "Estimate", label = structure("Estimate", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz3-answer", question = "Quiz3"), loading = structure("<strong>Loading:<\u002fstrong> \nWe use sample statistics to do which of the following regarding population parameters?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 749834626.150831, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz3", question = structure("We use sample statistics to do which of the following regarding population parameters?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_1747758",     option = "Prove", value = "Prove", label = structure("Prove", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_17ea1d8",     option = "Guess", value = "Guess", label = structure("Guess", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_d49e732",     option = "Differentiate", value = "Differentiate", label = structure("Differentiate", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c37cc1f",     option = "Estimate", value = "Estimate", label = structure("Estimate", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz3-answer", question = "Quiz3"), loading = structure("<strong>Loading:<\u002fstrong> \nWe use sample statistics to do which of the following regarding population parameters?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 749834626.150831, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1648,7 +1663,7 @@ output$Q3 <- renderPlot({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz4", question = structure("As we increase the sample size, the sampling distribution of the mean becomes:", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_1016db3",     option = "More normal", value = "More normal", label = structure("More normal", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_272e7f0",     option = "Wider", value = "Wider", label = structure("Wider", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_69edef8",     option = "Narrower", value = "Narrower", label = structure("Narrower", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c2bb879",     option = "Skewed", value = "Skewed", label = structure("Skewed", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz4-answer", question = "Quiz4"), loading = structure("<strong>Loading:<\u002fstrong> \nAs we increase the sample size, the sampling distribution of the mean becomes:\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1980205465.07789, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz4", question = structure("As we increase the sample size, the sampling distribution of the mean becomes:", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_1016db3",     option = "More normal", value = "More normal", label = structure("More normal", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_272e7f0",     option = "Wider", value = "Wider", label = structure("Wider", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_69edef8",     option = "Narrower", value = "Narrower", label = structure("Narrower", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c2bb879",     option = "Skewed", value = "Skewed", label = structure("Skewed", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz4-answer", question = "Quiz4"), loading = structure("<strong>Loading:<\u002fstrong> \nAs we increase the sample size, the sampling distribution of the mean becomes:\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1980205465.07789, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1680,7 +1695,7 @@ output$Q4 <- renderPlot({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz5", question = structure("If I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_f5502c0",     option = "1", value = "1", label = structure("1", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_2d567b",     option = "2", value = "2", label = structure("2", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_e70273b",     option = "5", value = "5", label = structure("5", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c6a4a60",     option = "95", value = "95", label = structure("95", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz5-answer", question = "Quiz5"), loading = structure("<strong>Loading:<\u002fstrong> \nIf I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 837719716.609906, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz5", question = structure("If I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_f5502c0",     option = "1", value = "1", label = structure("1", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_2d567b",     option = "2", value = "2", label = structure("2", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_e70273b",     option = "5", value = "5", label = structure("5", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c6a4a60",     option = "95", value = "95", label = structure("95", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "Quiz5-answer", question = "Quiz5"), loading = structure("<strong>Loading:<\u002fstrong> \nIf I replicate a study 20 times, how many studies will have a mean not included in the 95% CI?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 837719716.609906, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">

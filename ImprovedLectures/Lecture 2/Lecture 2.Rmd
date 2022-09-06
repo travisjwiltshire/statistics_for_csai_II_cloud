@@ -133,7 +133,7 @@ question("What type of sampling is most commonly used in university settings?",
     answer("Volunteer"),
     answer("Opportunity"),
     incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    allow_retry = FALSE
     )
 ```
 
@@ -181,7 +181,7 @@ output$Q1 <- renderPlot({
     answer("Earn a degree"),
     answer("Use knowledge of sample to make inference", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    allow_retry = FALSE
     )
 ```
 
@@ -230,7 +230,7 @@ output$Q2 <- renderPlot({
     answer("Differentiate"),
     answer("Estimate", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    allow_retry = FALSE
     )
 ```
 
@@ -278,7 +278,7 @@ question("As we increase the sample size, the sampling distribution of the mean 
     answer("Narrower", correct = TRUE),
     answer("Skewed"),
     incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    allow_retry = FALSE
     )
 ```
 
@@ -326,7 +326,7 @@ output$Q4 <- renderPlot({
     answer("5"),
     answer("95"),
     incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+    allow_retry = FALSE
     )
 ```
 
@@ -432,7 +432,7 @@ output$Q5 <- renderPlot({
 
 <p><img src="images/figure10.3.png" style="max-width: 100%;" /></p>
 
-### Exercise 2: Sample in R
+## Sampling in R
 
 - Create a variable called pop that includes the letters a-j
 - Create a variable called samp1 by sampling the population using the sample() function
@@ -566,7 +566,9 @@ samp3<-sample(pop,size=4,prob = bias,replace=FALSE)
 | Correlation       | $\rho$        | $r$ (Sample correlation) |
 | Regression coefi. | $\beta$       | $b$ (Sample regression coefficient) |
 
-### Exercise 2: Sample statistics vs. Population parameters
+## Exercises in R
+
+### Sample statistics vs. Population parameters
 
 - Let's generate some data:
   + IQ.1 <- round(rnorm(n=100, mean=100, sd=15))
@@ -576,8 +578,6 @@ samp3<-sample(pop,size=4,prob = bias,replace=FALSE)
 **Now compare the mean and standard deviation of both of these. **
 
 **What do you observe? And why?**
-
-
 
 
 ### 1. Generate three random variables with different sample sizes from a normal distribution
@@ -655,7 +655,7 @@ plot(c(sd(IQ.1),sd(IQ.2),sd(IQ.3)),type='l')
 #store
 ```
 
-### Law of large numbers
+## 6. Law of large numbers
 
 - **We get more ‘accurate’ numbers from larger samples.**
 
@@ -675,7 +675,9 @@ plot(c(sd(IQ.1),sd(IQ.2),sd(IQ.3)),type='l')
 
 Figure 10.5: The sampling distribution of the mean for the "five IQ scores experiment". If you sample 5 people at random and calculate their average IQ, you'll almost certainly get a number between 80 and 120, even though there are quite a lot of individuals who have IQs above 120 or below 80. For comparison, the black line plots the population distribution of IQ scores.
 
-### Exercise 3: Sampling distribution of the mean
+## Exercises in R
+
+### Sampling distribution of the mean
 
 - Using the same sample information from before (M = 100, SD = 15)
   + Calculate the sampling distribution of the mean for 100, 1000, and 10000 samples with size 5
@@ -685,7 +687,6 @@ Figure 10.5: The sampling distribution of the mean for the "five IQ scores exper
   + Plot a histogram for each of these
   
 - **HINT: You may want to use a for loop**
-
 
 
 ### Calculate the sampling distribution of the mean for 100, 1000, and 10000 samples with size 10000
@@ -717,7 +718,6 @@ hist(x, freq=FALSE,col='gray')
 ```{r ex31-check}
 #store
 ```
-
 
 
 ### Calculate the sampling distribution of the mean for 100, 1000, and 10000 samples with size 5
@@ -790,7 +790,7 @@ hist(x, freq=FALSE,col='gray')
 <img src="images/meandistribtuion.png" 
      style="max-width: 100%;" />
 
-### Exercise 4: Standard error
+### Exercise: Standard error
 
 - Using the same sample information from before (M = 100, SD = 15)
   + Calculate the standard error of the mean for 10000 samples with size 5
@@ -850,7 +850,7 @@ hist(x, freq=FALSE,col='gray')
 #store
 ```
 
-### Central limit theorem
+## 7. Central limit theorem
 
 - Given a sufficiently sized sample, the following claims are typically true:
   + The mean of the sampling distribution is the same as the mean of the population
@@ -904,7 +904,7 @@ hist(x, freq=FALSE,col='gray')
 
 ![Normal distribution](images/normaldistribution.png)
 
-### Try to find the boundaries with code
+### Finding the boundaries in R
 
 Run the code to find lower and upper limit:
 
@@ -950,7 +950,8 @@ qt( p = .975, df = N-1)
 ```{r ex52-check}
 #store
 ```
-### How to interpret a confidence interval
+
+### Interpreting a confidence interval
 
 + If we replicated the experiment over and over again and computed a 95% confidence interval for each replication, then 95% of those intervals would contain the true mean.
 
@@ -960,10 +961,10 @@ qt( p = .975, df = N-1)
 Figure 10.11: 95% confidence intervals. The top (panel a) shows 50 simulated replications of an exper-
 iment in which we measure the IQs of 10 people. The dot marks the location of the sample mean, and the line shows the 95% confidence interval. In total 47 of the 50 confidence intervals do contain the true mean (i.e., 100), but the three intervals marked with asterisks do not. The lower graph (panel b) shows a similar simulation, but this time we simulate replications of an experiment that measures the IQs of 25 people.
 
-## 6. Exercises
 
+## Exercise 1
 
-### Exercise 1: Calculating the CI in R
+### Calculating the CI in R
 
 - Install and load the lsr package
 - Install and load the R datasets package and load the ‘trees’ and ‘discoveries’ data sets
@@ -1155,7 +1156,9 @@ sd(disc_samp4)
 
 
 
-### Exercise 6: Simulate a simple random sample
+## Exercise 2 
+
+### Simulate a simple random sample
 
 - Install and load the ‘tigerstats’ package
 - Load the FakeSchool data include in the package and check out the data frame
@@ -1255,7 +1258,9 @@ mean.srs
 
 **Compare the two means**
 
-### Exercise 7: Simulate a stratified sample
+## Exercise 3
+
+### Simulate a stratified sample
 
 - Using the FakeSchool data there are Honors and non-Honors students:
 - Create a sample of size 7 that proportionally represents the honors and non-honors students in the population (the whole FakeSchool data frame)
@@ -1353,7 +1358,9 @@ stratifiedsample.mean
 ```
 
 
-### Exercise 8: Calculate many simple random samples
+## Exercise 4
+
+### Calculate many simple random samples
 
 - Using the FakeSchool data :
 - For 100, 1000, and 10,000 samples, create a sample of size 7 from population (the whole FakeSchool data frame)
@@ -1449,7 +1456,6 @@ ciMean(x.10000)
 ```{r ex76-check}
 #store
 ```
-
 
 
 ## Conculsion
