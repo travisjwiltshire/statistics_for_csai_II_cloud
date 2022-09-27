@@ -140,7 +140,7 @@ output$Q1 <- renderPlot({
   question("What correlation would be most appropriate for examining the relationship between ranking in a gaming competition and age, when the sample size is small?",
     answer("Pearson correlation"),
     answer("Partial correlation"),
-    answer("Spearman correlaton", correct = TRUE),
+    answer("Spearman correlation", correct = TRUE),
     answer("Semi-partial correlation"),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
