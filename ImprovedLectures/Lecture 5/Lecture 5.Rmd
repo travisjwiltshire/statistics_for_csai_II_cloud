@@ -92,7 +92,7 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
   question("Which of the following types of correlation would you use if you want to examine the relationship between x and y, while controlling for the relationship of z on both x and y?",
     answer("Pearson correlation"),
     answer("Partial correlation", correct = TRUE),
-    answer("Spearman correlaton"),
+    answer("Spearman correlation"),
     answer("Semi-partial correlation"),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
