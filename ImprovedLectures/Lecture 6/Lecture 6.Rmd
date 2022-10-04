@@ -77,11 +77,11 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 ### Question 1
 ```{r Quiz1}
-  question("If you observed a-0.03 correlation between hours of daylight and mood, which are you most likely to include?",
+  question("If you observed a -0.03 correlation between hours of daylight and mood, which are you most likely to conclude?",
     answer("There is a negative relationship between hours of daylight and mood."),
     answer("There is a positive relationship between hours of daylight and mood."),
     answer("There is no relationship between hours of daylight and mood."),
-    answer("Not enough information is provided", correct = TRUE),
+    answer("Not enough information is provided.", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
@@ -106,7 +106,7 @@ output$Q1 <- renderPlot({
   count(answer))
   total_n = nrow(answers)
   answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Not enough information is provided", "Correct", "Incorrect")
+  answers_count$correct <- ifelse(answers_count$answer == "Not enough information is provided.", "Correct", "Incorrect")
 
   ggplot(answers_count,
          aes(x = percentage,
@@ -124,7 +124,7 @@ output$Q1 <- renderPlot({
   question("In a regression equation, b0 describes which of the following?",
     answer("The x intercept"),
     answer("The regression coefficient of the predictor"),
-    answer("The correlation coefficients"),
+    answer("The correlation coefficient"),
     answer("The y intercept", correct = TRUE),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
@@ -265,11 +265,11 @@ output$Q4 <- renderPlot({
 
 ### Question 5
 ```{r Quiz5}
-  question("The R-squared value tells you",
+  question("The R-squared value tells you which of the following (select the most correct)?",
     answer("If there is a relationship between your predictor and your outcome"),
     answer("How much error is in your model"),
-    answer("How much of the variance your overall model accounts for", correct = TRUE),
-    answer("If your regression summary is valid "),
+    answer("How much of the variance in the outcome variable your overall model accounts for", correct = TRUE),
+    answer("If your regression assumptions are met"),
     incorrect = "Hint: Try again, you can pick another answer!",
     allow_retry = TRUE
     )
@@ -298,7 +298,7 @@ output$Q5 <- renderPlot({
   count(answer))
   total_n = nrow(answers)
   answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "How much of the variance your overall model accounts for", "Correct", "Incorrect")
+  answers_count$correct <- ifelse(answers_count$answer == "How much of the variance in the outcome variable your overall model accounts for", "Correct", "Incorrect")
 
   ggplot(answers_count,
          aes(x = percentage,
