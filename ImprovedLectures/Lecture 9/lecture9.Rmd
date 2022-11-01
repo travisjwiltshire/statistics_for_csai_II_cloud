@@ -151,7 +151,7 @@ output$Q1 <- renderPlot({
 
 ### Results
 
-#### 2. In a regression equation, b0 describes which of the following?
+#### 2. Which of the following is the most efficient way run multiple regression with an interaction term and all lower order terms in R?
 
 ```{r, Quiz2O, echo = FALSE}
 plotOutput("Q2")
@@ -235,7 +235,7 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 <img src="images/table8.2.1.png" style="max-width: 100%;" />
 
 
-## Exercises 1
+## Exercise 1
 
 ### Preparing some data to run a model with dummy codes
 
@@ -298,7 +298,7 @@ performance::check_model(mod.1)
 
 ## (unweighted) Effects Coding
 
-- Used to compare how the outcome for each group differs from the average outcome of the whole sample (grand mean)
+- Used to compare how the outcome for each group differs from the grand mean (mean of group means)
 - Base group gets all -1
   - Group that is of least interest
 - Regression coefs represent the deviation of the outcome for each separate group to the mean of the sample
@@ -306,7 +306,7 @@ performance::check_model(mod.1)
 
 <img src="images/table8.3.1.png" style="max-width: 100%;" />
 
-## Exercises 2
+## Exercise 2
 
 - 1. Try out the `contr.sum()` function to generate effects coding matrices for variables with 3 and 4 groups
 - 2. Run a linear model with:
@@ -401,7 +401,7 @@ TukeyHSD(anova.results)
  
 <img src="images/table8.4.1.png" style="max-width: 100%;" />
 
-## Exercises 
+## Exercise 3 
 
 Run a model with weighted effects codes
 
@@ -442,7 +442,7 @@ mean(BMI$BMI)
 
 <img src="images/table8.5.1.png" style="max-width: 100%;" />
 
-## Exercises 3
+## Exercise 4
 
 - 1. Create a matrix that allows you to compare the lowest education to the middle and highest matrix (hint: see Table 8.5.1 D)
 - 2. Run the model including this matrix in the contrasts arguments
@@ -463,7 +463,7 @@ summary(mod.3)
 
 
 
-## Conculsion
+## Conclusion
 
 ### More coding systems
 
