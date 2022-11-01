@@ -14,22 +14,28 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
+library(RMariaDB)
 library(DBI)
 library(pool)
 
+library(gvlma)
+library(lme4)
+library(lmtest)
+library(wec)
+library(psych)
+
 pool <- dbPool(
   drv = RMySQL::MySQL(),
-  dbname = "p543343_Statistics2",
-  host = "91.184.19.135",
-  username = "p543343_admin",
-  password = "Stats_Admin1"
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
 )
 
 ## options
@@ -40,9 +46,7 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -51,13 +55,15 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(pool, "module9", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+data(BMI)
 ```
+
 
 ## 1. Introduction
 
@@ -82,6 +88,54 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 4. Weighted Effects 
 5. Contrast Coding
 
+## Quiz
+
+### Question 1
+
+```{r Quiz1, echo=FALSE}
+  question("In a regression equation, b0 describes which of the following?",
+    answer("The x intercept"),
+    answer("The regression coefficient of the predictor"),
+    answer("The correlation coefficients"),
+    answer("The y intercept", correct = TRUE),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 2. In a regression equation, b0 describes which of the following?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module9")
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The y intercept", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
 
 ## Multiple Regression
 
@@ -123,8 +177,6 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 
 ## Dummy coding
 
-### Dummy coding
-
 - Need to carefully consider the reference group
   - A useful comparison (e.g., control group)
   - Size of group should not be too small compared to size of other groups
@@ -138,7 +190,6 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 
 ## Exercises
 
-
 ### Preparing some data to run a model with dummy codes
 
 - Install and load the ‘wec’ package
@@ -148,12 +199,8 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 - Get some descriptive statistics on the data set
 
 
-### Install and load BMI data
-
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
-
 ```{r ex11, exercise=TRUE}
-
+#The data is stored in a variable called BMI
 
 ```
 ```{r ex11-hint}
@@ -163,14 +210,12 @@ require(gvlma)
 data(BMI)
 options(scipen=999)
 ```
-```{r ex11-check}
-#store
-```
+
 
 ### Create a set of dummy coded variables for the education variable in the BMI data set and get some descriptive data
 
 ```{r ex12, exercise=TRUE}
-# Dummy coding
+#The data is stored in a variable called BMI
 
 ```
 ```{r ex12-hint}
@@ -178,9 +223,6 @@ options(scipen=999)
 dum<-psych::dummy.code(BMI$education)
 bmi_ed<-data.frame(BMI,dum)
 summary(bmi_ed)
-```
-```{r ex12-check}
-#store
 ```
 
 ### Run multiple regression on the data
@@ -193,7 +235,7 @@ summary(bmi_ed)
 
 
 ```{r ex13, exercise=TRUE}
-
+#The data is stored in a variable called BMI
 
 ```
 ```{r ex13-hint}
@@ -205,13 +247,9 @@ performance::check_model(mod.1)
 
 
 ```
-```{r ex13-check}
-#store
-```
+
 
 ## (unweighted) Effects Coding
-
-### (unweighted) Effects Coding
 
 - Used to compare how the outcome for each group differs from the average outcome of the whole sample (grand mean)
 - Base group gets all -1
@@ -221,7 +259,7 @@ performance::check_model(mod.1)
 
 <img src="images/table8.3.1.png" style="max-width: 100%;" />
 
-### Exercise: Run a model with unweighted effects codes
+## Exercises
 
 - Try out the `contr.sum()` function to generate effects coding matrices for variables with 3 and 4 groups
 - Run a linear model with:
@@ -234,12 +272,10 @@ performance::check_model(mod.1)
 - Bonus: Figure out the difference between ANOVA and categorical regression
 
 
-
-### Use contr.sum() to generate...
-
-- Check out and interpret the summary of the model
+### Check out and interpret the summary of the model
 
 ```{r ex21, exercise=TRUE}
+#The data is stored in a variable called BMI
 
 
 ```
@@ -250,15 +286,14 @@ contr.sum(3)
 contr.sum(4)
 
 ```
-```{r ex21-check}
-#store
-```
+
 
 ### Predict BMI from education using unweighted effects coding 
 
 - Check out and interpret the summary of the model
 
 ```{r ex22, exercise=TRUE}
+#The data is stored in a variable called BMI
 
 
 ```
@@ -270,14 +305,14 @@ summary(mod.2)
 
 
 ```
-```{r ex22-check}
-#store
-```
+
 
 ### Get the mean of the base group
 
 
 ```{r ex23, exercise=TRUE}
+#The data is stored in a variable called BMI
+
 
 
 ```
@@ -292,13 +327,12 @@ aggregate(x = BMI$BMI, by = list(BMI$education), FUN = mean)   #Get group means
 -1.00669-(-.16262)+25.14101 #Base group mean
 
 ```
-```{r ex23-check}
-#store
-```
+
 
 ### Bonus: Figure out the difference between ANOVA and categorical regression
 
 ```{r ex24, exercise=TRUE}
+#The data is stored in a variable called BMI
 
 
 ```
@@ -309,15 +343,10 @@ summary(anova.results)
 psych::describeBy(bmi_ed,group='education')
 TukeyHSD(anova.results)
 ```
-```{r ex24-check}
-#store
-```
-
 
 
 ## Weighted Effects Coding
 
-### Weighted Effects Coding
 
 - Useful when the proportion of cases from each group ‘represents’ the population
   - (e.g., ethnic makeup, cognitive ability, etc.)
@@ -325,7 +354,9 @@ TukeyHSD(anova.results)
  
 <img src="images/table8.4.1.png" style="max-width: 100%;" />
 
-### Exercise: Run a model with weighted effects codes
+## Exercises 
+
+Run a model with weighted effects codes
 
 - Make a weighted contrast matrix using the `contr.wec()` function from wec package
 - Make two new variables the represent contrasts either omitting the ‘lowest’ or highest’ education group
@@ -333,44 +364,14 @@ TukeyHSD(anova.results)
 - Generate summaries, interpret, and compare
 
 
-### Make a weighted contrast matrix using the `contr.wec()` function from wec package
-
-```{r ex31, exercise=TRUE}
-
-
-```
-```{r ex31-hint}
-#
-
-```
-```{r ex31-check}
-#store
-```
-
-### Make two new variables the represent contrasts either omitting the ‘lowest’ or highest’ education group
-
-```{r ex32, exercise=TRUE}
-
-
-```
-```{r ex32-hint}
-wec::contr.wec(BMI$education, omitted='highest')
-BMI$educ.wec.lowest <- BMI$educ.wec.highest <- BMI$education
-
-
-```
-```{r ex32-check}
-#store
-```
-
-### Now run two models including those new variables, interpret and compare
-
-
 ```{r ex33, exercise=TRUE}
+#The data is stored in a variable called BMI
 
 
 ```
 ```{r ex33-hint}
+wec::contr.wec(BMI$education, omitted='highest')
+BMI$educ.wec.lowest <- BMI$educ.wec.highest <- BMI$education
 model.wec.lowest <- lm(BMI ~ educ.wec.lowest, data=BMI)
 model.wec.highest <- lm(BMI ~ educ.wec.highest, data=BMI)
 summary(model.wec.lowest)
@@ -379,13 +380,9 @@ mean(bmi_ed$BMI) #See the intercept is the sample mean
 mean(BMI$BMI)
 
 ```
-```{r ex33-check}
-#store
-```
+
 
 ## Contrast Coding
-
-### Contrast Coding 
 
 - When there are mean expected differences between groups or combinations of groups
 - Good for testing specific hypotheses 
@@ -398,55 +395,24 @@ mean(BMI$BMI)
 
 <img src="images/table8.5.1.png" style="max-width: 100%;" />
 
-### Exercise: Run a model with contrast codes
+## Exercises
 
 - Create a matrix that allows you to compare the lowest education to the middle and highest matrix (hint: see Table 8.5.1 D)
 - Run the model including this matrix in the contrasts arguments
 - Generate and interpret the summary
 
 
-### Create a matrix that allows you to compare the lowest education to the middle and highest matrix (hint: see Table 8.5.1 D)
-
-```{r ex41, exercise=TRUE}
-
-
-```
-```{r ex41-hint}
-mat = matrix(c(-2/3,1/3,1/3,0,1/2,-1/2), ncol = 2)# Set the
-
-```
-```{r ex41-check}
-#store
-```
-
-### Run the model including this matrix in the contrasts arguments
-
 ```{r ex42, exercise=TRUE}
+#The data is stored in a variable called BMI
 
 
 ```
 ```{r ex42-hint}
+mat = matrix(c(-2/3,1/3,1/3,0,1/2,-1/2), ncol = 2)
 mod.3<-lm(BMI~education,contrasts=list(education=mat),data=BMI)
-
-```
-```{r ex42-check}
-#store
-```
-
-### Generate and interpret the summary
-
-```{r ex43, exercise=TRUE}
-
-
-```
-```{r ex43-hint}
 summary(mod.3)
 
 ```
-```{r ex43-check}
-#store
-```
-
 
 
 
