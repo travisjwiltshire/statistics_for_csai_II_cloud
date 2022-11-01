@@ -1,5 +1,5 @@
 ---
-title: "Statistics for CSAI II - Coding and Effects"
+title: "Statistics for CSAI II - Categories, Coding, and Effects"
 date: |
   <center>
     ![](images/logo.png){width=2in}
@@ -104,7 +104,7 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 ### Results
 
-#### 2. In a regression equation, b0 describes which of the following?
+#### 1. In a regression equation, b0 describes which of the following?
 
 ```{r, Quiz1O, echo = FALSE}
 plotOutput("Q1")
@@ -125,6 +125,53 @@ output$Q1 <- renderPlot({
   total_n = nrow(answers)
   answers_count$percentage <- (answers_count$n/total_n)*100
   answers_count$correct <- ifelse(answers_count$answer == "The y intercept", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+### Question 2
+
+```{r Quiz2, echo=FALSE}
+  question("Which of the following is the most efficient way run multiple regression with an interaction term and all lower order terms in R?",
+    answer("lm(y ~ x1*x2)", correct = TRUE),
+    answer("lm(y ~ x1 + x2 + x1*x2)"),
+    answer("lm(y ~ x1:x2)"),
+    answer("lm(y ~ x1 + x2 + x3"),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 2. In a regression equation, b0 describes which of the following?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module9")
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "lm(y ~ x1*x2)", "Correct", "Incorrect")
 
   ggplot(answers_count,
          aes(x = percentage,
@@ -165,7 +212,7 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 
 <img src="images/meme.png" style="max-width: 100%;" />
 
-### Coding Systems in Multiple Regression
+### Coding Systems in Multiple Regression
 
 - All coding systems use g-1 predictor variables to represent all g (groups).
 - Each represents a single distinction among the groups
@@ -188,15 +235,15 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 <img src="images/table8.2.1.png" style="max-width: 100%;" />
 
 
-## Exercises
+## Exercises 1
 
 ### Preparing some data to run a model with dummy codes
 
-- Install and load the ‘wec’ package
-- Load the ‘BMI’ data that is within that package (and check out the variables)
-- Check out the `dummy.code()` function from the psych package 
-- Create a set of dummy coded variables for the education variable in the BMI data set
-- Get some descriptive statistics on the data set
+- 1. Install and load the ‘wec’ package
+- 2. Load the ‘BMI’ data that is within that package (and check out the variables)
+- 3. Check out the `dummy.code()` function from the psych package 
+- 4. Create a set of dummy coded variables for the education variable in the BMI data set
+- 5. Get some descriptive statistics on the data set
 
 
 ```{r ex11, exercise=TRUE}
@@ -227,9 +274,9 @@ summary(bmi_ed)
 
 ### Run multiple regression on the data
 
-- Create a linear model with your dummy codes as predictors of BMI (be sure to choose a referent group)
-- Check out and interpret the summary of the model
-- Do a global and visual check of the assumptions for the model
+- 1. Create a linear model with your dummy codes as predictors of BMI (be sure to choose a referent group)
+- 2. Check out and interpret the summary of the model
+- 3. Do a global and visual check of the assumptions for the model
 
 ### Create a linear model with your dummy codes as predictors of BMI (be sure to choose a referent group)
 
@@ -259,20 +306,20 @@ performance::check_model(mod.1)
 
 <img src="images/table8.3.1.png" style="max-width: 100%;" />
 
-## Exercises
+## Exercises 2
 
-- Try out the `contr.sum()` function to generate effects coding matrices for variables with 3 and 4 groups
-- Run a linear model with:
+- 1. Try out the `contr.sum()` function to generate effects coding matrices for variables with 3 and 4 groups
+- 2. Run a linear model with:
   - BMI as the outcome,
   - Education as the predictor
   - Figure out how to use the contrasts argument of `lm()` by creating a list that includes the `contr.sum` for the education variable
-- Generate and interpret the summary
-- Get the mean of the base group
+- 3. Generate and interpret the summary
+- 4. Get the mean of the base group
 
 - Bonus: Figure out the difference between ANOVA and categorical regression
 
 
-### Check out and interpret the summary of the model
+### 1. Check out and interpret the summary of the model
 
 ```{r ex21, exercise=TRUE}
 #The data is stored in a variable called BMI
@@ -288,9 +335,9 @@ contr.sum(4)
 ```
 
 
-### Predict BMI from education using unweighted effects coding 
+### 2. Predict BMI from education using unweighted effects coding 
 
-- Check out and interpret the summary of the model
+- 3. Check out and interpret the summary of the model
 
 ```{r ex22, exercise=TRUE}
 #The data is stored in a variable called BMI
@@ -307,7 +354,7 @@ summary(mod.2)
 ```
 
 
-### Get the mean of the base group
+### 4. Get the mean of the base group
 
 
 ```{r ex23, exercise=TRUE}
@@ -358,10 +405,10 @@ TukeyHSD(anova.results)
 
 Run a model with weighted effects codes
 
-- Make a weighted contrast matrix using the `contr.wec()` function from wec package
-- Make two new variables the represent contrasts either omitting the ‘lowest’ or highest’ education group
-- Now run two models including those new variables
-- Generate summaries, interpret, and compare
+- 1. Make a weighted contrast matrix using the `contr.wec()` function from wec package
+- 2. Make two new variables the represent contrasts either omitting the ‘lowest’ or highest’ education group
+- 3. Now run two models including those new variables
+- 4. Generate summaries, interpret, and compare
 
 
 ```{r ex33, exercise=TRUE}
@@ -395,11 +442,11 @@ mean(BMI$BMI)
 
 <img src="images/table8.5.1.png" style="max-width: 100%;" />
 
-## Exercises
+## Exercises 3
 
-- Create a matrix that allows you to compare the lowest education to the middle and highest matrix (hint: see Table 8.5.1 D)
-- Run the model including this matrix in the contrasts arguments
-- Generate and interpret the summary
+- 1. Create a matrix that allows you to compare the lowest education to the middle and highest matrix (hint: see Table 8.5.1 D)
+- 2. Run the model including this matrix in the contrasts arguments
+- 3. Generate and interpret the summary
 
 
 ```{r ex42, exercise=TRUE}
