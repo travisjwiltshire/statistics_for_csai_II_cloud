@@ -22,9 +22,17 @@ library(scales)
 library(RMariaDB)
 library(DBI)
 library(ggwordcloud)
+library(DBI)
+library(pool)
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
+pool <- dbPool(
+  drv = MariaDB(),
+  dbname = "p543343_Statistics2",
+  host = "91.184.19.135",
+  username = "p543343_admin",
+  password = "Stats_Admin1"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -44,7 +52,7 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(conn, "module1", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(pool, "module1", d_tibble, append=TRUE, row.names = FALSE)}
 
 
 tutorial_options(exercise.checker = function(
@@ -73,8 +81,6 @@ options(tutorial.event_recorder = new_recorder)
 
 
 ## exercise setup
-
-
 ```
 
 ## Introduction
@@ -361,8 +367,8 @@ plotOutput("Q1")
 
 output$Q1 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
-  data = dbFetch(res)
+  data <- dbGetQuery(pool, "SELECT * FROM module1")
+  #data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz1",)
   answers[answers==""] <- NA
@@ -410,7 +416,7 @@ plotOutput("Q2")
 
 output$Q2 <- renderPlot({
   
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
+  res <- dbSendQuery(pool, "SELECT * FROM module1")
   data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz2",)

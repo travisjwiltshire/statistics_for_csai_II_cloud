@@ -22,6 +22,7 @@ library(scales)
 library(RMariaDB)
 library(DBI)
 
+
 conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
 ## options
@@ -76,6 +77,7 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 ## Quiz
 
 ### Question 1
+
 ```{r Quiz1}
   question("If you observed a-0.03 correlation between hours of daylight and mood, which are you most likely to include?",
     answer("There is a negative relationship between hours of daylight and mood."),
@@ -120,6 +122,7 @@ output$Q1 <- renderPlot({
 ```
 
 ### Question 2
+
 ```{r Quiz2}
   question("In a regression equation, b0 describes which of the following?",
     answer("The x intercept"),
@@ -169,6 +172,7 @@ output$Q2 <- renderPlot({
 
 
 ### Question 3
+
 ```{r Quiz3}
  question("All regression models use a straight line to describe the data.",
     answer("Yes", correct = TRUE),
@@ -216,6 +220,7 @@ output$Q3 <- renderPlot({
 
 
 ### Question 4
+
 ```{r Quiz4}
 question("The slope of a regression line can be:",
     answer("Positive", correct = TRUE),
@@ -264,6 +269,7 @@ output$Q4 <- renderPlot({
 ```
 
 ### Question 5
+
 ```{r Quiz5}
   question("The R-squared value tells you",
     answer("If there is a relationship between your predictor and your outcome"),

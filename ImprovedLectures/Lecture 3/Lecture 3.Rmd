@@ -52,10 +52,8 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 What we will cover today:
 
-1. Quiz
-2. Hypothesis Testing Revisited
-3. Correlation
-
+1. Hypothesis Testing Revisited
+2. Correlation
 
 ## 2. Hypothesis testing
 
@@ -90,7 +88,7 @@ What we will cover today:
 
 <img src="images/hboundary.jpg" style="max-width: 100%;" />
 
-### Exercise 1: Z-test in R
+## Z-test in R
 
 1. Randomly generate a vector in R from a normal distribution with mean of 55.4, n=30,sd=5.
 2. Install and load the BSDA package
@@ -157,7 +155,7 @@ z.test(x=x,sigma.x=20,mu=50,conf.level=0.95,alternative='greater')
 $$t-statistic=\frac{\overline{x}-\mu_{0}}{\frac{S}{\sqrt{n}}}$$
 <img src="images/sdeviation.png" style="max-width: 100%;" />
 
-### Exercise 2: T-test in R
+## T-test in R
 
 1. Use your vector in R from a normal distribution with mean of 55.4, n=30,sd=5.
 2. Check out the arguments for the `t.test()` function
@@ -182,7 +180,7 @@ t.test(x=x,mu=50,conf.level=0.95,alternative='greater')
 
 
 
-### Errors in Hypothesis Tests
+## Errors in Hypothesis Tests
 
 - Just because the sample mean (following treatment) is different from the original population mean does not necessarily indicate that the treatment has caused a change or that there is an effect.  
 - You should recall that there usually is some discrepancy between a sample mean and the population mean simply as a result of sampling error. 
@@ -197,11 +195,11 @@ t.test(x=x,mu=50,conf.level=0.95,alternative='greater')
 
 <img src="images/effectsize.png" style="max-width: 100%;" />
 
-### Effec Size
+### Effect Size
 
 <img src="images/scoresdistribution.jpg" style="max-width: 100%;" />
 
-### Exercise 3: Cohen’s D effect size 
+### Effect size exercises
 
 1. Install/load the ‘psych’ package
 2. Read about the `cohen.d()` function
@@ -230,7 +228,7 @@ summary(cd)  #summarize the output
 
 
 
-### Hypothesis Testing and a Model Based Approach
+## Hypothesis Testing and a Model Based Approach
 
 - Data = Model + Error
 - Comparison (relationship) vs Prediction (predicted outcomes vs predicting relationship vs using the model for prediction)
@@ -317,7 +315,7 @@ $$cov_{x,y}=\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}$$
 
 $cov_{x,y}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}\\=\frac{(-0.4)(-3)+(-1.4)(-2)+(-1.4)(-1)+(0.6)(2)+(2.6)(4)}{4}\\=\frac{1.2+2.8+1.4+1.2+10.4}{4}\\=\frac{17}{4}\\=4.25$
 
-### Covariance Exercises
+## Covariance Exercises
 
 - Create two variables in R:
   + **Ads** with values 5,4,4,6,8
@@ -350,7 +348,7 @@ cov(ads,packets)
 #store
 ```
 
-### Problems with Covariance
+## Problems with Covariance
 
 - It depends upon the **<u>units of measurement</u>**.
   + E.g. the covariance of two variables measured in miles might be 4.25, but if the same scores are converted to kilometres, the covariance is 11.
@@ -365,7 +363,7 @@ $$ r =\frac{ cov_{xy} }{s_{x}s_{y}}$$
 $r = \frac{ cov_{xy} }{s_{x}s_{y}}\\=\frac{4.25}{1.67 \times 2.29}\\= .87$  
 
 
-### Standardizing and Correlation Exercises
+## Standardizing and Correlation Exercises
 
 - Create new variables by standardizing both variables below using the `scale()` function:
   + Ads
@@ -401,7 +399,7 @@ cor(ads,packets, method="pearson")
 ```
 
 
-### Things to Know about the Correlation
+## Things to Know about the Correlation
 
 - It varies between -1 and +1
   + 0 = no relationship
@@ -429,7 +427,7 @@ cor(ads,packets, method="pearson")
 - And we can also specify our alternative for whether there should be a negative relationship **(alternative =‘less’)** or positive association **(alternative=‘greater’)**
 - Also provides p-values, and CIs
 
-### Correlation Testing Exercises
+## Correlation Testing Exercises
 
 - Use the `cor.test()` function to calculate the correlation of ads and packets
 - Use the `cor.test()` function to calculate the correlation of ads and packets predict a negative association
@@ -464,7 +462,7 @@ Check [this](https://tylervigen.com/discover) out for some interesting spurious 
 ![](images/corcominc.png)
 
 
-### More Correlation Testing Exercises
+## More Correlation Testing Exercises
 
 - Load the Exam Anxiety.dat file into R using `read.delim()` function
   - 103 participants, variables indicated Time spent revising (hours), Exam performance (%), Exam Anxiety (the EAQ, score out of 100), Gender

@@ -32,8 +32,6 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
 g_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
@@ -66,7 +64,6 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 
 
 ### Outline
-
 
 What we will cover today:
 

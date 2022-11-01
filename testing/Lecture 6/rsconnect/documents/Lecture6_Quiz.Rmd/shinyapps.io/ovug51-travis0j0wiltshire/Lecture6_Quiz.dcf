@@ -1,0 +1,14 @@
+name: Lecture6_Quiz
+title: Lecture6_Quiz
+username:
+account: ovug51-travis0j0wiltshire
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7273239
+bundleId: 6438706
+url: https://travisjwiltshire.shinyapps.io/Lecture6_Quiz/
+when: 1666695534.66511
+lastSyncTime: 1666695534.66511
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Lecture-6.html|Lecture 6.Rmd

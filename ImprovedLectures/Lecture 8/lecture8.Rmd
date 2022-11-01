@@ -12,18 +12,31 @@ output:
     css: css/style.css
 runtime: shiny_prerendered
 ---
-
-
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+library(pool)
+
+library(gvlma)
+library(lme4)
+library(lmtest)
+library(emmeans)
+library(rockchalk)
+library(interactions)
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -33,9 +46,7 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -44,13 +55,15 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(pool, "module8", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+GPA.Data <- read.csv("GPA.DATA.csv", header=TRUE)
 ```
+
 
 ## Introduction
 
@@ -58,7 +71,7 @@ options(tutorial.event_recorder = new_recorder)
 ## HEADER ###
 HTML("  <div class='jumbotron jumbotron-fluid'>
     <div class='container'>
-    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Multiple Regression II/u></h2>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Multiple Regression II</u></h2>
     <h4 class='mb-3'>Statistics for CSAI II</h4>
     <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
     </div>
@@ -78,7 +91,192 @@ What we will cover today:
 
 ## Quiz
 
-add
+### Question 2
+
+```{r Quiz1,  echo=FALSE}
+  question("What is the common goal of doing empirical work utilizing statistics in CSAI?",
+    answer("Become famous"),
+    answer("Earn a degree"),
+    answer("Use knowledge of sample to make inference", correct = TRUE),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 1. What is the common goal of doing empirical work utilizing statistics in CSAI?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module8")
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Use knowledge of sample to make inference", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+### Question 2
+
+```{r Quiz2, echo=FALSE}
+  question("In a regression equation, b0 describes which of the following?",
+    answer("The x intercept"),
+    answer("The regression coefficient of the predictor"),
+    answer("The correlation coefficients"),
+    answer("The y intercept", correct = TRUE),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 2. In a regression equation, b0 describes which of the following?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module8")
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The y intercept", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+### Question 3
+```{r Quiz3, echo=FALSE}
+ question("The null hypothesis for a correlation test is which of the following?",
+    answer("The correlation is positive"),
+    answer("The correlation is negative"),
+    answer("The correlation is different than 0"),
+    answer("The correlation is equal to 0", correct = TRUE),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 3. The null hypothesis for a correlation test is which of the following?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module8")
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "The correlation is equal to 0", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+### Question 4
+```{r Quiz4, echo=FALSE}
+  question("An estimate of the the correlation between Scoville Heat Units in various chili peppers and
+perceived pain is .7. What size effect is this?",
+    answer("Small"),
+    answer("Medium"),
+    answer("Large", correct = TRUE),
+    answer("No idea"),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 4. An estimate of the the correlation between Scoville Heat Units in various chili peppers and perceived pain is .7. What size effect is this?
+
+```{r, Quiz4O, echo = FALSE}
+plotOutput("Q4")
+```
+
+```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q4 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module6")
+  
+  answers <- subset(data, data$label == "Quiz4",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Large", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
 
 ## Simple vs. Multiple Regression
 
@@ -135,12 +333,11 @@ $$Y_i=b_0+b_1X_2+b_2X_2+\color{red}{b_3X_1X_2}+\epsilon_i$$
 
 
 
-
 ## Exercises
 
 ### Preparing some data to test an interaction
 
-- Load the GPA.Data.csv file from Canvas
+- Load the GPA.Data.csv file
 - Create an interaction variable for IQ and Work.Ethic
 - Generate descriptive statistics for the data and interpret them
 - Generate correlation matrix and evaluate that
@@ -149,11 +346,10 @@ $$Y_i=b_0+b_1X_2+b_2X_2+\color{red}{b_3X_1X_2}+\epsilon_i$$
 - Create a new interaction term with the centered IQ and Work.Ethic
 - Check out the correlation matrix now
 
-### Load the GPA.Data.csv file from Canvas
-
 In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
 
 ```{r ex1, exercise=TRUE}
+#The GPA dataset is stored in a variable called 'GPA.Data'
 
 
 ```
@@ -165,91 +361,6 @@ In this online coding environment it’s not needed to load the data, because th
 #store
 ```
 
-### Create an interaction variable for IQ and Work.Ethic
-
-
-```{r ex11, exercise=TRUE}
-
-
-```
-```{r ex11-hint}
-#
-GPA.Data$IQ.WE.INT<-GPA.Data$IQ*GPA.Data$Work.Ethic #This one creates a multicollinearity problem
-GPA.Data$IQ.WE.INT.c<-GPA.Data$IQ.C*GPA.Data$Work.Ethic.C #This one looks much better
-cor(GPA.Data)
-```
-```{r ex11-check}
-#store
-```
-
-### Generate descriptive statistics for the data and interpret them
-
-```{r ex12, exercise=TRUE}
-
-
-```
-```{r ex12-hint}
-#
-psych::describe(GPA.Data)
-
-
-```
-```{r ex12-check}
-#store
-```
-
-### Generate correlation matrix and evaluate that
-```{r ex13, exercise=TRUE}
-
-
-```
-```{r ex13-hint}
-#
-cor(GPA.Data)
-
-
-```
-```{r ex13-check}
-#store
-```
-
-### Center IQ and Work.Ethic (save these as new variables)
-hint use scale function, but not all arguments should be true
-
-```{r ex14, exercise=TRUE}
-
-
-```
-```{r ex14-hint}
-#
-GPA.Data$IQ.C <- scale(GPA.Data$IQ, center = TRUE, scale = FALSE)[,]
-GPA.Data$Work.Ethic.C <- scale(GPA.Data$Work.Ethic, center = TRUE, scale = FALSE)[,]
-GPA.Data$IQ.C <- as.numeric(scale(GPA.Data$IQ, center = TRUE, scale = FALSE))
-
-```
-```{r ex14-check}
-#store
-```
-
-### Create a new interaction term with the centered IQ and Work.Ethic
-
- Also check out the correlation matrix now
-
-```{r ex15, exercise=TRUE}
-
-
-```
-```{r ex15-hint}
-#
-GPA.Data$IQ.WE.INT<-GPA.Data$IQ*GPA.Data$Work.Ethic #This one creates a multicollinearity problem
-GPA.Data$IQ.WE.INT.c<-GPA.Data$IQ.C*GPA.Data$Work.Ethic.C #This one looks much better
-cor(GPA.Data)
-```
-```{r ex15-check}
-#store
-```
-
-
 ### Run multiple regression on the data
 
 - Create a linear model with only the centered version of IQ and Work.Ethic as predictors
@@ -259,14 +370,9 @@ cor(GPA.Data)
 - Compare the models to see which is the better fit
 - Get your standardized coefficients using lm.beta()
 - Do a global check and visual check of the assumptions for the model
-
-
-### Create a linear model with only the centered version of IQ and Work.Ethic as predictors
-
 - Check out and interpret the summary of the model
 
 ```{r ex21, exercise=TRUE}
-
 
 ```
 ```{r ex21-hint}
@@ -279,83 +385,7 @@ summary(gpa.mod1)
 #store
 ```
 
-### Create a linear model with the centered version of IQ and Work.Ethic AND the centered interaction term as predictors 
 
-- Check out and interpret the summary of the model
-
-```{r ex22, exercise=TRUE}
-
-
-```
-```{r ex22-hint}
-#
-gpa.mod2<-lm(GPA~IQ.C+Work.Ethic.C+IQ.WE.INT.c,data=GPA.Data)
-summary(gpa.mod2)
-gpa.mod3<-lm(GPA~IQ.C*Work.Ethic.C,data=GPA.Data)
-summary(gpa.mod3)
-
-```
-```{r ex22-check}
-#store
-```
-
-### Compare the models to see which is the better fit
-
-```{r ex23, exercise=TRUE}
-
-
-```
-```{r ex23-hint}
-#
-anova(gpa.mod1,gpa.mod2)
-
-extractAIC(gpa.mod1)
-extractAIC(gpa.mod2) #Note how the AIC for this one is lower (more negative*)
-
-performance::performance(gpa.mod1)
-performance::performance(gpa.mod2)
-plot(performance::compare_performance(gpa.mod1,gpa.mod2))
-
-anova(gpa.mod2,gpa.mod3)
-
-```
-```{r ex23-check}
-#store
-```
-
-### Get your standardized coefficients using lm.beta()
-
-```{r ex24, exercise=TRUE}
-
-
-```
-```{r ex24-hint}
-#
-QuantPsyc::lm.beta(gpa.mod3) #note that now I am using the mod3 using the *
-
-
-```
-```{r ex24-check}
-#store
-```
-
-### Do a global check and visual check of the assumptions for the model
-
-```{r ex25, exercise=TRUE}
-
-
-```
-```{r ex25-hint}
-#
-require(gvlma)
-gvlma(gpa.mod3)
-performance::check_model(gpa.mod3)
-
-
-```
-```{r ex25-check}
-#store
-```
 
 
 ## Interactions
@@ -435,11 +465,10 @@ https://stats.idre.ucla.edu/r/seminars/interactions-r/
 - Examine the simple slopes for WorkEthic.C using `emtrends()`. What do they show? Do they appear different?
 - Modify your input to the `emtrends()` function to Probe the simple slopes and test if any of these are different than each other. 
 
-### Extracting the estimated marginal means and simple slopes
-
 In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
 
 ```{r ex31, exercise=TRUE}
+#The GPA dataset is stored in a variable called 'GPA.Data'
 
 
 ```
@@ -453,72 +482,20 @@ summary(GPA.Data$IQ.C)
 #store
 ```
 
-### Create IQ values at, and +/1 1 SD from the mean
 
-```{r ex32, exercise=TRUE}
+### Plot the simple slopes
 
-
-```
-```{r ex32-hint}
-#
-IQplus <- round(mean(GPA.Data$IQ.C) + sd(GPA.Data$IQ.C),1)
-IQ <- round(mean(GPA.Data$IQ.C),1)
-IQminus <-round(mean(GPA.Data$IQ.C) - sd(GPA.Data$IQ.C),1)
-mylist <- list(IQ.C=c(IQplus,IQ,IQminus) )
-
-```
-```{r ex32-check}
-#store
-```
-
-### Now examine the simple slopes of work ethic at the levels of IQ
-
- Do they appear different?
-
-```{r ex33, exercise=TRUE}
-
-
-```
-```{r ex33-hint}
-#
-emtrends(gpa.mod3,~IQ.C,var = "Work.Ethic.C", at=mylist)
-
-
-```
-```{r ex33-check}
-#store
-```
-
-### Testing the simple slopes
-
-```{r ex34, exercise=TRUE}
-
-
-```
-```{r ex34-hint}
-#
-emtrends(gpa.mod3,pairwise ~IQ.C,var = "Work.Ethic.C" ,at=mylist,adjusts='none')
-
-```
-```{r ex34-check}
-#store
-```
-
-### Plot the simple slopes (s19)
-
-Install and load the ‘rockchalk’ and ‘interactions’ package
-Check out the arguments of the `plotSlopes()` function
-Use `plotSlopes` to make a graph that shows the simple slopes for IQ.C
-Reverse the order of entry of the IVs and plot the simple slopes
-Check out the arguments of the `interact_plot()` function
-Use `interact_plot()` to make a graph that shows the simple slopes for IQ.C
-
-### Load/install ‘rockchalk’ and ‘interactions’ package
+1. Load the ‘rockchalk’ and ‘interactions’ package
+2. Check out the arguments of the `plotSlopes()` function
+3. Use `plotSlopes` to make a graph that shows the simple slopes for IQ.C
+3. Reverse the order of entry of the IVs and plot the simple slopes
+4. Check out the arguments of the `interact_plot()` function
+5. Use `interact_plot()` to make a graph that shows the simple slopes for IQ.C
 
 In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
 
 ```{r ex41, exercise=TRUE}
-
+#The GPA dataset is stored in a variable called 'GPA.Data'
 
 ```
 ```{r ex41-hint}
@@ -529,41 +506,8 @@ In this online coding environment it’s not needed to load the data, because th
 #store
 ```
 
-### Use `plotSlopes` to make a graph that shows the simple slopes for IQ.C
 
-```{r ex42, exercise=TRUE}
-
-
-```
-```{r ex42-hint}
-#
-gpa.simp<-plotSlopes(gpa.mod3,plotx='Work.Ethic.C',modx='IQ.C',modxVals='std.dev', legendTitle='IQ.C')
-
-gpa.simp<-plotSlopes(gpa.mod3,plotx='IQ.C',modx='Work.Ethic.C',modxVals='std.dev', legendTitle='IQ.C')
-
-```
-```{r ex42-check}
-#store
-```
-
-### Use `interact_plot()` to make a graph that shows the simple slopes for IQ.C
-
-```{r ex43, exercise=TRUE}
-
-
-```
-```{r ex43-hint}
-#
-interact_plot(gpa.mod3, pred = Work.Ethic.C, modx = IQ.C)
-interact_plot(gpa.mod3, pred = IQ.C, modx = Work.Ethic.C)
-
-
-```
-```{r ex43-check}
-#store
-```
-
-### Data analysis of Dutch Lexicon Project (s20)
+### Data analysis of Dutch Lexicon Project
 
 1. retrieve the tab delimited files for stimulus characteristics and average reaction times from http://crr.ugent.be/programs-data/lexicon-projects
 2. load the data in R

@@ -21,8 +21,16 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(DBI)
+library(pool)
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "p543343_Statistics2",
+  host = "91.184.19.135",
+  username = "p543343_admin",
+  password = "Stats_Admin1"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)

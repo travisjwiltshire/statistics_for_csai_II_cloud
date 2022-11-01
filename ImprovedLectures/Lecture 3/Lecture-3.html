@@ -130,7 +130,6 @@ $(document).ready(function () {
 <h3>Outline</h3>
 <p>What we will cover today:</p>
 <ol style="list-style-type: decimal">
-<li>Quiz</li>
 <li>Hypothesis Testing Revisited</li>
 <li>Correlation</li>
 </ol>
@@ -178,8 +177,9 @@ $(document).ready(function () {
 <h3>Critical regions</h3>
 <p><img src="images/hboundary.jpg" style="max-width: 100%;" /></p>
 </div>
-<div id="section-exercise-1-z-test-in-r" class="section level3">
-<h3>Exercise 1: Z-test in R</h3>
+</div>
+<div id="section-z-test-in-r" class="section level2">
+<h2>Z-test in R</h2>
 <ol style="list-style-type: decimal">
 <li>Randomly generate a vector in R from a normal distribution with mean of 55.4, n=30,sd=5.</li>
 <li>Install and load the BSDA package</li>
@@ -188,7 +188,6 @@ $(document).ready(function () {
 <li>Use the <code>z.test()</code> function to test your hypothesis</li>
 <li>Read the output and make a decision about the null hypothesis</li>
 </ol>
-</div>
 <div id="section-load" class="section level3">
 <h3>Load</h3>
 <p>In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!</p>
@@ -241,8 +240,9 @@ z.test(x=x,sigma.x=20,mu=50,conf.level=0.95,alternative=&#39;greater&#39;)</code
 </ul>
 <p><span class="math display">\[t-statistic=\frac{\overline{x}-\mu_{0}}{\frac{S}{\sqrt{n}}}\]</span> <img src="images/sdeviation.png" style="max-width: 100%;" /></p>
 </div>
-<div id="section-exercise-2-t-test-in-r" class="section level3">
-<h3>Exercise 2: T-test in R</h3>
+</div>
+<div id="section-t-test-in-r" class="section level2">
+<h2>T-test in R</h2>
 <ol style="list-style-type: decimal">
 <li>Use your vector in R from a normal distribution with mean of 55.4, n=30,sd=5.</li>
 <li>Check out the arguments for the <code>t.test()</code> function</li>
@@ -252,7 +252,6 @@ z.test(x=x,sigma.x=20,mu=50,conf.level=0.95,alternative=&#39;greater&#39;)</code
 <li>How does this compare to your z.test?</li>
 <li>What about the CIs?</li>
 </ol>
-</div>
 <div id="section-code-to-generate-a-t-statistic-and-results" class="section level3">
 <h3>Code to generate a t-statistic and results</h3>
 <div class="tutorial-exercise" data-label="ex14" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -267,15 +266,15 @@ t.test(x=x,mu=50,conf.level=0.95,alternative=&#39;greater&#39;)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-errors-in-hypothesis-tests" class="section level3">
-<h3>Errors in Hypothesis Tests</h3>
+</div>
+<div id="section-errors-in-hypothesis-tests" class="section level2">
+<h2>Errors in Hypothesis Tests</h2>
 <ul>
 <li>Just because the sample mean (following treatment) is different from the original population mean does not necessarily indicate that the treatment has caused a change or that there is an effect.<br />
 </li>
 <li>You should recall that there usually is some discrepancy between a sample mean and the population mean simply as a result of sampling error.</li>
 </ul>
 <p><img src="images/errortype.png" style="max-width: 100%;" /></p>
-</div>
 <div id="section-measuring-effect-size" class="section level3">
 <h3>Measuring Effect Size</h3>
 <ul>
@@ -287,12 +286,12 @@ t.test(x=x,mu=50,conf.level=0.95,alternative=&#39;greater&#39;)</code></pre>
 </ul>
 <p><img src="images/effectsize.png" style="max-width: 100%;" /></p>
 </div>
-<div id="section-effec-size" class="section level3">
-<h3>Effec Size</h3>
+<div id="section-effect-size" class="section level3">
+<h3>Effect Size</h3>
 <p><img src="images/scoresdistribution.jpg" style="max-width: 100%;" /></p>
 </div>
-<div id="section-exercise-3-cohens-d-effect-size" class="section level3">
-<h3>Exercise 3: Cohen’s D effect size</h3>
+<div id="section-effect-size-exercises" class="section level3">
+<h3>Effect size exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Install/load the ‘psych’ package</li>
 <li>Read about the <code>cohen.d()</code> function</li>
@@ -319,13 +318,13 @@ summary(cd)  #summarize the output</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-hypothesis-testing-and-a-model-based-approach" class="section level3">
-<h3>Hypothesis Testing and a Model Based Approach</h3>
+</div>
+<div id="section-hypothesis-testing-and-a-model-based-approach" class="section level2">
+<h2>Hypothesis Testing and a Model Based Approach</h2>
 <ul>
 <li>Data = Model + Error</li>
 <li>Comparison (relationship) vs Prediction (predicted outcomes vs predicting relationship vs using the model for prediction)</li>
 </ul>
-</div>
 <div id="section-hypothesis-testing-in-a-model-based-framework" class="section level3">
 <h3>Hypothesis Testing in a Model-Based Framework</h3>
 <p><img src="images/testframework.png" /></p>
@@ -422,8 +421,9 @@ summary(cd)  #summarize the output</code></pre>
 <p><img src="images/advert-package.png" /></p>
 <p><span class="math inline">\(cov_{x,y}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}\\=\frac{(-0.4)(-3)+(-1.4)(-2)+(-1.4)(-1)+(0.6)(2)+(2.6)(4)}{4}\\=\frac{1.2+2.8+1.4+1.2+10.4}{4}\\=\frac{17}{4}\\=4.25\)</span></p>
 </div>
-<div id="section-covariance-exercises" class="section level3">
-<h3>Covariance Exercises</h3>
+</div>
+<div id="section-covariance-exercises" class="section level2">
+<h2>Covariance Exercises</h2>
 <ul>
 <li>Create two variables in R:
 <ul>
@@ -432,7 +432,6 @@ summary(cd)  #summarize the output</code></pre>
 </ul></li>
 <li>Use the <code>cov()</code> function to calculate the covariance of ads and packets</li>
 </ul>
-</div>
 <div id="section-creating-two-variables" class="section level3">
 <h3>1. Creating two variables</h3>
 <div class="tutorial-exercise" data-label="ex21" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -455,8 +454,9 @@ packets&lt;-c(8,9,10,13,15)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-problems-with-covariance" class="section level3">
-<h3>Problems with Covariance</h3>
+</div>
+<div id="section-problems-with-covariance" class="section level2">
+<h2>Problems with Covariance</h2>
 <ul>
 <li>It depends upon the <strong><u>units of measurement</u></strong>.
 <ul>
@@ -475,8 +475,8 @@ packets&lt;-c(8,9,10,13,15)</code></pre>
 <p><span class="math display">\[ r =\frac{ cov_{xy} }{s_{x}s_{y}}\]</span></p>
 <p><span class="math inline">\(r = \frac{ cov_{xy} }{s_{x}s_{y}}\\=\frac{4.25}{1.67 \times 2.29}\\= .87\)</span></p>
 </div>
-<div id="section-standardizing-and-correlation-exercises" class="section level3">
-<h3>Standardizing and Correlation Exercises</h3>
+<div id="section-standardizing-and-correlation-exercises" class="section level2">
+<h2>Standardizing and Correlation Exercises</h2>
 <ul>
 <li>Create new variables by standardizing both variables below using the <code>scale()</code> function:
 <ul>
@@ -486,7 +486,6 @@ packets&lt;-c(8,9,10,13,15)</code></pre>
 <li>Use the <code>cov()</code> function to calculate the covariance of the <strong>standardized versions</strong> of ads and packets</li>
 <li>Use the <code>cor()</code> function to calculate the correlation of ads and packets</li>
 </ul>
-</div>
 <div id="section-testing-out-standardization-of-variables" class="section level3">
 <h3>Testing out standardization of variables</h3>
 <div class="tutorial-exercise" data-label="ex23" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -515,8 +514,9 @@ cov(std_ads,std_packets)</code></pre>
 <pre class="text"><code>#store</code></pre>
 </div>
 </div>
-<div id="section-things-to-know-about-the-correlation" class="section level3">
-<h3>Things to Know about the Correlation</h3>
+</div>
+<div id="section-things-to-know-about-the-correlation" class="section level2">
+<h2>Things to Know about the Correlation</h2>
 <ul>
 <li>It varies between -1 and +1
 <ul>
@@ -534,7 +534,6 @@ cov(std_ads,std_packets)</code></pre>
 </ul></li>
 </ul>
 <p><img src="images/overlap.png" /></p>
-</div>
 <div id="section-general-procedure-for-correlations-using-r" class="section level3">
 <h3>General Procedure for Correlations Using R</h3>
 <ul>
@@ -555,15 +554,15 @@ cov(std_ads,std_packets)</code></pre>
 <li>Also provides p-values, and CIs</li>
 </ul>
 </div>
-<div id="section-correlation-testing-exercises" class="section level3">
-<h3>Correlation Testing Exercises</h3>
+</div>
+<div id="section-correlation-testing-exercises" class="section level2">
+<h2>Correlation Testing Exercises</h2>
 <ul>
 <li>Use the <code>cor.test()</code> function to calculate the correlation of ads and packets</li>
 <li>Use the <code>cor.test()</code> function to calculate the correlation of ads and packets predict a negative association</li>
 <li>Use the <code>cor.test()</code> function to calculate the correlation of ads and packets predict a positive association</li>
 </ul>
 <p>What do these results suggest to you? Is the correlation between these variables significant?</p>
-</div>
 <div id="section-testing-the-correlation-obtaining-a-p-value-and-cis-and-making-a-prediction-about-positive-or-negative-relationships" class="section level3">
 <h3>Testing the correlation, obtaining a p-value and CIs and making a prediction about positive or negative relationships</h3>
 <div class="tutorial-exercise" data-label="ex25" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
@@ -594,8 +593,9 @@ cor.test(ads,packets, method=&quot;pearson&quot;,alternative = &quot;greater&quo
 <p>Check <a href="https://tylervigen.com/discover">this</a> out for some interesting spurious correlations: <a href="https://tylervigen.com/discover" class="uri">https://tylervigen.com/discover</a></p>
 <p><img src="images/corcominc.png" /></p>
 </div>
-<div id="section-more-correlation-testing-exercises" class="section level3">
-<h3>More Correlation Testing Exercises</h3>
+</div>
+<div id="section-more-correlation-testing-exercises" class="section level2">
+<h2>More Correlation Testing Exercises</h2>
 <ul>
 <li>Load the Exam Anxiety.dat file into R using <code>read.delim()</code> function
 <ul>
@@ -607,7 +607,6 @@ cor.test(ads,packets, method=&quot;pearson&quot;,alternative = &quot;greater&quo
 </ul></li>
 <li>Generate an exploratory correlation matrix using the <code>correlate()</code> function from the <code>lsr</code> package. How do you interpret this?</li>
 </ul>
-</div>
 <div id="section-load-the-exam-anxiety-dataset-and-do-a-correlation-test" class="section level3">
 <h3>1. Load the Exam Anxiety dataset and do a correlation test</h3>
 <p>The exam anxiety dataset is pre-loaded in a variable called exam_data.</p>
