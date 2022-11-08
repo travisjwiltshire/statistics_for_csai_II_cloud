@@ -15,13 +15,11 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 ## libraries1
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -181,9 +179,7 @@ In this online coding environment it’s not needed to load the data, because th
 psych::describe(yerkes.dods)
 plot(yerkes.dods$arous,yerkes.dods$perf)
 ```
-```{r ex11-check}
-#store
-```
+
 
 ### Run and save linear model with perf as the outcome and arous as the predictor
 
@@ -195,9 +191,6 @@ plot(yerkes.dods$arous,yerkes.dods$perf)
 #
 mod.lin<-lm(perf~arous,data=yerkes.dods)
 summary(mod.lin)
-```
-```{r ex12-check}
-#store
 ```
 
 ### Generate and inspect the following fitted vs residual plot, histogram of the residuals, and the qq plot
@@ -218,9 +211,7 @@ performance::check_model(mod.lin)
 
 
 ```
-```{r ex13-check}
-#store
-```
+
 
 ### Now run and save the model adding a quadratic term and interpret the results
 
@@ -235,9 +226,7 @@ mod.quad<-lm(perf~arous+I(arous^2),data=yerkes.dods)
 summary(mod.quad)
 
 ```
-```{r ex14-check}
-#store
-```
+
 
 ### Compare your models
 
@@ -261,9 +250,6 @@ extractAIC(mod.quad)
 performance::compare_performance(mod.lin,mod.quad)
 plot(performance::compare_performance(mod.lin,mod.quad))
 ```
-```{r ex15-check}
-#store
-```
 
 ### Check out if you have any problems with multicollinearity
 
@@ -274,9 +260,7 @@ plot(performance::compare_performance(mod.lin,mod.quad))
 ```{r ex16-hint}
 
 ```
-```{r ex16-check}
-#store
-```
+
 
 ## Orthogonal polynomials 
 
@@ -325,9 +309,7 @@ gpa.mod1<-lm(GPA~IQ.C+Work.Ethic.C,data=GPA.Data)
 summary(gpa.mod1)
 
 ```
-```{r ex21-check}
-#store
-```
+
 
 ### Create a linear model with the centered version of IQ and Work.Ethic AND the centered interaction term as predictors 
 
@@ -345,9 +327,7 @@ gpa.mod3<-lm(GPA~IQ.C*Work.Ethic.C,data=GPA.Data)
 summary(gpa.mod3)
 
 ```
-```{r ex22-check}
-#store
-```
+
 
 ### Compare the models to see which is the better fit
 
@@ -371,9 +351,7 @@ plot(performance::compare_performance(gpa.mod1,gpa.mod2))
 anova(gpa.mod2,gpa.mod3)
 
 ```
-```{r ex23-check}
-#store
-```
+
 
 ### Get your standardized coefficients using lm.beta()
 
@@ -386,9 +364,6 @@ anova(gpa.mod2,gpa.mod3)
 QuantPsyc::lm.beta(gpa.mod3) #note that now I am using the mod3 using the *
 
 
-```
-```{r ex24-check}
-#store
 ```
 
 ### Do a global check and visual check of the assumptions for the model
@@ -405,9 +380,7 @@ performance::check_model(gpa.mod3)
 
 
 ```
-```{r ex25-check}
-#store
-```
+
 
 
 ## Conclusion
