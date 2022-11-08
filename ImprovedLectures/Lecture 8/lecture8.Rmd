@@ -61,7 +61,7 @@ dbWriteTable(pool, "module8", d_tibble, append=TRUE, row.names = FALSE)}
 options(tutorial.event_recorder = new_recorder)
 
 ## exercise setup
-GPA.Data <- read.csv("GPA.DATA.csv", header=TRUE)
+GPA.Data <- read.csv("data/GPA.DATA.csv", header=TRUE)
 ```
 
 
@@ -357,9 +357,6 @@ In this online coding environment it’s not needed to load the data, because th
 #
 
 ```
-```{r ex1-check}
-#store
-```
 
 ### Run multiple regression on the data
 
@@ -381,11 +378,6 @@ gpa.mod1<-lm(GPA~IQ.C+Work.Ethic.C,data=GPA.Data)
 summary(gpa.mod1)
 
 ```
-```{r ex21-check}
-#store
-```
-
-
 
 
 ## Interactions
@@ -478,10 +470,6 @@ require(emmeans)
 summary(GPA.Data$IQ.C)
 
 ```
-```{r ex31-check}
-#store
-```
-
 
 ### Plot the simple slopes
 
@@ -502,10 +490,6 @@ In this online coding environment it’s not needed to load the data, because th
 #
 
 ```
-```{r ex41-check}
-#store
-```
-
 
 ### Data analysis of Dutch Lexicon Project
 
