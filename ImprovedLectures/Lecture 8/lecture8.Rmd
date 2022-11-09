@@ -91,9 +91,9 @@ What we will cover today:
 
 ## Quiz
 
-### Question 2
+### Question 1
 
-```{r Quiz1,  echo=FALSE}
+```{r /Quiz1,  echo=FALSE}
   question("What is the common goal of doing empirical work utilizing statistics in CSAI?",
     answer("Become famous"),
     answer("Earn a degree"),

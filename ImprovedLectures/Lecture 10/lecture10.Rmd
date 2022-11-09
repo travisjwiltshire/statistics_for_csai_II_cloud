@@ -56,7 +56,7 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(pool, "module8", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(pool, "module10", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
 

@@ -109,10 +109,30 @@ if (window.hljs) {
 
 <article class="topics" id="learnr-tutorial-content">
 
+<div id="section-introduction" class="section level2">
+<h2>Introduction</h2>
+  <div class='jumbotron jumbotron-fluid'>
+    <div class='container'>
+    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Polynomial Regression</u></h2>
+    <h4 class='mb-3'>Statistics for CSAI II</h4>
+    <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
+    </div>
+  </div>
+<div id="section-outline" class="section level3">
+<h3>Outline</h3>
+<p>What we will cover today:</p>
+<ol style="list-style-type: decimal">
+<li>Polynomial regression</li>
+<li>When to use it</li>
+<li>How to do it in R</li>
+<li>Orthogonal polynomials</li>
+</ol>
+</div>
+</div>
 <div id="section-quiz" class="section level2">
 <h2>Quiz</h2>
-<div id="section-question-1-placeholder-question" class="section level3">
-<h3>Question 1 (PLACEHOLDER QUESTION)</h3>
+<div id="section-question-1" class="section level3">
+<h3>Question 1</h3>
 <div class="panel panel-default tutorial-question-container">
 <div data-label="Quiz1" class="tutorial-question panel-body">
 <div id="Quiz1-answer_container" class="shiny-html-output"></div>
@@ -124,31 +144,10 @@ if (window.hljs) {
 </div>
 <div id="section-results" class="section level3">
 <h3>Results</h3>
-<div id="section-placeholder-question" class="section level4">
-<h4>1. PLACEHOLDER QUESTION</h4>
+<div id="section-which-of-the-following-would-be-a-good-coding-system-to-use-for-categorical-regression-when-you-want-to-ensure-your-sample-reflects-the-distribution-of-a-group-in-the-population" class="section level4">
+<h4>1. Which of the following would be a good coding system to use for categorical regression when you want to ensure your sample reflects the distribution of a group in the population?</h4>
 <p><div id="Q1" class="shiny-plot-output" style="width:100%;height:400px;"></div></p>
 </div>
-</div>
-</div>
-<div id="section-introduction" class="section level2">
-<h2>1. Introduction</h2>
-  <div class='jumbotron jumbotron-fluid'>
-    <div class='container'>
-    <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Polynomial Regression</u></h2>
-    <h4 class='mb-3'>Statistics for CSAI II</h4>
-    <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
-    </div>
-  </div>
-<p>In this tutorial, we’ll learn about sampling theory.</p>
-<div id="section-outline" class="section level3">
-<h3>Outline</h3>
-<p>What we will cover today:</p>
-<ol style="list-style-type: decimal">
-<li>Polynomial regression</li>
-<li>When to use it</li>
-<li>How to do it in R</li>
-<li>Orthogonal polynomials</li>
-</ol>
 </div>
 </div>
 <div id="section-polynomial-regression" class="section level2">
@@ -170,7 +169,10 @@ if (window.hljs) {
 <ul>
 <li><strong>Theoretically:</strong> When you have theory or a reason to expect the relationship between your predictor and your outcome to be <u><strong>curvilinear</strong></u></li>
 </ul>
-<p><img src="images/curvilinear.png" /></p>
+<div class="figure">
+<img src="images/curvilinear.png" alt="" />
+<p class="caption">Butner et al., 2014</p>
+</div>
 <p><img src="images/yerkes-dodson.png" /></p>
 </div>
 <div id="section-when-to-consider-polynomial-regression-1" class="section level3">
@@ -178,7 +180,7 @@ if (window.hljs) {
 <ul>
 <li><strong>Theoretically:</strong> When you have theory or a reason to expect the relationship between your predictor and your outcome to be <u><strong>curvilinear</strong></u></li>
 </ul>
-<p><img src="images/workingmemory.png" /> Image from: Euler, M. J., Wiltshire, T. J., Niermeyer, M. A., &amp; Butner, J. E. (2016). Working memory performance inversely predicts spontaneous delta and theta-band scaling relations. Brain research, 1637, 22-33.</p>
+<p><img src="images/workingmemory.png" alt="Euler et al., 2016" /> Image from: Euler, M. J., Wiltshire, T. J., Niermeyer, M. A., &amp; Butner, J. E. (2016). Working memory performance inversely predicts spontaneous delta and theta-band scaling relations. Brain research, 1637, 22-33.</p>
 </div>
 <div id="section-when-to-consider-polynomial-regression-2" class="section level3">
 <h3>When to consider polynomial regression</h3>
@@ -201,7 +203,7 @@ if (window.hljs) {
 <li>Practical significance vs statistical significance</li>
 <li>Coefs tell us direction and strength/depth of curve(s)</li>
 </ul>
-<p><img src="images/polynomialplots.png" /></p>
+<p><img src="images/polynomialplots2.jpg" /></p>
 </div>
 <div id="section-interpreting-polynomial-regression-results" class="section level3">
 <h3>Interpreting Polynomial Regression Results</h3>
@@ -226,7 +228,7 @@ if (window.hljs) {
 </ul></li>
 <li>Add directly into <code>lm()</code> formula
 <ul>
-<li>outcome ~ pred + I(pred^2)</li>
+<li><code>outcome ~ pred + I(pred^2)</code></li>
 </ul></li>
 </ul>
 <p><img src="images/polynomialterms.png" /></p>
@@ -237,9 +239,9 @@ if (window.hljs) {
 <div id="section-run-multiple-regression-on-the-data" class="section level3">
 <h3>Run multiple regression on the data</h3>
 <ul>
-<li>Load the yerkes.dods data (stored in a variable called yerkes.dods)</li>
+<li>Load the <code>yerkes.dods</code> data (stored in a variable called <code>yerkes.dods</code>)</li>
 <li>Inspect the data and generate descriptives</li>
-<li>Run and save linear model with perf as the outcome and arous as the predictor</li>
+<li>Run and save linear model with <code>perf</code> as the outcome and <code>arous</code> as the predictor</li>
 <li>Interpret the results</li>
 <li>Generate and inspect the following fitted vs residual plot, histogram of the residuals, and the qq plot</li>
 <li>Now run and save the model adding a quadratic term (you can decide which method you want to do to add this)</li>
@@ -321,7 +323,8 @@ extractAIC(mod.lin)
 extractAIC(mod.quad)
 
 performance::compare_performance(mod.lin,mod.quad)
-plot(performance::compare_performance(mod.lin,mod.quad))</code></pre>
+plot(performance::compare_performance(mod.lin,mod.quad))
+performance::check_model(mod.quad)</code></pre>
 </div>
 </div>
 </div>
@@ -334,7 +337,7 @@ plot(performance::compare_performance(mod.lin,mod.quad))</code></pre>
 <li>A transformation of the polynomial terms that reduces correlation</li>
 <li>But poses a challenge for interpretability because the b values are no longer in original metric</li>
 <li>Easy to do in R using <code>poly()</code> function in <code>lm()</code> formula</li>
-<li>See here for more but this is non-essential: <a href="https://www.youtube.com/watch?v=lrSQH_69MTM&amp;ab_channel=MathTheBeautiful">Video</a> or <a href="http://www.stat.wmich.edu/wang/664/egs/Rpoly.html">webpage</a> or <a href="http://thejuniverse.org/PUBLIC/LinearAlgebra/LOLA/dotProd/proj.html">visualizations</a> or <a href="https://www.jstor.org/stable/1403204?seq=1#metadata_info_tab_contents">paper</a></li>
+<li>See here for more but this is non-essential: <a href="https://www.youtube.com/watch?v=lrSQH_69MTM&amp;ab_channel=MathTheBeautiful">Video</a> or <a href="http://thejuniverse.org/PUBLIC/LinearAlgebra/LOLA/dotProd/proj.html">visualizations</a> or <a href="https://www.jstor.org/stable/1403204?seq=1#metadata_info_tab_contents">Paper</a></li>
 </ul>
 <p><img src="images/orthogonalpolynom.png" /></p>
 </div>
@@ -348,12 +351,12 @@ plot(performance::compare_performance(mod.lin,mod.quad))</code></pre>
 <div id="section-run-multiple-regression-on-the-data-1" class="section level3">
 <h3>Run multiple regression on the data</h3>
 <ul>
-<li>Load the cub.csv data file</li>
+<li>Load the <code>cub.csv</code> data file and call it ‘cub’</li>
 <li>Inspect the data and generate descriptives (this is simulated data)</li>
 <li>Make a scatterplot</li>
 </ul>
 <div class="tutorial-exercise" data-label="ex21" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>## The data is preloaded in a variable called cubs, when running this locally you will need to download the dataset from Canvas and load it
+<pre class="text"><code>## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it
 
 
 
@@ -365,13 +368,18 @@ plot(performance::compare_performance(mod.lin,mod.quad))</code></pre>
 <script type="application/json" data-ui-opts="1">{"engine":"r","has_checker":false,"caption":"<span data-i18n=\"text.enginecap\" data-i18n-opts=\"{&quot;engine&quot;:&quot;R&quot;}\">R Code<\/span>"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="ex21-hint" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>#</code></pre>
+<pre class="text"><code>#
+head(cub)
+
+psych::describe(cub)
+
+plot(cub$q,cub$noisy.y)</code></pre>
 </div>
 </div>
 <div id="section-find-the-best-fitting-model" class="section level3">
 <h3>Find the best fitting model</h3>
 <ul>
-<li>Run and save 3 models (noisy.y is outcome, q is predictor), interpret output along the way
+<li>Run and save 3 models (<code>noisy.y</code> is outcome, <code>q</code> is predictor), interpret output along the way
 <ul>
 <li>Start with just a linear model</li>
 <li>Then add a quadratic term using the <code>poly()</code> function in your <code>lm()</code> formula</li>
@@ -382,15 +390,19 @@ plot(performance::compare_performance(mod.lin,mod.quad))</code></pre>
 <li>Check assumptions of the best fitting model</li>
 </ul>
 <div class="tutorial-exercise" data-label="ex22" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>## The data is preloaded in a variable called GPA.Data, when running this locally you will need to download the dataset from Canvas and load it
+<pre class="text"><code>## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it
 
 
-
-## Create a linear model with only the centered version of IQ and Work.Ethic as predictors, save the model as gpa.mod1
-
+## Run and save 3 models (`noisy.y` is outcome, `q` is predictor), interpret output along the way
 
 
-### Create a linear model with the centered version of IQ and Work.Ethic (gpa.mod2) AND the centered interaction term as predictors (gpa.mod3) 
+## Start with just a linear model
+
+
+## Then add a quadratic term using the `poly()` function in your `lm()` formula
+
+
+## Then a cubic term using the `poly()` function in your `lm()` formula
 
 
 
@@ -407,17 +419,35 @@ plot(performance::compare_performance(mod.lin,mod.quad))</code></pre>
 </div>
 <div class="tutorial-exercise-support" data-label="ex22-hint" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>#
-gpa.mod1&lt;-lm(GPA~IQ.C+Work.Ethic.C,data=GPA.Data)
-summary(gpa.mod1)
-gpa.mod2&lt;-lm(GPA~IQ.C+Work.Ethic.C+IQ.WE.INT.c,data=GPA.Data)
-summary(gpa.mod2)
-gpa.mod3&lt;-lm(GPA~IQ.C*Work.Ethic.C,data=GPA.Data)
-summary(gpa.mod3)
-anova(gpa.mod2,gpa.mod3)
-extractAIC(gpa.mod3)
-performance::performance(gpa.mod2)
-performance::performance(gpa.mod3)
-plot(performance::compare_performance(gpa.mod2,gpa.mod3))</code></pre>
+mod2.lin&lt;-lm(noisy.y~q)#Refer to dataset in these if you load it
+summary(mod2.lin)
+
+mod2.quad&lt;-lm(noisy.y~poly(q,2))
+summary(mod2.quad)
+
+mod2.cub&lt;-lm(noisy.y~poly(q,3))
+summary(mod2.cub)
+
+#Compare models
+anova(mod2.lin,mod2.quad)
+anova(mod2.lin,mod2.cub)
+anova(mod2.quad,mod2.cub)
+extractAIC(mod2.quad)
+extractAIC(mod2.cub)
+
+performance::compare_performance(mod2.lin,mod2.quad,mod2.cub)
+plot(performance::compare_performance(mod2.lin,mod2.quad,mod2.cub))
+
+# Make a plot of the fitted values and the observed data
+plot(q,noisy.y,col=&#39;deepskyblue4&#39;,xlab=&#39;q&#39;,main=&#39;Observed data&#39;)
+predicted.intervals &lt;- predict(mod2.cub,data.frame(x=q),interval=&#39;confidence&#39;,level=0.99)
+lines(q,predicted.intervals[,1],col=&#39;green&#39;,lwd=3)
+lines(q,predicted.intervals[,2],col=&#39;black&#39;,lwd=1)
+lines(q,predicted.intervals[,3],col=&#39;black&#39;,lwd=1)
+
+# Check assumptions of model
+performance::check_model(mod2.cub)
+gvlma::gvlma(mod2.cub)</code></pre>
 </div>
 </div>
 </div>
@@ -492,7 +522,7 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(pool, "module8", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(pool, "module10", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
 
@@ -531,16 +561,20 @@ session$onSessionEnded(function() {
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("What is the common goal of doing empirical work utilizing statistics in CSAI?", html = TRUE, class = c("html", 
-"character")), answers = list(structure(list(id = "lnr_ans_7e62ab9", 
-    option = "Become famous", value = "Become famous", label = structure("Become famous", html = TRUE, class = c("html", 
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("Which of the following would be a good coding system to use for categorical regression when you want to ensure your sample reflects the distribution of a group in the population?", html = TRUE, class = c("html", 
+"character")), answers = list(structure(list(id = "lnr_ans_9640f9f", 
+    option = "Dummy coding", value = "Dummy coding", label = structure("Dummy coding", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_c635f22", 
-    option = "Earn a degree", value = "Earn a degree", label = structure("Earn a degree", html = TRUE, class = c("html", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_1c9467d", 
+    option = "Unweighted effects", value = "Unweighted effects", 
+    label = structure("Unweighted effects", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_75da626", 
-    option = "Use knowledge of sample to make inference", value = "Use knowledge of sample to make inference", 
-    label = structure("Use knowledge of sample to make inference", html = TRUE, class = c("html", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_974d371", 
+    option = "Contrast coding", value = "Contrast coding", label = structure("Contrast coding", html = TRUE, class = c("html", 
+    "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_e35eed3", 
+    option = "Weighted effects", value = "Weighted effects", 
+    label = structure("Weighted effects", html = TRUE, class = c("html", 
     "character")), correct = TRUE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
 "tutorial_quiz_answer"))), button_labels = list(submit = structure("<span data-i18n=\"button.questionsubmit\">Submit Answer<\u002fspan>", html = TRUE, class = c("html", 
 "character")), try_again = structure("<span data-i18n=\"button.questiontryagain\">Try Again<\u002fspan>", html = TRUE, class = c("html", 
@@ -549,7 +583,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", 
 "character")), message = NULL, post_message = NULL), ids = list(
     answer = "Quiz1-answer", question = "Quiz1"), loading = NULL, 
-    random_answer_order = FALSE, allow_retry = FALSE, seed = 634157454.704697, 
+    random_answer_order = FALSE, allow_retry = FALSE, seed = 1407746130.34447, 
     options = list()), class = c("learnr_radio", "tutorial_question"
 )), session = session)
 </script>
@@ -568,7 +602,7 @@ output$Q1 <- renderPlot({
   count(answer))
   total_n = nrow(answers)
   answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Use knowledge of sample to make inference", "Correct", "Incorrect")
+  answers_count$correct <- ifelse(answers_count$answer == "Weighted effects", "Correct", "Incorrect")
 
   ggplot(answers_count,
          aes(x = percentage,
@@ -603,7 +637,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex11", global_setup = stru
 "  ", "d_tibble <- tibble::tibble(", "user_id  = user_id, ", 
 "event = event,", "label = data$label,", "correct = data$correct,", 
 "question = data$question,", "answer = data$answer", "  )", "", 
-"## send to mysql", "dbWriteTable(pool, \"module8\", d_tibble, append=TRUE, row.names = FALSE)}", 
+"## send to mysql", "dbWriteTable(pool, \"module10\", d_tibble, append=TRUE, row.names = FALSE)}", 
 "", "options(tutorial.event_recorder = new_recorder)", "", "## exercise setup", 
 "yerkes.dods <- read.csv(\"data/yerkes.dods.csv\", header=TRUE)", 
 "cub <- read.csv(\"data/cub.csv\", header=TRUE)", "GPA.Data <- read.csv(\"data/GPA.DATA.csv\", header=TRUE)", 
@@ -666,7 +700,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex15", global_setup = stru
 "  ", "d_tibble <- tibble::tibble(", "user_id  = user_id, ", 
 "event = event,", "label = data$label,", "correct = data$correct,", 
 "question = data$question,", "answer = data$answer", "  )", "", 
-"## send to mysql", "dbWriteTable(pool, \"module8\", d_tibble, append=TRUE, row.names = FALSE)}", 
+"## send to mysql", "dbWriteTable(pool, \"module10\", d_tibble, append=TRUE, row.names = FALSE)}", 
 "", "options(tutorial.event_recorder = new_recorder)", "", "## exercise setup", 
 "yerkes.dods <- read.csv(\"data/yerkes.dods.csv\", header=TRUE)", 
 "cub <- read.csv(\"data/cub.csv\", header=TRUE)", "GPA.Data <- read.csv(\"data/GPA.DATA.csv\", header=TRUE)", 
@@ -726,7 +760,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex21", global_setup = stru
 "  ", "d_tibble <- tibble::tibble(", "user_id  = user_id, ", 
 "event = event,", "label = data$label,", "correct = data$correct,", 
 "question = data$question,", "answer = data$answer", "  )", "", 
-"## send to mysql", "dbWriteTable(pool, \"module8\", d_tibble, append=TRUE, row.names = FALSE)}", 
+"## send to mysql", "dbWriteTable(pool, \"module10\", d_tibble, append=TRUE, row.names = FALSE)}", 
 "", "options(tutorial.event_recorder = new_recorder)", "", "## exercise setup", 
 "yerkes.dods <- read.csv(\"data/yerkes.dods.csv\", header=TRUE)", 
 "cub <- read.csv(\"data/cub.csv\", header=TRUE)", "GPA.Data <- read.csv(\"data/GPA.DATA.csv\", header=TRUE)", 
@@ -735,7 +769,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex21", global_setup = stru
 "summary(gpa.mod2)", "gpa.mod3<-lm(GPA~IQ*Work.Ethic,data=GPA.Data)", 
 "summary(gpa.mod3)", "", ""), chunk_opts = list(label = "setup", 
     include = FALSE)), setup = NULL, chunks = list(list(label = "ex21", 
-    code = "\n## The data is preloaded in a variable called cubs, when running this locally you will need to download the dataset from Canvas and load it\n\n\n\n## Inspect the data and generate descriptives (this is simulated data)\n\n\n\n## Make a scatterplot\n\n\n", 
+    code = "\n## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it\n\n\n\n## Inspect the data and generate descriptives (this is simulated data)\n\n\n\n## Make a scatterplot\n\n\n", 
     opts = list(label = "\"ex21\"", exercise = "TRUE"), engine = "r")), 
     code_check = NULL, error_check = NULL, check = NULL, solution = NULL, 
     tests = NULL, options = list(eval = FALSE, echo = TRUE, results = "markup", 
@@ -755,7 +789,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex21", global_setup = stru
         message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
         engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
         max.print = 1000, exercise.eval = FALSE, label = "ex21", 
-        exercise = TRUE, code = c("", "## The data is preloaded in a variable called cubs, when running this locally you will need to download the dataset from Canvas and load it", 
+        exercise = TRUE, code = c("", "## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it", 
         "", "", "", "## Inspect the data and generate descriptives (this is simulated data)", 
         "", "", "", "## Make a scatterplot", "", "", ""), out.width.px = 624, 
         out.height.px = 384, params.src = "ex21, exercise=TRUE", 
@@ -786,7 +820,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex22", global_setup = stru
 "  ", "d_tibble <- tibble::tibble(", "user_id  = user_id, ", 
 "event = event,", "label = data$label,", "correct = data$correct,", 
 "question = data$question,", "answer = data$answer", "  )", "", 
-"## send to mysql", "dbWriteTable(pool, \"module8\", d_tibble, append=TRUE, row.names = FALSE)}", 
+"## send to mysql", "dbWriteTable(pool, \"module10\", d_tibble, append=TRUE, row.names = FALSE)}", 
 "", "options(tutorial.event_recorder = new_recorder)", "", "## exercise setup", 
 "yerkes.dods <- read.csv(\"data/yerkes.dods.csv\", header=TRUE)", 
 "cub <- read.csv(\"data/cub.csv\", header=TRUE)", "GPA.Data <- read.csv(\"data/GPA.DATA.csv\", header=TRUE)", 
@@ -795,7 +829,7 @@ learnr:::store_exercise_cache(structure(list(label = "ex22", global_setup = stru
 "summary(gpa.mod2)", "gpa.mod3<-lm(GPA~IQ*Work.Ethic,data=GPA.Data)", 
 "summary(gpa.mod3)", "", ""), chunk_opts = list(label = "setup", 
     include = FALSE)), setup = NULL, chunks = list(list(label = "ex22", 
-    code = "\n## The data is preloaded in a variable called GPA.Data, when running this locally you will need to download the dataset from Canvas and load it\n\n\n\n## Create a linear model with only the centered version of IQ and Work.Ethic as predictors, save the model as gpa.mod1\n\n\n\n### Create a linear model with the centered version of IQ and Work.Ethic (gpa.mod2) AND the centered interaction term as predictors (gpa.mod3) \n\n\n\n## Compare the models to see which one fits best (you need to make 3 comparisons)\n\n\n\n## Make a plot of the fitted values of the best fitting model with the observed data as well\n\n\n\n## Check assumptions of the best fitting model\n", 
+    code = "\n## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it\n\n\n## Run and save 3 models (`noisy.y` is outcome, `q` is predictor), interpret output along the way\n\n\n## Start with just a linear model\n\n\n## Then add a quadratic term using the `poly()` function in your `lm()` formula\n\n\n## Then a cubic term using the `poly()` function in your `lm()` formula\n\n\n\n## Compare the models to see which one fits best (you need to make 3 comparisons)\n\n\n\n## Make a plot of the fitted values of the best fitting model with the observed data as well\n\n\n\n## Check assumptions of the best fitting model\n", 
     opts = list(label = "\"ex22\"", exercise = "TRUE"), engine = "r")), 
     code_check = NULL, error_check = NULL, check = NULL, solution = NULL, 
     tests = NULL, options = list(eval = FALSE, echo = TRUE, results = "markup", 
@@ -815,9 +849,11 @@ learnr:::store_exercise_cache(structure(list(label = "ex22", global_setup = stru
         message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
         engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
         max.print = 1000, exercise.eval = FALSE, label = "ex22", 
-        exercise = TRUE, code = c("", "## The data is preloaded in a variable called GPA.Data, when running this locally you will need to download the dataset from Canvas and load it", 
-        "", "", "", "## Create a linear model with only the centered version of IQ and Work.Ethic as predictors, save the model as gpa.mod1", 
-        "", "", "", "### Create a linear model with the centered version of IQ and Work.Ethic (gpa.mod2) AND the centered interaction term as predictors (gpa.mod3) ", 
+        exercise = TRUE, code = c("", "## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it", 
+        "", "", "## Run and save 3 models (`noisy.y` is outcome, `q` is predictor), interpret output along the way", 
+        "", "", "## Start with just a linear model", "", "", 
+        "## Then add a quadratic term using the `poly()` function in your `lm()` formula", 
+        "", "", "## Then a cubic term using the `poly()` function in your `lm()` formula", 
         "", "", "", "## Compare the models to see which one fits best (you need to make 3 comparisons)", 
         "", "", "", "## Make a plot of the fitted values of the best fitting model with the observed data as well", 
         "", "", "", "## Check assumptions of the best fitting model", 
