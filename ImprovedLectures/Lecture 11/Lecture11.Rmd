@@ -45,7 +45,7 @@ tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
 d_tibble <- tibble::tibble(
 user_id  = user_id, 
@@ -62,7 +62,17 @@ dbWriteTable(pool, "module11", d_tibble, append=TRUE, row.names = FALSE)}
 options(tutorial.event_recorder = new_recorder)
 
 ## exercise setup
+library(lmtest)
+library(lme4)
+library(lmerTest)
+##data
 politeness <- read.csv("data/politeness_data.csv", header=TRUE)
+## model 2
+mod.2<-lmer(frequency~attitude + (1|subject)+(1|scenario),data=politeness)
+## model 3
+mod.3<-lmer(frequency~attitude + gender + (1|subject)+(1|scenario),data=politeness)
+# model 4
+mod.4<-lmer(frequency~attitude + gender+ (1+attitude|subject)+(1+attitude|scenario),data=politeness,REML=FALSE)
 
 
 ```
@@ -81,8 +91,6 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
   </div>")
 ```
 
-
-In this tutorial, we'll learn about sampling theory.
 
 ### Outline
 
@@ -143,20 +151,17 @@ output$Q1 <- renderPlot({
 ```
 
 
-## Multiple and Mixed Model Regression
+## Multiple and Mixed Models
 
-### Multiple and Mixed Model Regression
- 
-<!-- Is this correct -->
-
-**Multiple**
+### **Multiple**
 
 $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 - One dependent variable Y predicted from **a set of** independent variables ($X_1, X_2, …X_k$)
 - One regression coefficient for each independent variable
 - $R^2:$ proportion of variation in dependent variable Y predictable by <u>**set of**</u> independent variables (X’s)
 
-**Mixed**
+
+### **Mixed**
 
 $$Y_i=b_{oj}+b_1X_{ij}+\epsilon_{ij}$$
 
@@ -168,8 +173,6 @@ $b_{1j}=b_1+u_{1j}$|<p style="color:Red;">Random slopes</p>
   - Groups, cohorts, schools, organizations, hospitals, etc.
 - We can include fixed and random effects to predict an outcome variable
 
-
-
 ### Data Types
 
 - Nested Data
@@ -180,11 +183,6 @@ $b_{1j}=b_1+u_{1j}$|<p style="color:Red;">Random slopes</p>
 
 
 <img src="images/predictors.png" style="max-width: 100%;" />
-
-
-
-
-
 
 ### Why should we use this? 
 
@@ -198,21 +196,21 @@ $b_{1j}=b_1+u_{1j}$|<p style="color:Red;">Random slopes</p>
   - MLMs can cope with missing data
 
   
-### Fixed effects vs random effects 
+## Fixed vs random effects 
 
-- Intercepts and slopes can be fixed or random
+### Intercepts and slopes can be fixed or random
   - In OLS regression they are fixed
   
-<img src="images/randomslopes.png" style="max-width: 100%;" />  
+<img src="images/randomslopes.png" style="max-width: 100%;"/>  
  
 
-- Fixed coefficients
+### Fixed coefficients
   - Intercepts/slopes are assumed to be the same across different contexts
   
-<img src="images/fixedslopes.png" style="max-width: 100%;" />
+<img src="images/fixedslopes.png" style="max-width: 100%;"/>
 
 
-- Random coefficients
+### Random coefficients
   - Intercepts/slopes are allowed to vary across different contexts
   
 <img src="images/mikado.png" style="max-width: 100%;" />
@@ -220,8 +218,7 @@ $b_{1j}=b_1+u_{1j}$|<p style="color:Red;">Random slopes</p>
 
 ### Fixed effects vs random effects
 
-
-!img src="images/4plots.png" style="max-width: 100%;" />
+<img src="images/4plots.png" style="max-width: 100%;" />
 
 [https://bookdown.org/steve_midway/DAR/random-effects.html#fixed-and-random-effects](https://bookdown.org/steve_midway/DAR/random-effects.html#fixed-and-random-effects)
 
@@ -244,37 +241,37 @@ $b_{1j}=b_1+u_{1j}$|<p style="color:Red;">Random slopes</p>
 Nakagawa, S., Johnson, P. C. D., & Schielzeth, H. (2017). The coefficient of determination R2 and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. Journal of The Royal Society Interface, 14(134), 20170213. doi: 10.1098/rsif.2017.0213
 
 
-### Interpreting Random Effects and Intraclass Correlation 
+### Interpreting Random Effects 
 
-- Random effects
+#### Random effects
+
   - Variance tells you how much variability between individuals in a group is explained relative to residual
   - SD tells you about between-person differences within the group
   - Corr – is correlation between slope and intercept 
 
+### Interpreting Intraclass Correlation
 
-- Intraclass correlation
+#### Intraclass correlation
   - Ratio of the random intercept variance (between-person) to the total variance, defined as the sum of the random intercept variance and residual variance (between + within).
   - Correlation coefficient of observations in the same cluster
   - Can tell you:
   - If mixed model is even necessary (if ICC is near 0, maybe not)
   - How much variation is explained due to clustering/grouping variable(s)
   - Compare how ICC changes with different changes to model
-
+  
 ### Running the model in R with random intercepts
 
-
-- Install the lme4 package and lmerTest package
+- Load the lme4 package and lmerTest package
 - Using the `lmer()` function we specify our model
   - `outcome ~ pred1 + (1|pred2)`
 - Where pred2 has multiple observations associated with some higher level group (e.g., participant, school, team)
 - Pred2 also isn’t necessarily something we are interested in using as a predictor, but we know it is having some influence on our outcome and we want to ‘control’ for that
 
-
+## Exercise 1
 
 ### Run a mixed model with random intercepts
 
-
-- Install and load the lme4 and lmerTest packages
+- Load the lme4 and lmerTest packages
 - Load the politeness data
 - Check out the politeness data set (get a summary, make some plots, etc.)
 - Make a prediction about the relationship between attitude and vocal frequency
@@ -285,20 +282,24 @@ Nakagawa, S., Johnson, P. C. D., & Schielzeth, H. (2017). The coefficient of det
 - Interpret the output 
 - Bonus: use `parameters::model_parameters()` function to get standardized coefficients
 
-
 ### Load packages and load politness data
-
- In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!  
-
-- Check out the politeness data set (get a summary, make some plots, etc.)
-- Make a prediction about the relationship between attitude and vocal frequency?
-
 ```{r ex11, exercise=TRUE}
+politeness <- read.csv("data/politeness_data.csv", header=TRUE)
 
+## Load the lme4 and lmerTest packages
+
+
+
+## Load the politeness data
+##(stored in the data folder)
+
+
+
+## Check out the politeness data set 
+## (get a summary, make some plots, etc.)
 
 ```
 ```{r ex11-hint}
-politeness <- read.csv("~/Teaching/Statistics in R/Stats II CSAI Fall 2021/Data sets/politeness_data.csv")
 summary(politeness)
 #attitude - inf = informal
 #attitude - pol = polite
@@ -310,48 +311,54 @@ summary(politeness)
 
 
 
-### Run a mixed effects model to predict vocal frequency from attitude while allowing random intercepts for subject and scenario
-- Remember to add these to the equation (1|pred)
-
-
+### Run a mixed effects model 
 ```{r ex13, exercise=TRUE}
+
+## Make a prediction about the relationship between
+## attitude and vocal frequency
+
+
+
+## Run a mixed effects model to predict vocal frequency 
+## from attitude while allowing random 
+## intercepts for subject and scenario.
+## Save your model in a variable called mod.2!
+
+
+
+## Remember to add these to the equation (1|pred)
+
+
+
+## Get $R^2$ values using `performance()` function
+
+
+
+## Generate and inspect the random intercepts using `coef(yourmodelhere)`
+
+
+## Interpret the output 
+
+
+## Bonus: use `parameters::model_parameters()` function to get standardized coefficients
+
 
 
 ```
 ```{r ex13-hint}
 mod.2<-lmer(frequency~attitude + (1|subject)+(1|scenario),data=politeness)
 summary(mod.2)
-
+performance(mod.2)
+coef(mod.2)
+summary(mod.2)
 
 ```
 ```{r ex13-check}
 #store
 ```
 
-### Do additional statistics
 
-- Get $R^2$ values using `performance()` function
-- Generate and inspect the random intercepts using `coef(yourmodelhere)`
-- Interpret the output 
-
-```{r ex14, exercise=TRUE}
-
-
-```
-```{r ex14-hint}
-performance(mod.2)
-coef(mod.2)
-summary(mod.2)
-# Marginal R-squared is the variance described by the fixed effects
-# Conditional R-squared is the variance described by the fixed AND random effects together
-```
-```{r ex14-check}
-#store
-```
-
-
-### Repeat the same mixed model with random intercepts and new predictor
-
+### Exercise 2
 - Make a prediction about the relationship between attitude and vocal frequency and gender and vocal frequency
 - Run a mixed effects model to predict vocal frequency from attitude and gender while allowing random intercepts for subject and scenario
   - Remember to add these to the equation (1|pred)
@@ -361,10 +368,42 @@ summary(mod.2)
 - Interpret the output
 - Bonus: use parameters::model_parameters() function to get standardized coefficients
 
-
-### Make a prediction about the relationship between attitude and vocal frequency and gender and vocal frequency
-
+### Repeat the same mixed model with random intercepts and a new predictor
 ```{r ex12, exercise=TRUE}
+
+## Make a prediction about the relationship between attitude and vocal frequency and gender and vocal frequency
+
+
+
+## Run a mixed effects model to predict vocal frequency 
+## from attitude and gender while allowing random 
+## intercepts for subject and scenario
+## Save your model in a variable called mod.3!
+
+
+
+
+## Remember to add these to the equation (1|pred)
+
+
+
+## Get R2 values using performance() function
+
+
+
+## Generate the random intercepts using coef(yourmodelhere)
+
+
+
+## Compare mod.2 and mod.3 using AIC, BIC, -2LL, ANOVA
+
+
+
+## Interpret the output
+
+
+
+## Bonus: use parameters::model_parameters() function to get standardized coefficients
 
 
 ```
@@ -372,25 +411,7 @@ summary(mod.2)
 #plot(politeness$frequency,politeness$gender)
 boxplot(frequency~attitude*gender,col=c('white','lightgray'),politeness)
 
-#What if we try a regular linear model?
-mod.1<-lm(frequency~gender+attitude,data=politeness)
-summary(mod.1)
 
-```
-```{r ex12-check}
-#store
-```
-
-### Run a mixed effects model to predict vocal frequency from attitude and gender while allowing random intercepts for subject and scenario
-
-- Remember to add these to the equation (1|pred)
-
-```{r ex15, exercise=TRUE}
-
-
-```
-```{r ex15-hint}
-#Run our second mixed model with random intercepts for subject and scenario adding gender
 mod.3<-lmer(frequency~attitude + gender + (1|subject)+(1|scenario),data=politeness)
 summary(mod.3)
 performance(mod.3)
@@ -398,33 +419,9 @@ coef(mod.3)
 anova(mod.2,mod.3)
 compare_performance(mod.2,mod.3)
 plot(compare_performance(mod.2,mod.3))
-```
-```{r ex15-check}
-#store
-```
-
-### Preform additional statistics
-
-- Get R2 values using performance() function
-- Generate the random intercepts using coef(yourmodelhere)
-- Compare the 2 models using AIC, BIC, -2LL, ANOVA
-- Interpret the output
-
-```{r ex16, exercise=TRUE}
-
 
 ```
-```{r ex16-hint}
-#Run our second mixed model with random intercepts for subject and scenario adding gender
-
-performance(mod.3)
-coef(mod.3)
-anova(mod.2,mod.3)
-compare_performance(mod.2,mod.3)
-plot(compare_performance(mod.2,mod.3))
-summary(mod.3)
-```
-```{r ex16-check}
+```{r ex12-check}
 #store
 ```
 
@@ -433,7 +430,7 @@ summary(mod.3)
 ### Running the model in R with random intercepts and slopes
 
 
-- Install the lme4 package and lmerTest package
+- Load the lme4 package and lmerTest package
 - Using the `lmer()` function we specify our model
   - `outcome ~ pred + (1+pred|pred2)`
 - Telling R to expect the slope to vary for the fixed effect (pred) as a function of pred2
@@ -446,8 +443,9 @@ summary(mod.3)
   - Model 1 LL – Model 2 LL
 
 
-### Exercise: Run a  mixed model with random intercepts and slopes
+## Exercise 4
 
+### Run a  mixed model with random intercepts and slopes
 - Run a mixed effects model to predict vocal frequency from attitude and gender while allowing random intercepts for subject and scenario and random slopes based on attitude
   - Remember to add these to the equation (1+pred|pred2)
 - Get $R^2$ values using `performance()` function
@@ -455,12 +453,32 @@ summary(mod.3)
 - Compare the 2 models
 - Interpret the output
 
-
-### Run a mixed effects model 
-- to predict vocal frequency from attitude and gender while allowing random intercepts for subject and scenario and random slopes based on attitude
-  - Remember to add these to the equation (1+pred|pred2)
-
+### Run a mixed model with random intercepts and slopes
 ```{r ex21, exercise=TRUE}
+## Run a mixed effects model to predict vocal frequency 
+## from attitude and gender while allowing random intercepts 
+## for subject and scenario and random slopes based on attitude
+## Save your model in a variable called mod.4!
+
+
+
+## Remember to add these to the equation (1+pred|pred2)
+
+
+
+## Get $R^2$ values using `performance()` function
+
+
+
+## Generate the random intercepts and slopes using `coef(yourmodelhere)`
+
+
+
+## Compare mod.3 and mod.4
+
+
+
+## Interpret the output
 
 
 ```
@@ -468,22 +486,39 @@ summary(mod.3)
 #Model with random intercepts and random slopes
 mod.4<-lmer(frequency~attitude + gender+ (1+attitude|subject)+(1+attitude|scenario),data=politeness,REML=FALSE)
 summary(mod.4)
-
-
+performance(mod.4)
+coef(mod.4)
+anova(mod.3,mod.4)
+plot(compare_performance(mod.3,mod.4))
 
 ```
 ```{r ex21-check}
 #store
 ```
 
-### Preform additional statistics:  
-
+### Perform additional statistics:  
 - Get $R^2$ values using `performance()` function
 - Generate the random intercepts and slopes using `coef(yourmodelhere)`
 - Compare the 2 models
 - Interpret the output
 
+### Perform additional statistics:  
 ```{r ex22, exercise=TRUE}
+
+## Get $R^2$ values for mod.4 using the `performance()` function
+
+
+
+## Generate the random intercepts and slopes for mod.4 using `coef(yourmodelhere)`
+
+
+
+## Compare mod.3 and mod.4
+
+
+
+## Interpret the output
+
 
 
 ```
@@ -499,8 +534,7 @@ plot(compare_performance(mod.3,mod.4))
 ```
 
 
-
-### Should it be fixed or random?
+## Fixed or random?
 
 - Rules of thumb for random effects
   - Include random intercepts for all ‘control’ variables (subject ID, school, observation number, teamID, etc. )
@@ -535,19 +569,22 @@ Barr, D. J., Levy, R., Scheepers, C., & Tily, H. J. (2013). Random effects struc
 <img src="images/influenceanalysis.png" style="max-width: 100%;" />
 
 
-### Exercise: Check your assumptions for mod.3
+## Exercise 3 
 
-- Linearity and homoscedasticity of the model
-- Normality of residuals
-- Influential data points
-  - Try `plot(hatvalues(mod.3))` and see if there is a cut-off you would use to exclude the potentially influential values from the model
-  - Figure out a way to find that/those values from the dataset (in a new object) and re-run model without these points
+### Check your assumptions for mod.3
 
-
-
-### Check Linearity and homoscedasticity of the model
 
 ```{r ex31, exercise=TRUE}
+
+## Check the following for mod.3:
+
+
+## Linearity and homoscedasticity of the model
+
+
+
+## Normality of residuals
+
 
 
 ```
@@ -556,34 +593,24 @@ Barr, D. J., Levy, R., Scheepers, C., & Tily, H. J. (2013). Random effects struc
 #Check linearity and homoscedasticity
 plot(fitted(mod.3),residuals(mod.3), pch=20)
 abline(a=0,b=0, lty=2)
+hist(residuals(mod.3))
+car::qqPlot(residuals(mod.3))
 
 ```
 ```{r ex31-check}
 #store
 ```
 
-### Check Normality of residuals
-
-```{r ex32, exercise=TRUE}
-
-
-```
-```{r ex32-hint}
-#Check normality of residuals
-hist(residuals(mod.3))
-car::qqPlot(residuals(mod.3))
-
-```
-```{r ex32-check}
-#store
-```
 
 ### Infulental data points 
 
-- Try plot(hatvalues(mod.3)) and see if there is a cut-off you would use to exclude the potentially influential values from the model
+- Try to plot(hatvalues(mod.3)) and see if there is a cut-off you would use to exclude the potentially influential values from the model
 
 
 ```{r ex33, exercise=TRUE}
+
+## The model is stored in a variable called mod.3
+
 
 
 ```
@@ -607,6 +634,9 @@ ggplot(data.frame(lev=hatvalues(mod.3),pearson=residuals(mod.3,type="pearson")),
 
 
 ```{r ex34, exercise=TRUE}
+
+## The model is stored in a variable called mod.3
+
 
 
 ```
