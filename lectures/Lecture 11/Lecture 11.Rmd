@@ -11,15 +11,30 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+library(pool)
+
+library(gvlma)
+library(lme4)
+library(lmtest)
+library(emmeans)
+library(rockchalk)
+library(interactions)
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -29,9 +44,7 @@ tutorial_options(exercise.eval = FALSE)
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-
-  
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -40,12 +53,25 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(pool, "module11", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+## exercise setup
+yerkes.dods <- read.csv("data/yerkes.dods.csv", header=TRUE)
+cub <- read.csv("data/cub.csv", header=TRUE)
+GPA.Data <- read.csv("data/GPA.DATA.csv", header=TRUE)
+
+mod.lin<-lm(perf~arous,data=yerkes.dods)
+mod.quad<-lm
+gpa.mod1<-lm(GPA~IQ+Work.Ethic,data=GPA.Data)
+gpa.mod2<-lm(GPA~IQ+Work.Ethic+IQ,data=GPA.Data)
+summary(gpa.mod2)
+gpa.mod3<-lm(GPA~IQ*Work.Ethic,data=GPA.Data)
+summary(gpa.mod3)
+
+
 ```
 
 ## 1. Introduction
@@ -67,20 +93,53 @@ Mixed models, Multilevel 	models, random coefficient 	regression models, hierarc
 - Random Slopes 
 - Assumptions
 
-
-### What do you know about sampling so far?
+## Quiz
 
 ### Question 1
+
 ```{r Quiz1,  echo=FALSE}
-question("What type of sampling is most commonly used in university settings?",
-    answer("Snowball", correct = TRUE),
-    answer("Convenience"),
-    answer("Random"),
-    answer("Volunteer"),
-    answer("Opportunity"),
-    incorrect = "Hint: Try again, you can pick another answer!",
-    allow_retry = TRUE
+  question("Which of the following would be a good coding system to use for categorical regression when you want to ensure your sample reflects the distribution of a group in the population?",
+    answer("Dummy coding"),
+    answer("Unweighted effects"),
+    answer("Contrast coding"),
+    answer("Weighted effects", correct = TRUE),
+    allow_retry = FALSE
     )
+```
+
+### Results
+
+#### 1. Which of the following would be a good coding system to use for categorical regression when you want to ensure your sample reflects the distribution of a group in the population?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module11")
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Weighted effects", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
 ```
 
 
