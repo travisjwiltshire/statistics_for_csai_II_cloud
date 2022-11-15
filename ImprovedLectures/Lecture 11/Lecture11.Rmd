@@ -452,7 +452,7 @@ summary(mod.2)
 ```
 
 
-### Exercise 2
+## Exercise 2
 - Make a prediction about the relationship between attitude and vocal frequency and gender and vocal frequency
 - Run a mixed effects model to predict vocal frequency from attitude and gender while allowing random intercepts for subject and scenario
   - Remember to add these to the equation (1|pred)
