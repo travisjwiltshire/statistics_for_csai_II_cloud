@@ -30,6 +30,7 @@ library(lmtest)
 library(emmeans)
 library(rockchalk)
 library(interactions)
+library(performance)
 
 pool <- dbPool(
   drv = RMySQL::MySQL(),
