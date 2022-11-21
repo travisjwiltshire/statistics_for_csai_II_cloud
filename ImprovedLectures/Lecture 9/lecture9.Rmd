@@ -116,7 +116,7 @@ output$Q1 <- renderPlot({
   
   data <- dbGetQuery(pool, "SELECT * FROM module9")
   
-  answers <- subset(data, data$label == "Quiz1",)
+  answers <- subset(data, data$label == "exercise_submission",)
   answers[answers==""] <- NA
   answers <- na.omit(answers)
 
