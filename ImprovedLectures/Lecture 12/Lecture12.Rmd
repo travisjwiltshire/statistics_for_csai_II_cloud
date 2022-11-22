@@ -315,10 +315,11 @@ $$Y_{ij}=\color{red}{\beta_{0i}}+\color{green}{\beta_{1i}}*Time_j+\epsilon_{ij}$
 - Load the ChickWeight data: data(ChickWeight)
 - Check out the data set (look at data frame, get a summary)
 - Using `lmer()`
-- Make and save a base model: weight ~ Time + (1|Chick), REML=F
-  - Next: weight ~ Time + Diet + (1|Chick), REML=F
-  - Next: weight ~ Time * Diet + (1|Chick), REML=F
+- Make and save a base model: `weight ~ Time + (1|Chick), REML=F`
+  - Next: `weight ~ Time + Diet + (1|Chick), REML=F`
+  - Next: `weight ~ Time * Diet + (1|Chick), REML=F`
 - Use `anova()` to compare all three models (you can enter all three at once)
+  - You could also use `test_performance()` from the `performance` package
 - Generate a summary of the best fitting model and interpret
 - Now add the random slopes for Time to the model and compare it to your best fitting model from before
 
@@ -330,7 +331,7 @@ $$Y_{ij}=\color{red}{\beta_{0i}}+\color{green}{\beta_{1i}}*Time_j+\epsilon_{ij}$
 
 ```{r ex1_1, exercise=TRUE}
 ## Load the lme4 and lmerTest packages
-
+## These are already loaded in the browswer based tutorial
 
 
 
