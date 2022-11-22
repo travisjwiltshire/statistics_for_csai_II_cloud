@@ -22,7 +22,7 @@ library(scales)
 library(RMariaDB)
 library(DBI)
 library(pool)
-library(performance)
+
 
 pool <- dbPool(
   drv = RMySQL::MySQL(),
@@ -61,6 +61,7 @@ require(lme4)
 require(lmerTest)
 require(ggplot2)
 require(Rcpp)
+library(performance)
 ## data ex.1
 data(ChickWeight)
 ## models ex.1
