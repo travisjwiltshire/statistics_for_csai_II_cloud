@@ -200,7 +200,7 @@ output$Q2 <- renderPlot({
 
 ### Question 3
 
-```{r Quiz2,  echo=FALSE}
+```{r Quiz3,  echo=FALSE}
   question("Which of the following is true regarding growth curve modeling and mixed effects modeling?",
     answer("Growth curve models do not feature random slopes or random intercepts"),
     answer("Growth curve models use both latent and observed variables to look at trajectories of change over time"),
