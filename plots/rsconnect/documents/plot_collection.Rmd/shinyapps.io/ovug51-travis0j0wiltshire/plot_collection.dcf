@@ -1,0 +1,13 @@
+name: plot_collection
+title: plot_collection
+username:
+account: ovug51-travis0j0wiltshire
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7825191
+bundleId: 6598138
+url: https://travisjwiltshire.shinyapps.io/plot_collection/
+when: 1670314555.2992
+lastSyncTime: 1670314555.2992
+asMultiple: FALSE
+asStatic: FALSE
