@@ -22,18 +22,24 @@ library(ggplot2)
 library(scales)
 library(RMariaDB)
 library(DBI)
-library(ggwordcloud)
+library(pool)
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
 d_tibble <- tibble::tibble(
 user_id  = user_id, 
@@ -45,11 +51,9 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(conn, "module2", d_tibble, append=TRUE, row.names = FALSE)}
-
+dbWriteTable(pool, "module2", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
-
 
 ## exercise setup
 pop<-base::letters[1:10]
@@ -437,7 +441,7 @@ output$Q5 <- renderPlot({
 - Create a variable called pop that includes the letters a-j
 - Create a variable called samp1 by sampling the population using the sample() function
 - Create a variable called samp2 by sampling the population using the sample() function with replacement
-- Try to figure out how to add a bias to your sample that only draws the ‘black’ letters  a, b, g, and h and then make a samp3 variable with the biased sample.
+- Try to figure out how to add a bias to your sample that only draws the ‘black’ letters  a, b, g, and h and then make a samp3 variable with the biased sample. Remember that in sample(x, size, replace = FALSE, prob = NULL), prob stands for  a vector of probability weights for obtaining the elements of the vector being sampled.
 
 **Remember: Figure 10.2**
 
@@ -447,11 +451,27 @@ output$Q5 <- renderPlot({
 #Create a variable called pop that includes the letters a-j
 
 
+# Create a variable called samp1 by sampling the population using the sample() function
+# to find out more you can type ?sample and run code to get help
+
+#Create a variable called samp2 by sampling the population using the sample() function with replacement
+
+
+#Try to figure out how to add a bias to your sample that only draws the ‘black’ letters  a, b, g, and h and then make a samp3 variable with the biased sample.
 ```
 ```{r ex1-hint}
 #Use base function letters and select 1:10 (j is 10. letter)
 pop<-base::letters[1:10]
+
+samp1<-sample(pop,size=4,replace=FALSE)
+
+samp2<-sample(pop,size=4,replace=TRUE)
+
+bias<-c(1,1,0,0,0,0,1,1,0,0) #add a bias to letters a,b,g,h
+samp3<-sample(pop,size=4,prob = bias,replace=FALSE)
+
 ```
+
 ```{r ex1-check}
 #store
 ```
@@ -590,12 +610,33 @@ IQ.1 <- round(rnorm(n=100, mean=100, sd=15))
 IQ.2 <- round(rnorm(n=1000,mean=100,sd=15 ))
 IQ.3 <- round(rnorm(n=10000,mean=100,sd=15))
 
+### 2. Look at the means and standard deviations
+
+
+### Make a plot of the three means, you can try creating plot by using function `plot()`
+
 ```
 ```{r ex21-hint}
 #Generate three random variables with different sample sizes from a normal distribution
 IQ.1 <- round(rnorm(n=100, mean=100, sd=15))
 IQ.2 <- round(rnorm(n=1000,mean=100,sd=15 ))
 IQ.3 <- round(rnorm(n=10000,mean=100,sd=15))
+
+#Use pre built functions mean(),  sd()
+mean(IQ.1)
+sd(IQ.1)
+mean(IQ.2)
+sd(IQ.2)
+mean(IQ.3)
+sd(IQ.3)
+
+plot(c(mean(IQ.1),mean(IQ.2),mean(IQ.3)),type='l')
+
+
+### Make a plot of the three standard deviations 
+# Remember that in sample(x, size, replace = FALSE, prob = NULL), prob stands for  a vector of probability weights for obtaining the elements of the vector being sampled.
+
+plot(c(sd(IQ.1),sd(IQ.2),sd(IQ.3)),type='l')
 ```
 ```{r ex21-check}
 #store
@@ -618,6 +659,7 @@ mean(IQ.2)
 sd(IQ.2)
 mean(IQ.3)
 sd(IQ.3)
+
 ```
 ```{r ex22-check}
 #store
@@ -694,7 +736,21 @@ Plot a histogram for each of these
 
 ```{r ex31, exercise=TRUE}
 #Use a loop to create more samples
-
+x<-NULL
+for (i in 1:100){
+  x[i]<-round(rnorm(n=10000,mean=100,sd=15))
+}
+hist(x, freq=FALSE,col='gray')
+x<-NULL
+for (i in 1:1000){
+  x[i]<-round(rnorm(n=10000,mean=100,sd=15))
+}
+hist(x, freq=FALSE,col='gray')
+x<-NULL
+for (i in 1:10000){
+  x[i]<-round(rnorm(n=10000,mean=100,sd=15))
+}
+hist(x, freq=FALSE,col='gray')
 
 ```
 ```{r ex31-hint}
@@ -725,7 +781,8 @@ And Plot a histogram for each of these
 
 You can do this by using `hist()` function included in R.
 ```{r ex32, exercise=TRUE}
-#You could use mean(round(rnorm(n=5,mean=100,sd=15) in a for loop. Do it for 100 samples here:
+
+### Calculate the sampling distribution of the mean for 100, 1000, and 10000 samples with size 5
 
 
 ```
@@ -736,8 +793,19 @@ for (i in 1:100){
   x[i]<-round(rnorm(n=5,mean=100,sd=15))
 }
 hist(x, freq=FALSE,col='gray')
+#You could use mean(round(rnorm(n=5,mean=100,sd=15) in a for loop. Do it for 1000 samples here:
+x<-NULL
+for (i in 1:1000){
+  x[i]<-round(rnorm(n=5,mean=100,sd=15))
+}
+hist(x, freq=FALSE,col='gray')
 
 
+x<-NULL
+for (i in 1:10000){
+  x[i]<-round(rnorm(n=5,mean=100,sd=15))
+}
+hist(x, freq=FALSE,col='gray')
 
 ```
 ```{r ex32-check}
@@ -909,13 +977,12 @@ hist(x, freq=FALSE,col='gray')
 Run the code to find lower and upper limit:
 
 ```{r qnorm, exercise=TRUE}
-#This is two tailed z test distribution
-qnorm( p = c(.025, .975) )
+#This is two tailed z test distribution .. use qnorm
 
 ```
 ```{r qnorm-hint}
-#You could use mean(round(rnorm(n=5,mean=100,sd=15) in a for loop. Do it for 100 samples here:
 
+qnorm( p = c(.025, .975) )
 
 
 ```
@@ -990,12 +1057,34 @@ In this online coding environment the libraries are pre-installed However, do no
  
  
 ```{r ex80, exercise=TRUE}
-#Call datasets with function data() and load libraries with library()
+#datasets are preloaded, cakk them 'discoveries' and 'trees'
+head(trees)
+
+#Find values for mean, SD, and both confidence intervals(95% and 99%) for tree grith
+
+
+#Find mean, sd and both confidence intervals for tree height
+
+#Find mean, sd and both confidence intervals for tree volume
+
+
 ```
 ```{r ex80-hint}
 library('datasets')
 data("discoveries")
 data('trees')
+
+#calculate required values
+mean(trees$Girth)
+sd(trees$Girth)
+ciMean(x=trees$Girth,conf=.95)
+ciMean(x=trees$Girth,conf=.99)
+
+mean(trees$Height)
+sd(trees$Height)
+ciMean(x=trees$Height,conf=.95)
+ciMean(x=trees$Height,conf=.99)
+
 ```
 ```{r ex80-check}
 #store
@@ -1174,85 +1263,42 @@ sd(disc_samp4)
 In this online coding environment the packages you need are pre-installed and loaded. Don't forget to install and load the packages you need.
 
 ```{r ex61, exercise=TRUE}
-require(tigerstats)
+library(tigerstats)
 data(FakeSchool)
+
+### Set a seed to be able to replicate random samples
+#With setting a seed you ensure random alghoritm will be the same every time you run it
+
+
+### Generate a simple random sample of size 7 and store it in a variable called simplerandomsample
+
+
+### Check the mean GPA of the population and store it in a variable called mean.pop
+
+### Check the mean GPA of the simple random sample 
+
+
+
 
 ```
 ```{r ex61-hint}
-#You could use mean(round(rnorm(n=5,mean=100,sd=15) in a for loop. Do it for 100 samples here:
+
 if (!require('tigerstats')) install.packages('tigerstats')
 require(tigerstats)
 data(FakeSchool)
 
-
-```
-```{r ex61-check}
-#store
-```
-
-### Set a seed to be able to replicate random samples
-
-```{r ex62, exercise=TRUE}
-#With setting a seed you ensure random alghoritm will be the same every time you run it
-
-```
-```{r ex62-hint}
 #With setting a seed you ensure random alghoritm will be the same every time you run it
 set.seed(23325)
 
-```
-```{r ex62-check}
-#store
-```
-
-### Generate a simple random sample of size 7 and store it in a variable called simplerandomsample
-
-```{r ex63, exercise=TRUE}
-#Use popsamp and FakeSchool data
-popsamp
-
-```
-```{r ex63-hint}
-#Use popsamp and FakeSchool data
 simplerandomsample<-popsamp(7,FakeSchool)
-simplerandomsample
 
-```
-```{r ex63-check}
-#store
-```
-
-### Check the mean GPA of the population and store it in a variable called mean.pop
-
-```{r ex64, exercise=TRUE}
-#Use FakeSchool data to find mean and create variable: mean.pop
-
-```
-```{r ex64-hint}
-#Use FakeSchool data to find mean and create variable: mean.pop
 mean.pop<- mean(FakeSchool$GPA)
-mean.pop
 
-```
-```{r ex64-check}
-#store
-
-```
-### Check the mean GPA of the simple random sample 
-
-It's the sample you generated in part 3 of this exercise.
-
-```{r ex65, exercise=TRUE}
-#Use randomsample from previous data to create variable: mean.srs
-
-```
-```{r ex65-hint}
 #Use randomsample from previiys data to create variable: mean.srs
 mean.srs<- mean(simplerandomsample$GPA)
-mean.srs
 
 ```
-```{r ex65-check}
+```{r ex61-check}
 #store
 ```
 
@@ -1278,7 +1324,21 @@ mean.srs
 - Here it might be a problem of multiple solutions
 
 ```{r ex69, exercise=TRUE}
-#There are many commands that can give you desired answer
+#There are many commands that can help you inspect data
+
+
+# Remember `popsamp()` function? If not run code: `??popsamp`
+# To solve this exercise you need to combine two samples(honor-non honor) and combine them
+##Create a sample of size 7 that proportionally represents the honors and non-honors students in the population.
+#honors
+
+#non honors
+
+
+# Combine the two samples to create sample that proportionally represents the distribution of honor/non-honor population and calculate GPA mean
+
+
+
 
 ```
 ```{r ex69-hint}
@@ -1289,73 +1349,23 @@ summary(FakeSchool)
 psych::describeBy(FakeSchool,FakeSchool$Honors)
 
 set.seed(1837)
+
 honors=subset(FakeSchool,Honors=="Yes")
-honors
+honors.samp=popsamp(3,honors)
+
+
+nonhonors=subset(FakeSchool,Honors=="No") 
+nonhonors.samp=popsamp(4,nonhonors) 
+
+stratifiedsample<-rbind(honors.samp,nonhonors.samp)
+stratifiedsample.mean<-mean(stratifiedsample$GPA)
+stratifiedsample.mean
 
 ```
 ```{r ex69-check}
 #store
 ```
 
-### Create a sample 
-
- **Create a sample of size 7 that proportionally represents the honors and non-honors students in the population.**
-
-Remember `popsamp()` function? If not run code: `??popsamp`
-To solve this exercise you need to combine two samples(honor-non honor) and combine them
-
-```{r ex66, exercise=TRUE}
-#Create honors subset
-
-```
-```{r ex66-hint}
-#Create honors subset
-
-set.seed(1837)
-honors=subset(FakeSchool,Honors=="Yes")
-honors.samp=popsamp(3,honors)
-honors.samp
-```
-```{r ex66-check}
-#store
-```
-
-### Non-honors subset
-
-```{r ex67, exercise=TRUE}
-#Create non-honors subset
-
-```
-```{r ex67-hint}
-#Create non-honors subset
-
-set.seed(1837)
-nonhonors=subset(FakeSchool,Honors=="No") 
-nonhonors.samp=popsamp(4,nonhonors) 
-nonhonors.samp
-
-```
-```{r ex67-check}
-#store
-```
-
-### Combine the two samples 
-
-Combine the two samples to create sample that proportionally represents the distribution of honor/non-honor population and calculate GPA mean
-
-```{r ex68, exercise=TRUE}
-#Create non-honors subset
-?rbind
-```
-```{r ex68-hint}
-#Create non-honors subset
-stratifiedsample<-rbind(honors.samp,nonhonors.samp)
-stratifiedsample.mean<-mean(stratifiedsample$GPA)
-stratifiedsample.mean
-```
-```{r ex68-check}
-#store
-```
 
 
 ## Exercise 4
@@ -1377,6 +1387,14 @@ In this online coding environment it’s not needed to load libraries, because t
 
 ```{r ex71, exercise=TRUE}
 #100 samples and plot a histogram
+head(FakeSchool)
+
+#1000 samples
+
+#10000 samples
+
+### Calculate mean and confidence interval of sampling distribution of the means from the 3 sample sets(100, 1000, 10000) that you've just created
+
 ```
 ```{r ex71-hint}
 #100 samples
@@ -1386,14 +1404,6 @@ for (i in 1:100){
   x.100[i]<-mean(srs$GPA)
 }
 hist(x.100, freq=FALSE,col='gray')
-```
-```{r ex71-check}
-#store
-```
-```{r ex72, exercise=TRUE}
-#1000 samples and plot a histogram
-```
-```{r ex72-hint}
 #1000 samples
 x.1000<-NULL
 for (i in 1:1000){
@@ -1401,14 +1411,6 @@ for (i in 1:1000){
   x.1000[i]<-mean(srs$GPA)
 }
 hist(x.1000, freq=FALSE,col='gray')
-```
-```{r ex72-check}
-#store
-```
-```{r ex73, exercise=TRUE}
-#10000 samples and plot a histogram
-```
-```{r ex73-hint}
 #10000 samples
 x.10000<-NULL
 for (i in 1:10000){
@@ -1416,46 +1418,16 @@ for (i in 1:10000){
   x.10000[i]<-mean(srs$GPA)
 }
 hist(x.10000, freq=FALSE,col='gray')
-```
-```{r ex73-check}
-#store
-```
 
-### Calculate mean and confidence interval of sampling distribution of the means from the 3 sample sets(100, 1000, 10000) that you've just created
-
-```{r ex74, exercise=TRUE}
-#100 samples dataset mean and confidence interval
-```
-```{r ex74-hint}
 #100 samples dataset mean and confidence interval
 mean(x.100)
 ciMean(x.100)
 ```
-```{r ex74-check}
+```{r ex71-check}
 #store
 ```
-```{r ex75, exercise=TRUE}
-#1000 samples dataset mean and confidence interval
-```
-```{r ex75-hint}
-#1000 samples dataset mean and confidence interval
-mean(x.1000)
-ciMean(x.1000)
-```
-```{r ex75-check}
-#store
-```
-```{r ex76, exercise=TRUE}
-#10000 samples dataset mean and confidence interval
-```
-```{r ex76-hint}
-#10000 samples dataset mean and confidence interval
-mean(x.10000)
-ciMean(x.10000)
-```
-```{r ex76-check}
-#store
-```
+
+
 
 
 ## Conclusion

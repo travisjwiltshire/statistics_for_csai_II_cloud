@@ -14,25 +14,34 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-## libraries1
+## libraries
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+library(RMariaDB)
+library(DBI)
+library(pool)
+
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
-g_tibble <- tibble::tibble(
+d_tibble <- tibble::tibble(
 user_id  = user_id, 
 event = event,
 label = data$label,
@@ -41,12 +50,18 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
-
-}
+## send to mysql
+dbWriteTable(pool, "module7", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
+# exercise setup
+albumsales2<-read.delim(file="data/Album Sales 2.dat",header=TRUE)
+library(psych)
+library(QuantPsyc)
+library(gvlma)
+library(performance)
+library(MASS)
 ```
 
 ## Introduction
@@ -75,7 +90,151 @@ What we will cover today:
 
 ## Quiz
 
-add
+
+
+### Question 1
+
+```{r Quiz1,  echo=FALSE}
+  question("Which of the following models shows orthogonal polynomial regression with a quadratic term?",
+    answer("`lm(affect ~ stress + I(stress^2))`"),
+    answer("`lm(affect ~ stress * performance)`"),
+    answer("`lm(affect ~ poly(stress, 2) + performance)`", correct = TRUE),
+    answer("`lm(affect ~ poly(stress, 3) + performance)`"),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 1. Which of the following models shows orthogonal polynomial regression with a quadratic term?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module7")
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "`lm(affect ~ poly(stress, 2) + performance)`", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+### Question 2
+
+```{r Quiz2,  echo=FALSE}
+  question("Which of the following is the most accurate interpretation of intra-class correlation (ICC) in mixed modeling?",
+    answer("How much variation in the model is due to random effects", correct = TRUE),
+    answer("How correlated the random effects are with the fixed effects"),
+    answer("How much variation in the model is due to the fixed effects"),
+    answer("How much correlation there is between the random intercepts and random slopes"),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 2. Which of the following is the most accurate interpretation of ICC in mixed modeling?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module7")
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "How much variation in the model is due to random effects", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
+### Question 3
+
+```{r Quiz3,  echo=FALSE}
+  question("Which of the following is true regarding growth curve modeling and mixed effects modeling?",
+    answer("Growth curve models do not feature random slopes or random intercepts"),
+    answer("Growth curve models use both latent and observed variables to look at trajectories of change over time"),
+    answer("Mixed effects models cannot capture the growth of variables over time"),
+    answer("Growth curve modeling is a form of mixed modeling that focuses on modeling the shape over time", correct = TRUE),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 3. Which of the following is true regarding growth curve modeling and mixed effects modeling?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module7")
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Growth curve modeling is a form of mixed modeling that focuses on modeling the shape over time", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
 
 
 ## Simple vs. Multiple Regression
@@ -227,6 +386,8 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 <img src="images/albumsalesregression.png" 
      style="max-width: 100%;" />
 
+## Exercise
+
 ### Run a regression on Album sales 2 data
 
 - Load the Album Sales 2.dat file into R.
@@ -237,7 +398,16 @@ $$Y_i=b_0+b_1X_2+b_2X_2+ ...+b_nX_n+\epsilon_i$$
 - Generate beta estimates and confidence intervals for your b/beta estimates using `confint()`
 - Interpret the results
 
+**Compare model fit**
 
+- We often want to know if the model with more variables is better, because parsimoniously modeling is preferred
+- Using anova (model 1, model 2)
+- Comparing AIC the Akaike Information Criterion using extractAIC()
+  - Smaller AIC values are better
+- Root mean square  error using performance() from performance package
+  - Square root of the variance of the residuals (an absolute measure of fit)
+  - Useful for models with aim of prediction 
+  - Smaller is better
 
 ### Load the Album Sales 2.dat and generate descriptive statistics
 
@@ -247,108 +417,65 @@ In this online coding environment it’s not needed to load the data, because th
 
 ```{r ex11, exercise=TRUE}
 # your code here
+head(albumsales2)
+
+#Make (and save) a simple linear model predicting albums sales from advertising
+
+#interpret the output
+
+# Make (and save) a multiple regression model prediction albums sales from advertising and airplay
+
+# Generate beta estimates and confidence intervals for your b/beta estimates using confint()
+
+# Generate confidence intervals for the standardized estimates .. - Use `lm.beta()` from QuantPsyc package
+
+# Compare model fit
+#Compare the improvement of fit for the models
+
+# Check out the AIC using extractAIC()
+
+# Do a quick global assessment of model assumptions using gvlma()
+
+# Try plot(compare_performance(mod1, mod2)) from performance package
+
 ```
 ```{r ex11-hint}
-albumsales2<-read.delim(file="Album Sales 2.dat",header=TRUE)
+
 psych::describe(albumsales2)#generate descriptives statistics
 cor(albumsales2)
 
+
+albumsales.1<-lm(sales~adverts,data=albumsales2)
+summary(albumsales.1)
+#Run a multiple linear regression model
+albumsales.2<-lm(sales~adverts+airplay,data=albumsales2)
+
+confint(albumsales.2)
+
+anova(albumsales.1,albumsales.2)
+
+extractAIC(albumsales.1)
+extractAIC(albumsales.2)
+
+
+check_model(albumsales.2)
+gvlma(albumsales.2)
+
+performance::compare_performance(albumsales.1,albumsales.2)
+plot(performance::compare_performance(albumsales.1,albumsales.2))
+#Generate confindence intervals for the model
+confint(albumsales.2)
 ```
 ```{r ex11-check}
 #store
 ```
 
-### Make (and save) a simple linear model predicting albums sales from advertising
-
-
-```{r ex12, exercise=TRUE}
-
-
-```
-```{r ex12-hint}
-albumsales.1<-lm(sales~adverts,data=albumsales2)
-summary(albumsales.1)
-```
-```{r ex12-check}
-#store
-```
-
-- Interpret the output
-
-### Make (and save) a multiple regression model prediction albums sales from advertising and airplay
-
-```{r ex13, exercise=TRUE}
-
-
-```
-```{r ex13-hint}
-#Run a multiple linear regression model
-albumsales.2<-lm(sales~adverts+airplay,data=albumsales2)
-summary(albumsales.2)
-```
-```{r ex13-check}
-#store
-```
-
-
-### Generate beta estimates and confidence intervals for your b/beta estimates using confint()
-
-```{r ex14, exercise=TRUE}
-
-
-```
-```{r ex14-hint}
-#Generate confindence intervals for the model
-confint(albumsales.2)
-```
-```{r ex14-check}
-#store
-```
-
-
-- Interpret the results
-
-
-### We want to know which b estimate is strongest
-
-- Generate standardized beta coefficients for your multiple regression model using `lm.beta()` from QuantPsyc package
-- Generate confidence intervals for the standardized estimates using `confint()`
 
 ### Generate standardized beta coefficients
 
 In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
 
 
-- Use `confint()`
-
-
-```{r ex15, exercise=TRUE}
-
-
-```
-```{r ex15-hint}
-#Generate confindence intervals for the model
-confint(albumsales.2)
-```
-```{r ex15-check}
-#store
-```
-
-### Generate confidence intervals for the standardized estimates 
-
-- Use `lm.beta()` from QuantPsyc package
-
-```{r ex16, exercise=TRUE}
-
-
-```
-```{r ex16-hint}
-#Generate confindence intervals for the model
-confint(albumsales.2)
-```
-```{r ex16-check}
-#store
-```
 
 
 ## Comparing models
@@ -470,93 +597,59 @@ plot(performance::compare_performance(albumsales.1,albumsales.2))
 - Then save a new model using the `stepAIC()` from the MASS package on that model and specify the direction
 - Use your-model-name-here$anova to get the results
 
-
-### Create a new model that has all predictors in the data
-
-```{r ex31, exercise=TRUE}
-#creaete variable albumsales4
-```
-```{r ex31-hint}
-
-albumsales.4<-lm(sales~adverts+airplay+attract,data=albumsales2)
-```
-```{r ex31-check}
-#store
-```
-
-### Save a new model using the `stepAIC()` from the MASS package on that model and specify the direction
-
-- Use your-model-name-here$anova to get the results
-
-```{r ex32, exercise=TRUE}
-
-
-```
-```{r ex32-hint}
-
-albumsales.5<-MASS::stepAIC(albumsales.4,direction='backward')
-albumsales.5$anova
-```
-```{r ex32-check}
-#store
-```
-
-### Evaluate and compare the final model to the last model
+**Evaluate and compare the final model to the last model**
 
 - Look at the summary of this model with all variables and interpret them
 - Generate standardized beta estimates and CIs
 - Compare this last model that includes all the variables to the one with only two of the predictors
 - Do check of the assumptions of the model both visual and with gvlma
 
-### Look at the summary of this model with all variables and interpret them
 
-```{r ex41, exercise=TRUE}
+### Create a new model that has all predictors in the data
+
+```{r ex31, exercise=TRUE}
+#create new model albumsales.4
+
+# Save a new model using the `stepAIC()` from the MASS package on that model and specify the direction
+
+# Evaluate and compare models - Look at the summary of this model with all variables and interpret them
+# Look at the summary of this model with all variables and interpret them
+
+#Generate confindence intervals for the model
+
+#Standardizing the coefs or variables
+
+# Compare this last model that includes all the variables to the one with only two of the predictors
 
 ```
-```{r ex41-hint}
+```{r ex31-hint}
+
+albumsales.4<-lm(sales~adverts+airplay+attract,data=albumsales2)
+
+albumsales.5<-MASS::stepAIC(albumsales.4,direction='backward')
+albumsales.5$anova
+
+albumsales.5<-MASS::stepAIC(albumsales.4,direction='backward')
+albumsales.5$anova
+
 summary(albumsales.5)
 
-```
-```{r ex41-check}
-#store
-```
-
-### Generate standardized beta estimates and CIs
-
-- Compare this last model that includes all the variables to the one with only two of the predictors
-
-```{r ex42, exercise=TRUE}
-
-```
-```{r ex42-hint}
 #Generate confindence intervals for the model
 confint(albumsales.5)
 
 #Standardizing the coefs
 QuantPsyc::lm.beta(albumsales.5)
 #or we can standardize the variables
-albumsales.5<-lm(scale(sales)~scale(adverts)+scale(airplay)+scale(attract),data=albumsales2)
+albumsales.6<-lm(scale(sales)~scale(adverts)+scale(airplay)+scale(attract),data=albumsales2)
+summary(albumsales.6)
+confint(albumsales.6)
 
-summary(albumsales.5)
-confint(albumsales.5)
-```
-```{r ex42-check}
-#store
-```
-
-
-### Compare this last model that includes all the variables to the one with only two of the predictors
-
-
-
-```{r ex43, exercise=TRUE}
+# Compare this last model that includes all the variables to the one with only two of the predictors
+gvlma(albumsales.6)
+performance::check_model(albumsales.6)
 
 ```
-```{r ex43-hint}
-gvlma(albumsales.5)
-performance::check_model(albumsales.5)
-```
-```{r ex43-check}
+```{r ex31-check}
 #store
 ```
 

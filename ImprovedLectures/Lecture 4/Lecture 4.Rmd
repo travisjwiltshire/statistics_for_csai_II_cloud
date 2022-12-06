@@ -22,18 +22,24 @@ library(ggplot2)
 library(scales)
 library(RMariaDB)
 library(DBI)
+library(pool)
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
 
-history = c("a")
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
 d_tibble <- tibble::tibble(
 user_id  = user_id, 
@@ -45,17 +51,18 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(pool, "module4", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
+
 
 ## exercise setup
 library(ppcor)
 #library(ggm)
 library(correlation)
 library(see)
-liar_data <- read.delim("The Biggest Liar.dat")
-exam_data2<-read.delim(file="Exam Anxiety.dat",header=TRUE)
+liar_data <- read.delim("data/The Biggest Liar.dat")
+exam_data2<-read.delim(file="data/Exam Anxiety.dat",header=TRUE)
 
 ```
 
@@ -363,33 +370,24 @@ $$r =\frac{ cov_{xy} }{s_{x}s_{y}}=\\ =\frac{ 4.25 }{1.67\times2.92 } = \\= .87$
 
 ### 1. Loading The Biggest Liar data
 
-Load the dataset and store it in a variable called liar_data.
+Load the dataset and store it in a variable called liar_data. In this online envionrment it also comes preloaded 
 
 
-```{r ex21, exercise=TRUE}
-liar_data <- read.delim("The Biggest Liar.dat")
+```{r ex1, exercise=TRUE}
+# liar_data <- read.delim("data/The Biggest Liar.dat")
+
+# Make a prediction about the relationship between position in the competition and creativity and test it using the `cor.test()` function. Use the spearman and kendall methods.
+
 ```
-```{r ex21-hint}
-
-liar_data <- read.delim("The Biggest Liar.dat")
-```
-```{r ex21-check}
-#store
-```
-
-### 2. Make a prediction about the relationship between position in the competition and creativity and test it using the `cor.test()` function. Use the spearman and kendall methods.
-
-```{r ex22, exercise=TRUE}
-#Your code here 
-```
-```{r ex22-hint}
+```{r ex1-hint}
 #Add exact argument to avoid warning
 cor.test(liar_data$Position, liar_data$Creativity,method="spearman", alternative = 'less', exact=FALSE)
 cor.test(liar_data$Creativity,liar_data$Position, method="kendall", alternative = 'less')
 ```
-```{r ex22-check}
+```{r ex1-check}
 #store
 ```
+
 
 ### Correlation and Causality
 
@@ -400,7 +398,7 @@ cor.test(liar_data$Creativity,liar_data$Position, method="kendall", alternative 
 
 Check [this out](https://tylervigen.com/discover) for some interesting spurious correlations
 
-![](images/casuality.png)
+![](images/causality.png)
 
 
 
@@ -421,8 +419,8 @@ Check [this out](https://tylervigen.com/discover) for some interesting spurious 
 
 Use for when you think that the confounding variable does not influence both variables.   
 
-<img src="images/corrconnection.png" 
-     style="max-width: 100%;" />
+![](images/corrconnection.png) 
+
 
 Need more details? Watch [this video](https://www.youtube.com/watch?v=OpAf4N582bA).
 
@@ -452,107 +450,76 @@ Need more details? Watch [this video](https://www.youtube.com/watch?v=OpAf4N582b
 
 ### 1. Run individual tests
 
-Store the data in a variable called exam_data2.
+Store the data in a variable called exam_data2. In this online enivonrnment data also comes pre-loaded under varaiable exam_data2
 
-```{r ex31, exercise=TRUE}
-library(ppcor)
-exam_data2 <-read.delim(file="Exam Anxiety.dat",header=TRUE)
+```{r ex2, exercise=TRUE}
+#library(ppcor)
+exam_data2 <-read.delim(file="data/Exam Anxiety.dat",header=TRUE)
+# Optional: create new data frames
 
-#Your code here
+# Run partial correlation test to see the relationship between exam score and revision time, while controlling for anxiety (use `pcor.test()`)
+
+#  Run a semi-partial correlation test to see the relationship between exam score and revision time, while controlling for the effect of anxiety on exam score only (use `spcor.test()`)
+
+# Test them all at once
+
+# Alternative methods
+
 ```
-```{r ex31-hint}
+```{r ex2-hint}
 pcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
 spcor.test(exam_data2$Revise,exam_data2$Exam,exam_data2$Anxiety)
-```
-```{r ex31-check}
-#store
-```
-
-### 2. Test them all at once
-
-```{r ex32, exercise=TRUE}
-library(ppcor)
-
-#Your code here
-```
-```{r ex32-hint}
-
 
 pcor(exam_data2)
 spcor(exam_data2)
-```
-```{r ex32-check}
-#store
-```
-
-### 3. Alternative methods
-
-```{r ex33, exercise=TRUE}
-#library(ggm)
 
 pc<-pcor(c("Exam","Anxiety","Revise"),var(exam_data2))
-pcor.test(pc,1,103) 
-
 #The 1 indicates we are only controlling for 1 variable, and the 103 is the sample size
+pcor.test(pc,1,103) 
 ```
-```{r ex33-hint}
-
-
-```
-```{r ex33-check}
+```{r ex2-check}
 #store
 ```
+
+
 
 ### Easystats: correlation package
 
 ![](images/easystats.png)
 
-### 1. Load packages
+### Load packages 
 
-```{r ex41, exercise=TRUE}
-library(correlation)
-library(dplyr)
-library(see)
-```
-```{r ex41-hint}
-#library pcor, spcor
+In this online envionrnment packages already come pre-loaded.
+
+```{r ex3, exercise=TRUE}
+
+# Use correlation
+
+# Plot results of correlation
+
+# Partial correlations
+
 
 ```
-```{r ex41-check}
-#store
-```
+```{r ex3-hint}
+#library pcor
+results <- correlation(exam_data2)
 
-### 2. Plot results
-
-```{r ex42, exercise=TRUE}
-#library pcor, spcor
-```
-```{r ex42-hint}
-results <- correlation(exam_data)
-results
 
 results %>%
   summary(redundant = TRUE) %>%
   plot()
-```
-```{r ex42-check}
-#store
-```
-
-### 3. Partial correlations
-
-```{r ex43, exercise=TRUE}
-#partial correlations
-```
-```{r ex43-hint}
 
 exam_data %>%
  correlation(partial=TRUE) %>%
 summary()
+
 ```
-```{r ex43-check}
+```{r ex3-check}
 #store
 ```
+
+
 
 ## Conculsion
 

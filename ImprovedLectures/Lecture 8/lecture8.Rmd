@@ -23,12 +23,6 @@ library(RMariaDB)
 library(DBI)
 library(pool)
 
-library(gvlma)
-library(lme4)
-library(lmtest)
-library(emmeans)
-library(rockchalk)
-library(interactions)
 
 pool <- dbPool(
   drv = RMySQL::MySQL(),
@@ -40,11 +34,11 @@ pool <- dbPool(
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
 d_tibble <- tibble::tibble(
 user_id  = user_id, 
@@ -60,8 +54,17 @@ dbWriteTable(pool, "module8", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
 
+
 ## exercise setup
 GPA.Data <- read.csv("data/GPA.DATA.csv", header=TRUE)
+library(performance)
+library(QuantPsyc)
+library(gvlma)
+library(lme4)
+library(lmtest)
+library(emmeans)
+library(rockchalk)
+library(interactions)
 ```
 
 
@@ -93,7 +96,7 @@ What we will cover today:
 
 ### Question 1
 
-```{r /Quiz1,  echo=FALSE}
+```{r, Quiz1,  echo=FALSE}
   question("What is the common goal of doing empirical work utilizing statistics in CSAI?",
     answer("Become famous"),
     answer("Earn a degree"),
@@ -346,37 +349,75 @@ $$Y_i=b_0+b_1X_2+b_2X_2+\color{red}{b_3X_1X_2}+\epsilon_i$$
 - Create a new interaction term with the centered IQ and Work.Ethic
 - Check out the correlation matrix now
 
-In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
-
-```{r ex1, exercise=TRUE}
-#The GPA dataset is stored in a variable called 'GPA.Data'
-
-
-```
-```{r ex1-hint}
-#
-
-```
-
-### Run multiple regression on the data
+**After that, run multiple regression on the data in same code chunk**
 
 - Create a linear model with only the centered version of IQ and Work.Ethic as predictors
   - Check out and interpret the summary of the model
-- Create a linear model with the centered version of IQ and Work.Ethic AND the centered interaction term as predictors 
+- Create a linear model with the centered version of IQ and Work.Ethic AND the centered interaction term as predictors
   - Check out and interpret the summary of the model
 - Compare the models to see which is the better fit
 - Get your standardized coefficients using lm.beta()
 - Do a global check and visual check of the assumptions for the model
 - Check out and interpret the summary of the model
 
-```{r ex21, exercise=TRUE}
+In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
 
+```{r ex1, exercise=TRUE}
+#The GPA dataset is stored in a variable called 'GPA.Data'
+head(GPA.Data)
+#  Create an interaction variable for IQ and Work.Ethic
+
+# Generate descriptive statistics for the data and interpret them
+
+# Generate correlation matrix and evaluate that
+
+# Center IQ and Work.Ethic (save these as new variables)
+
+# Create a new interaction term with the centered IQ and Work.Ethic
+
+### Create a linear model with only the centered version of IQ and Work.Ethic as predictors and inspect it
+
+# Create a linear model with the centered version of IQ and Work.Ethic AND the centered interaction term as predictors
+
+#Compare the models to see which is the better fit
+
+#Get your standardized coefficients using lm.beta()
+
+# Do a global check and visual check of the assumptions for the model
 ```
-```{r ex21-hint}
-#
+```{r ex1-hint}
+#  Create an interaction variable for IQ and Work.Ethic
+GPA.Data$IQ.WE.INT<-GPA.Data$IQ*GPA.Data$Work.Ethic #This one creates a multicollinearity problem
+## Generate descriptive statistics for the data and interpret them
+psych::describe(GPA.Data)
+# Generate correlation matrix and evaluate that
+cor(GPA.Data)
+### Center IQ and Work.Ethic (save these as new variables)
+GPA.Data$IQ.C <- scale(GPA.Data$IQ, center = TRUE, scale = FALSE)[,]
+GPA.Data$Work.Ethic.C <- scale(GPA.Data$Work.Ethic, center = TRUE, scale = FALSE)[,]
+GPA.Data$IQ.C <- as.numeric(scale(GPA.Data$IQ, center = TRUE, scale = FALSE))
+# Create a new interaction term with the centered IQ and Work.Ethic
+GPA.Data$IQ.WE.INT.c<-GPA.Data$IQ.C*GPA.Data$Work.Ethic.C #This one looks much better
+cor(GPA.Data)
+# Create a linear model with only the centered version of IQ and Work
 gpa.mod1<-lm(GPA~IQ.C+Work.Ethic.C,data=GPA.Data)
-summary(gpa.mod1)
+# Create a linear model with the centered version of IQ and Work.Ethic AND the centered interaction term as predictors
+gpa.mod2<-lm(GPA~IQ.C+Work.Ethic.C+IQ.WE.INT.c,data=GPA.Data)
+gpa.mod3<-lm(GPA~IQ.C*Work.Ethic.C,data=GPA.Data)
 
+#Compare the models to see which is the better fit
+anova(gpa.mod1,gpa.mod2)
+extractAIC(gpa.mod1)
+extractAIC(gpa.mod2) #Note how the AIC for this one is lower (more negative*)
+performance::performance(gpa.mod1)
+performance::performance(gpa.mod2)
+plot(performance::compare_performance(gpa.mod1,gpa.mod2))
+anova(gpa.mod2,gpa.mod3)
+#Get your standardized coefficients using lm.beta()
+QuantPsyc::lm.beta(gpa.mod3) #note that now I am using the mod3 using the *
+# Do a global check and visual check of the assumptions for the model
+gvlma(gpa.mod3)
+performance::check_model(gpa.mod3)
 ```
 
 
@@ -461,13 +502,33 @@ In this online coding environment it’s not needed to load the data, because th
 
 ```{r ex31, exercise=TRUE}
 #The GPA dataset is stored in a variable called 'GPA.Data'
+GPA.Data$IQ.C <- as.numeric(scale(GPA.Data$IQ, center = TRUE, scale = FALSE))
+GPA.Data$Work.Ethic.C <- scale(GPA.Data$Work.Ethic, center = TRUE, scale = FALSE)[,]
+GPA.Data$IQ.WE.INT.c<-GPA.Data$IQ.C*GPA.Data$Work.Ethic.C 
+gpa.mod1<-lm(GPA~IQ.C+Work.Ethic.C,data=GPA.Data)
+gpa.mod2<-lm(GPA~IQ.C+Work.Ethic.C+IQ.WE.INT.c,data=GPA.Data)
+gpa.mod3<-lm(GPA~IQ.C*Work.Ethic.C,data=GPA.Data)
 
+# Create IQ values at, and +/1 1 SD from the mean
 
+# Now examine the simple slopes of work ethic at the levels of IQ
+
+# Modify input for esting the simple slopes
 ```
 ```{r ex31-hint}
 #
-require(emmeans)
+library(emmeans)
 summary(GPA.Data$IQ.C)
+# Create IQ values at, and +/1 1 SD from the mean
+IQplus <- round(mean(GPA.Data$IQ.C) + sd(GPA.Data$IQ.C),1)
+IQ <- round(mean(GPA.Data$IQ.C),1)
+IQminus <-round(mean(GPA.Data$IQ.C) - sd(GPA.Data$IQ.C),1)
+mylist <- list(IQ.C=c(IQplus,IQ,IQminus) )
+# Now examine the simple slopes of work ethic at the levels of IQ
+emtrends(gpa.mod3,~IQ.C,var = "Work.Ethic.C", at=mylist)
+
+emtrends(gpa.mod3,pairwise ~IQ.C,var = "Work.Ethic.C" ,at=mylist,adjusts='none')
+
 
 ```
 
@@ -483,12 +544,24 @@ summary(GPA.Data$IQ.C)
 In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
 
 ```{r ex41, exercise=TRUE}
-#The GPA dataset is stored in a variable called 'GPA.Data'
+# Run this code before continuing exercise
+GPA.Data$IQ.C <- as.numeric(scale(GPA.Data$IQ, center = TRUE, scale = FALSE))
+GPA.Data$Work.Ethic.C <- scale(GPA.Data$Work.Ethic, center = TRUE, scale = FALSE)[,]
+GPA.Data$IQ.WE.INT.c<-GPA.Data$IQ.C*GPA.Data$Work.Ethic.C 
+gpa.mod1<-lm(GPA~IQ.C+Work.Ethic.C,data=GPA.Data)
+gpa.mod2<-lm(GPA~IQ.C+Work.Ethic.C+IQ.WE.INT.c,data=GPA.Data)
+gpa.mod3<-lm(GPA~IQ.C*Work.Ethic.C,data=GPA.Data)
+# Use `plotSlopes` to make a graph that shows the simple slopes for IQ.C
 
+## Use `interact_plot()` to make a graph that shows the simple slopes for IQ.C
 ```
 ```{r ex41-hint}
-#
-
+#Use `plotSlopes` to make a graph that shows the simple slopes for IQ.C
+gpa.simp<-plotSlopes(gpa.mod3,plotx='Work.Ethic.C',modx='IQ.C',modxVals='std.dev', legendTitle='IQ.C')
+gpa.simp<-plotSlopes(gpa.mod3,plotx='IQ.C',modx='Work.Ethic.C',modxVals='std.dev', legendTitle='IQ.C')
+## Use `interact_plot()` to make a graph that shows the simple slopes for IQ.C
+interact_plot(gpa.mod3, pred = Work.Ethic.C, modx = IQ.C)
+interact_plot(gpa.mod3, pred = IQ.C, modx = Work.Ethic.C)
 ```
 
 ### Data analysis of Dutch Lexicon Project

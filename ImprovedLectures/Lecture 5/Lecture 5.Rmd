@@ -22,16 +22,24 @@ library(ggplot2)
 library(scales)
 library(RMariaDB)
 library(DBI)
+library(pool)
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
 d_tibble <- tibble::tibble(
 user_id  = user_id, 
@@ -43,11 +51,15 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(conn, "module5", d_tibble, append=TRUE, row.names = FALSE)}
+dbWriteTable(pool, "module5", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
 
-## exercise setup
+## EXCERCISE SETUP
+albumsales1<-read.delim("data/Album Sales 1.dat",header=TRUE)
+exam_data<-read.delim(file="data/Exam Anxiety.dat",header=TRUE)
+library(ggplot2)
+library(QuantPsyc)
 
 ```
 
@@ -299,8 +311,8 @@ $$Y_i = b_0 +b_iX_i+\epsilon_i$$
 
 This graph shows a scatterplot of some data with a line representing the general trend. The vertical lines (dotted) represent the differences (or residuals) between the line and the actual data:
 
-<img src="images/lestsquares.png" 
-     style="max-width: 100%;" />
+![](images/lestsquares.png)
+
 
 ### How Good Is the Model?
 
@@ -310,8 +322,7 @@ This graph shows a scatterplot of some data with a line representing the general
 - **This model might not reflect reality.**
   - We need to test how well the model fits the observed data.
   
-<img src="images/regressionfigure.png" 
-     style="max-width: 100%;" />
+![](images/regressionfigure.png)
      
 
 
@@ -320,9 +331,7 @@ This graph shows a scatterplot of some data with a line representing the general
 
 Diagram showing from where the regression sums of squares derive:
 
-<img src="images/sumofsquares.png" 
-     style="max-width: 100%;" />
-
+![](images/sumofsquares.png)
 
 ### Standardized vs unstandardized regression coefficients
 
@@ -356,8 +365,7 @@ Diagram showing from where the regression sums of squares derive:
 ### Testing the Model: ANOVA
 
 
-<img src="images/testANOVA.png" 
-     style="max-width: 100%;" />
+![](images/testANOVA.png)
 
 If the model results in better prediction than using the mean, then we expect $SS_M$ to be much greater than $SS_R$
 
@@ -409,6 +417,8 @@ $$H_0: b=0$$
 $$H_1: b\neq0$$
 $$\hat{t}=\frac{\hat{b}}{SE(\hat{b})}$$
 
+## Exercises
+
 ### Regression in R
 
 - We run a regression analysis using the lm() function – lm stands for ‘linear model’. This function takes the general form:
@@ -426,9 +436,25 @@ In this online coding environment it’s not needed to load the data, because th
 
 ```{r ex11, exercise=TRUE}
 #Load the data 
+
+# Run a linear regression model on albumsales1
+
+# Make a nice plot
+
 ```
 ```{r ex11-hint}
-albumsales1<-read.delim("Album Sales 1.dat",header=TRUE)
+albumsales1<-read.delim("data/Album Sales 1.dat",header=TRUE)
+
+albumsalesmod1<-lm(sales~adverts,data=albumsales1)
+
+#standarize 
+QuantPsyc::lm.beta(albumsalesmod1)
+albumsalesmod2<-lm(scale(sales)~scale(adverts),data=albumsales1)
+summary(albumsalesmod2)
+
+# nice plot
+scatter <- ggplot(albumsales1, aes(adverts, sales))
+scatter + geom_point() + geom_smooth(method = "lm", colour = "salmon",alpha = 0.1, fill = "Red") + labs(title="Regression Example",x = "Amount Spent on Advertisement in units of ?1000",y = "Sales of CDs and Downloads")
 ```
 ```{r ex11-check}
 #store
@@ -459,15 +485,28 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 ### 2. Run a linear regression model
 
-```{r ex12, exercise=TRUE}
+```{r ex1, exercise=TRUE}
 #run linear regression model
 
+# Standardize the coefficients
+
+#nice plot using gg2
+
 ```
-```{r ex12-hint}
+```{r ex1-hint}
+
 albumsalesmod1<-lm(sales~adverts,data=albumsales1)
 summary(albumsalesmod1)
+
+#standarize coef QuantPsyc::lm.beta(albumsalesmod1)
+albumsalesmod2<-lm(scale(sales)~scale(adverts),data=albumsales1)
+summary(albumsalesmod2)
+
+#nice plot using gg2
+scatter <- ggplot(albumsales1, aes(adverts, sales))
+scatter + geom_point() + geom_smooth(method = "lm", colour = "salmon",alpha = 0.1, fill = "Red") + labs(title="Regression Example",x = "Amount Spent on Advertisement in units of ?1000",y = "Sales of CDs and Downloads")
 ```
-```{r ex12-check}
+```{r ex1-check}
 #store
 ```
 
@@ -480,39 +519,6 @@ summary(albumsalesmod1)
   - albumsalesmod2<-lm(scale(sales)~scale(adverts),data=albumsales1)
   - summary(albumsalesmod2)
   
-### 3. Standardizing the coefficients
-
-```{r ex13, exercise=TRUE}
-#standarize
-
-```
-```{r ex13-hint}
-
-QuantPsyc::lm.beta(albumsalesmod1)
-albumsalesmod2<-lm(scale(sales)~scale(adverts),data=albumsales1)
-summary(albumsalesmod2)
-
-```
-```{r ex13-check}
-#store
-```
-
-### 4. Make a nice plot
-
-```{r ex14, exercise=TRUE}
-#make a plot using ggplot2
-
-```
-```{r ex14-hint}
-
-require(ggplot2)
-scatter <- ggplot(albumsales1, aes(adverts, sales))
-scatter + geom_point() + geom_smooth(method = "lm", colour = "salmon",alpha = 0.1, fill = "Red") + labs(title="Regression Example",x = "Amount Spent on Advertisement in units of ?1000",y = "Sales of CDs and Downloads")
-
-```
-```{r ex14-check}
-#store
-```
 
 ### Making predictions with our Model
 
@@ -541,44 +547,27 @@ The amounts of money spent on advertising not only explained a significant 33% o
 
 ### 1. Load the data
 
- In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer!
+ In this online coding environment it’s not needed to load the data, because they are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer! It's saved under variable exam_data
 
 ### 1. Creating two variables
 
-```{r ex21, exercise=TRUE}
-#Require 
-```
-```{r ex21-hint}
+```{r ex2, exercise=TRUE}
+ 
+# exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
 
-exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
-```
-```{r ex21-check}
-#store
-```
+# Run a linear regression model
 
-### 2. Run a linear regression model
+# Make a nice plot
 
-```{r ex22, exercise=TRUE}
-#Require 
 ```
-```{r ex22-hint}
+```{r ex2-hint}
 
+# Run a linear regression mode
 exam_data$Exam <- as.numeric(exam_data$Exam)
 exam_datamod<-lm(Exam ~ Anxiety,data=exam_data)
 summary(exam_datamod)
-```
-```{r ex22-check}
-#store
-```
 
-### 3. Make a nice plot
-
-```{r ex23, exercise=TRUE}
-#make a plot, use ggplot2, and quantpsyc:: 
-```
-```{r ex23-hint}
-
-require(ggplot2)
+# Make a nice plot
 scatter <- ggplot(exam_data, aes(Anxiety, Exam))
 scatter + geom_point() + geom_smooth(method = "lm", colour = "salmon",alpha = 0.1, fill = "Red") + labs(title="Regression Exercise",x = "Anxiety about the Exam",y = "Exam Performance %")
 
@@ -586,10 +575,12 @@ QuantPsyc::lm.beta(exam_datamod)
 
 plot(exam_data$Anxiety,exam_data$Exam)
 abline(exam_datamod)
+
 ```
-```{r ex23-check}
+```{r ex2-check}
 #store
 ```
+
 
 
 ## Conclusion

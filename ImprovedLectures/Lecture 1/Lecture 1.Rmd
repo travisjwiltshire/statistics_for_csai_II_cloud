@@ -21,26 +21,24 @@ library(ggplot2)
 library(scales)
 library(RMariaDB)
 library(DBI)
-library(ggwordcloud)
-library(DBI)
 library(pool)
 
 
 pool <- dbPool(
-  drv = MariaDB(),
-  dbname = "p543343_Statistics2",
-  host = "91.184.19.135",
-  username = "p543343_admin",
-  password = "Stats_Admin1"
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
 )
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
-    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
   
 d_tibble <- tibble::tibble(
 user_id  = user_id, 
@@ -52,35 +50,13 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(pool, "module1", d_tibble, append=TRUE, row.names = FALSE)}
-
-
-tutorial_options(exercise.checker = function(
-  label,
-  user_code,
-  solution_code,
-  check_code,
-  envir_result,
-  evaluate_result,
-  envir_prep,
-  ...
-)
-  {
-  #Take all the variables that existed locally in the code block's environment
-  vars <- ls(envir = envir_result, all = TRUE)
-  for (i in 1:length(vars)){
-    #We need to make sure the following two variables are not changed:
-      #And add the local variables to the global environment, so that future code blocks can use this code.
-      assign(vars[i], get(vars[i]), envir = .GlobalEnv)
-  }
- 
-})
-
+dbWriteTable(pool, "module12", d_tibble, append=TRUE, row.names = FALSE)}
 
 options(tutorial.event_recorder = new_recorder)
 
+## EXCERCISE SETUP
 
-## exercise setup
+
 ```
 
 ## Introduction
@@ -123,8 +99,7 @@ What we will cover today:
  
 ### About me
      
-<img src="images/foundation.png" 
-     style="max-width: 100%;" />
+<img src="images/foundation.png" style="max-width: 100%;" />
 
 
 **Dr. Steve M. Fiore:**
@@ -364,7 +339,6 @@ plotOutput("Q1")
 ```
 
 ```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
-
 output$Q1 <- renderPlot({
   
   data <- dbGetQuery(pool, "SELECT * FROM module1")

@@ -23,13 +23,6 @@ library(RMariaDB)
 library(DBI)
 library(pool)
 
-library(gvlma)
-library(lme4)
-library(lmtest)
-library(emmeans)
-library(rockchalk)
-library(interactions)
-
 pool <- dbPool(
   drv = RMySQL::MySQL(),
   dbname = "statistics_II",
@@ -61,6 +54,14 @@ dbWriteTable(pool, "module10", d_tibble, append=TRUE, row.names = FALSE)}
 options(tutorial.event_recorder = new_recorder)
 
 ## exercise setup
+library(MASS)
+library(gvlma)
+library(lme4)
+library(lmtest)
+library(emmeans)
+library(rockchalk)
+library(interactions)
+
 yerkes.dods <- read.csv("data/yerkes.dods.csv", header=TRUE)
 cub <- read.csv("data/cub.csv", header=TRUE)
 GPA.Data <- read.csv("data/GPA.DATA.csv", header=TRUE)
@@ -72,6 +73,7 @@ gpa.mod2<-lm(GPA~IQ+Work.Ethic+IQ,data=GPA.Data)
 summary(gpa.mod2)
 gpa.mod3<-lm(GPA~IQ*Work.Ethic,data=GPA.Data)
 summary(gpa.mod3)
+
 
 
 ```
@@ -240,7 +242,7 @@ Euler, M. J., Wiltshire, T. J., Niermeyer, M. A., & Butner, J. E. (2016). Workin
 - Interpret the results
 
 
-```{r ex11, exercise=TRUE}
+```{r ex1, exercise=TRUE}
 ## The data is preloaded in a variable called yerkes.dods, when running this locally you will need to download the dataset from Canvas and load it
 
 
@@ -263,7 +265,7 @@ Euler, M. J., Wiltshire, T. J., Niermeyer, M. A., & Butner, J. E. (2016). Workin
 
 
 ```
-```{r ex11-hint}
+```{r ex1-hint}
 
 # Inspect the data
 psych::describe(yerkes.dods)
@@ -298,9 +300,11 @@ summary(mod.quad)
 - Now check out if you have any problems with multicollinearity (you may need to manually create the quadratic variable)
 
 
-```{r ex15, exercise=TRUE}
+```{r ex2, exercise=TRUE}
 
 ## Compare your models stored in the variables mod.lin and mod.quad using `anova()` and AIC
+mod.lin<-lm(perf~arous,data=yerkes.dods)
+mod.quad<-lm(perf~arous+I(arous^2),data=yerkes.dods)
 
 
 ## Which model fits better?
@@ -313,7 +317,7 @@ summary(mod.quad)
 
 
 ```
-```{r ex15-hint}
+```{r ex2-hint}
 anova(mod.lin,mod.quad)
 extractAIC(mod.lin)
 extractAIC(mod.quad)
@@ -348,10 +352,10 @@ performance::check_model(mod.quad)
 - Inspect the data and generate descriptives (this is simulated data)
 - Make a scatterplot
 
-```{r ex21, exercise=TRUE}
+```{r ex3, exercise=TRUE}
 
 ## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it
-
+head(cub)
 
 
 ## Inspect the data and generate descriptives (this is simulated data)
@@ -363,7 +367,7 @@ performance::check_model(mod.quad)
 
 
 ```
-```{r ex21-hint}
+```{r ex3-hint}
 #
 head(cub)
 
@@ -383,10 +387,10 @@ plot(cub$q,cub$noisy.y)
 - Make a plot of the fitted values of the best fitting model with the observed data as well
 - Check assumptions of the best fitting model
 
-```{r ex22, exercise=TRUE}
+```{r ex4, exercise=TRUE}
 
 ## The data is preloaded in a variable called cub, when running this locally you will need to download the dataset from Canvas and load it
-
+head(cub)
 
 ## Run and save 3 models (`noisy.y` is outcome, `q` is predictor), interpret output along the way
 
@@ -412,9 +416,9 @@ plot(cub$q,cub$noisy.y)
 ## Check assumptions of the best fitting model
 
 ```
-```{r ex22-hint}
+```{r ex4-hint}
 #
-mod2.lin<-lm(noisy.y~q)#Refer to dataset in these if you load it
+mod2.lin<-lm(noisy.y~q, data=cub)#Refer to dataset in these if you load it
 summary(mod2.lin)
 
 mod2.quad<-lm(noisy.y~poly(q,2))

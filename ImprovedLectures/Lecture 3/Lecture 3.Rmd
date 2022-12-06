@@ -18,23 +18,52 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyr)
 library(dplyr)
+library(ggplot2)
+library(scales)
+library(RMariaDB)
+library(DBI)
+library(pool)
 
-# no quizzes here yet?
 
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "statistics_II",
+  host = "185.57.8.99",
+  username = "admin",
+  password = "SeamlessAdmin2022!"
+)
 
-## exercise setup
-library(lsr)
+## options
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
-ads<-c(5,4,4,6,8)
-packets<-c(8,9,10,13,15)
-std_ads<-scale(ads)
-std_packets<-scale(packets)
-cov(std_ads,std_packets)
-exam_data<-read.delim(file="Exam Anxiety.dat",header=TRUE)
+## recording data
+new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
+    cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", append = TRUE)
+  
+d_tibble <- tibble::tibble(
+user_id  = user_id, 
+event = event,
+label = data$label,
+correct = data$correct,
+question = data$question,
+answer = data$answer
+  )
+
+## send to mysql
+dbWriteTable(pool, "module3", d_tibble, append=TRUE, row.names = FALSE)}
+
+options(tutorial.event_recorder = new_recorder)
+
+#exercuse setup
+library(BSDA)
+library(psych)
+exam_data=read.delim("data/Exam Anxiety.dat")
+
 
 ```
 
-## 1. Introduction
+## Introduction
 
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
 ## HEADER ###
@@ -55,7 +84,152 @@ What we will cover today:
 1. Hypothesis Testing Revisited
 2. Correlation
 
-## 2. Hypothesis testing
+## Quiz
+
+### Question 1
+
+```{r Quiz1,  echo=FALSE}
+  question("Which of the following models shows orthogonal polynomial regression with a quadratic term?",
+    answer("`lm(affect ~ stress + I(stress^2))`"),
+    answer("`lm(affect ~ stress * performance)`"),
+    answer("`lm(affect ~ poly(stress, 2) + performance)`", correct = TRUE),
+    answer("`lm(affect ~ poly(stress, 3) + performance)`"),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 1. Which of the following models shows orthogonal polynomial regression with a quadratic term?
+
+```{r, Quiz1O, echo = FALSE}
+plotOutput("Q1")
+```
+
+```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q1 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module3")
+  
+  answers <- subset(data, data$label == "Quiz1",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "`lm(affect ~ poly(stress, 2) + performance)`", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+### Question 2
+
+```{r Quiz2,  echo=FALSE}
+  question("Which of the following is the most accurate interpretation of intra-class correlation (ICC) in mixed modeling?",
+    answer("How much variation in the model is due to random effects", correct = TRUE),
+    answer("How correlated the random effects are with the fixed effects"),
+    answer("How much variation in the model is due to the fixed effects"),
+    answer("How much correlation there is between the random intercepts and random slopes"),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 2. Which of the following is the most accurate interpretation of ICC in mixed modeling?
+
+```{r, Quiz2O, echo = FALSE}
+plotOutput("Q2")
+```
+
+```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q2 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module12")
+  
+  answers <- subset(data, data$label == "Quiz2",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "How much variation in the model is due to random effects", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
+### Question 3
+
+```{r Quiz3,  echo=FALSE}
+  question("Which of the following is true regarding growth curve modeling and mixed effects modeling?",
+    answer("Growth curve models do not feature random slopes or random intercepts"),
+    answer("Growth curve models use both latent and observed variables to look at trajectories of change over time"),
+    answer("Mixed effects models cannot capture the growth of variables over time"),
+    answer("Growth curve modeling is a form of mixed modeling that focuses on modeling the shape over time", correct = TRUE),
+    allow_retry = FALSE
+    )
+```
+
+### Results
+
+#### 3. Which of the following is true regarding growth curve modeling and mixed effects modeling?
+
+```{r, Quiz3O, echo = FALSE}
+plotOutput("Q3")
+```
+
+```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+
+output$Q3 <- renderPlot({
+  
+  data <- dbGetQuery(pool, "SELECT * FROM module12")
+  
+  answers <- subset(data, data$label == "Quiz3",)
+  answers[answers==""] <- NA
+  answers <- na.omit(answers)
+
+  answers_count <- as.data.frame(answers %>% 
+  count(answer))
+  total_n = nrow(answers)
+  answers_count$percentage <- (answers_count$n/total_n)*100
+  answers_count$correct <- ifelse(answers_count$answer == "Growth curve modeling is a form of mixed modeling that focuses on modeling the shape over time", "Correct", "Incorrect")
+
+  ggplot(answers_count,
+         aes(x = percentage,
+             y = answer,
+             fill=correct
+             )
+         ) +
+    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
+    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+})
+```
+
+
+## Hypothesis testing
 
 ### What is a hypothesis? 
 
@@ -103,47 +277,27 @@ In this online coding environment it’s not needed to load the data, because th
 
 ```{r ex11, exercise=TRUE}
 #Require BSDA
-require(BSDA)
+
+# Generate a vector from a random normal distribution with a certain mean and standard deviation
+
+
+# Generate a z statistic and results
+
 ```
 ```{r ex11-hint}
+
+#code to generate a vector from a random normal distribution with a certain
+#mean and standard deviation
+x<-rnorm(n=30,mean=55.4,sd=5)
+
+# Generate a z statistic and results
+
+z.test(x=x,sigma.x=20,mu=50,conf.level=0.95,alternative='greater')
 
 ```
 ```{r ex11-check}
 #store
 ```
-
-### 1. Code to generate a vector from a random normal distribution with a certain mean and standard deviation
-
-
-
-```{r ex12, exercise=TRUE}
-#code to generate a vector from a random normal distribution with a certain
-#mean and standard deviation
-
-```
-```{r ex12-hint}
-#code to generate a vector from a random normal distribution with a certain
-#mean and standard deviation
-x<-rnorm(n=30,mean=55.4,sd=5)
-```
-```{r ex12-check}
-#store
-```
-
-### 2. Code to generate a z statistic and results
-```{r ex13, exercise=TRUE}
-#code to generate a z statistic and results
-
-```
-```{r ex13-hint}
-#code to generate a z statistic and results
-z.test(x=x,sigma.x=20,mu=50,conf.level=0.95,alternative='greater')
-
-```
-```{r ex13-check}
-#store
-```
-
 
 
 
@@ -157,7 +311,7 @@ $$t-statistic=\frac{\overline{x}-\mu_{0}}{\frac{S}{\sqrt{n}}}$$
 
 ## T-test in R
 
-1. Use your vector in R from a normal distribution with mean of 55.4, n=30,sd=5.
+1. Again, create a vector in R from a normal distribution with mean of 55.4, n=30,sd=5.
 2. Check out the arguments for the `t.test()` function
 3. Come up with a null hypothesis and alternative hypothesis regarding your randomly generated vector using the following population parameter: H0 : μ0 = 50
 4. Use the `t.test()` function to test your hypothesis
@@ -172,6 +326,8 @@ $$t-statistic=\frac{\overline{x}-\mu_{0}}{\frac{S}{\sqrt{n}}}$$
 ```
 ```{r ex14-hint}
 # code to generate a t statistic and results
+x<-rnorm(n=30,mean=55.4,sd=5)
+
 t.test(x=x,mu=50,conf.level=0.95,alternative='greater')
 ```
 ```{r ex14-check}
@@ -213,11 +369,12 @@ In this online coding environment it’s not needed to load the data, because th
 
 ```{r ex15, exercise=TRUE}
 #code to generate effect size sample
+head(sat.act)
 
 ```
 ```{r ex15-hint}
 # code to generate a effect size sample
-require(psych)
+library(psych)
 cohen.d(sat.act,"gender")
 cd <- cohen.d.by(sat.act,"gender","education") #Compound effect sizes
 summary(cd)  #summarize the output
@@ -241,7 +398,7 @@ summary(cd)  #summarize the output
 
 ![](images/testideas.png)
 
-## 3. Correlation 
+## Correlation 
 
 ### Outline
 
@@ -325,28 +482,24 @@ $cov_{x,y}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}\\=\frac{(-0.4)(-3)+(-1
 
 ### 1. Creating two variables
 
-```{r ex21, exercise=TRUE}
+```{r ex2, exercise=TRUE}
+## creatge variables
+
+# Calculate the covariance of two variables
+
+
 ```
-```{r ex21-hint}
+```{r ex2-hint}
 
 ads<-c(5,4,4,6,8)
 packets<-c(8,9,10,13,15)
-```
-```{r ex21-check}
-#store
-```
-
-### 2. Calculating the covariance of two variables
-```{r ex22, exercise=TRUE}
-#Require 
-```
-```{r ex22-hint}
 
 cov(ads,packets)
 ```
-```{r ex22-check}
+```{r ex2-check}
 #store
 ```
+
 
 ## Problems with Covariance
 
@@ -374,29 +527,32 @@ $r = \frac{ cov_{xy} }{s_{x}s_{y}}\\=\frac{4.25}{1.67 \times 2.29}\\= .87$
 ### Testing out standardization of variables
 ```{r ex23, exercise=TRUE}
 #Require 
+ads<-c(5,4,4,6,8)
+packets<-c(8,9,10,13,15)
+# Create new standardized variables
+
+
+
+### Calculate the correlation coefficients
+
+
 ```
 ```{r ex23-hint}
 
 std_ads<-scale(ads)
 std_packets<-scale(packets)
 cov(std_ads,std_packets)
+
+#correlation coefficients
+
+
+cor(ads,packets, method="pearson")
 ```
 ```{r ex23-check}
 #store
 ```
 
 
-### Calculating the correlation coefficients
-```{r ex24, exercise=TRUE}
-#Require 
-```
-```{r ex24-hint}
-cor(ads,packets, method="pearson")
-
-```
-```{r ex24-check}
-#store
-```
 
 
 ## Things to Know about the Correlation
@@ -439,6 +595,8 @@ What do these results suggest to you? Is the correlation between these variables
 ### Testing the correlation, obtaining a p-value and CIs and making a prediction about positive or negative relationships
 ```{r ex25, exercise=TRUE}
 #Require 
+ads<-c(5,4,4,6,8)
+packets<-c(8,9,10,13,15)
 ```
 ```{r ex25-hint}
 cor.test(ads,packets, method="pearson")
@@ -479,43 +637,27 @@ The exam anxiety dataset is pre-loaded in a variable called exam_data.
 In this online coding environment data and libraries are pre-loaded. However, do not forget to load the data and libraries when running R studio on your computer
 
 ```{r ex31, exercise=TRUE}
-exam_data
+#exam_data=read.delim("data/Exam Anxiety.dat")
+head(exam_data)
+
+# Relation between Revising and Anxiety
+
+# Generate a correlation matrix
+
+
 ```
 ```{r ex31-hint}
 cor.test(exam_data$Exam, exam_data$Anxiety, method = "pearson", alternative='less')
+### Relation between Revising and Anxiety
+cor.test(exam_data$Revise, exam_data$Anxiety, method = "pearson", alternative='less')
+#Generate a correlation matrix
+correlate(exam_data)
+
 ```
 ```{r ex31-check}
 #store
 ```
 
-### 2. Relation between Revising and Anxiety
-
-
-```{r ex32, exercise=TRUE}
-
-
-```
-```{r ex32-hint}
-cor.test(exam_data$Revise, exam_data$Anxiety, method = "pearson", alternative='less')
-```
-```{r ex32-check}
-#store
-```
-
-### 3. Generate a correlation matrix
-
-```{r ex33, exercise=TRUE}
-
-
-```
-```{r ex33-hint}
-
-require(lsr)
-correlate(exam_data)
-```
-```{r ex33-check}
-#store
-```
 
 
 ### Reporting results of a correlation
