@@ -1,5 +1,5 @@
 ---
-title: "Quizzes and Plots"
+title: "Quizzes from All Modules"
 author: Travis J. Wiltshire, Ph.D.
 output: 
   learnr::tutorial:
@@ -26,7 +26,7 @@ tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)
 
 ## Module one quiz
 
-### Questuon 1
+### Question 1
 ```{r Quiz2,  echo=FALSE}
   question("What is the common goal of doing empirical work utilizing statistics in CSAI?",
     answer("Become famous"),
