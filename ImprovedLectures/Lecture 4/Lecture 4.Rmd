@@ -20,34 +20,71 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
-library(DBI)
+## DB packages will be loaded conditionally
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+## Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+} else {
+  warning("rsconnect not installed; skipping writeManifest()")
+  message("rsconnect not installed; skipping writeManifest()")
+}
+
+## Toggle: enable/disable database features
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+## Establish connection conditionally
+conn <- NULL
+if (use_database) {
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
+    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135'), silent = TRUE)
+    if (inherits(conn, "try-error")) {
+      message("Database connection failed; disabling database features.")
+      use_database <- FALSE
+      conn <- NULL
+    }
+  } else {
+    message("DBI/RMariaDB not available; disabling database features.")
+    use_database <- FALSE
+  }
+}
 
 history = c("a")
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-d_tibble <- tibble::tibble(
-user_id  = user_id, 
-event = event,
-label = data$label,
-correct = data$correct,
-question = data$question,
-answer = data$answer
-  )
-
-## send to mysql
-dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)}
+  if (use_database && !is.null(conn)) {
+    d_tibble <- tibble::tibble(
+      user_id  = user_id, 
+      event = event,
+      label = data$label,
+      correct = data$correct,
+      question = data$question,
+      answer = data$answer
+    )
+    ## send to mysql
+    DBI::dbWriteTable(conn, "module4", d_tibble, append=TRUE, row.names = FALSE)
+  }
+}
 
 options(tutorial.event_recorder = new_recorder)
+
+## Clean up DB connection on session end
+if (use_database && !is.null(conn)) {
+  onStop(function() {
+    try(DBI::dbDisconnect(conn), silent = TRUE)
+  })
+}
 
 ## exercise setup
 library(ppcor)
@@ -114,35 +151,33 @@ What we will cover today:
 #### 1. How do you estimate the amount of overlap in variance between two variables using the correlation (r)?
 
 ```{r, Quiz1O, echo = FALSE}
-plotOutput("Q1")
+if (isTRUE(use_database)) {
+  plotOutput("Q1")
+}
 ```
 
 ```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q1 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module4")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz1",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q1 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module4")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz1")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Square it", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "Square it", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ### Question 2
@@ -163,35 +198,33 @@ perceived pain is .7. What size effect is this?",
 #### 2. An estimate of the the correlation between Scoville Heat Units in various chili peppers and perceived pain is .7. What size effect is this?
 
 ```{r, Quiz2O, echo = FALSE}
-plotOutput("Q2")
+if (isTRUE(use_database)) {
+  plotOutput("Q2")
+}
 ```
 
 ```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q2 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module4")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz2",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q2 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module4")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz2")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Large", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "Large", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ### Question 3
@@ -211,35 +244,33 @@ output$Q2 <- renderPlot({
 #### 3. The null hypothesis for a correlation test is which of the following?
 
 ```{r, Quiz3O, echo = FALSE}
-plotOutput("Q3")
+if (isTRUE(use_database)) {
+  plotOutput("Q3")
+}
 ```
 
 ```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q3 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module4")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz3",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q3 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module4")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz3")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "The correlation is equal to 0", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "The correlation is equal to 0", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ### Question 4
@@ -265,35 +296,33 @@ question("How glad are you to have the option to attend lectures on campus?",
 #### 4. How glad are you to have the option to attend lectures on campus?
 
 ```{r, Quiz4O, echo = FALSE}
-plotOutput("Q4")
+if (isTRUE(use_database)) {
+  plotOutput("Q4")
+}
 ```
 
 ```{r, Quiz4R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q4 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module4")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz4",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q4 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module4")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz4")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "Narrower", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ## 1. Correlation (revisited)

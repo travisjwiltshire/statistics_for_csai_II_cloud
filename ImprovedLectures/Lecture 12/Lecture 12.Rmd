@@ -15,17 +15,50 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 ## libraries1
 library(learnr)
-library(googlesheets4)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-gs4_auth()
-g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
+
+# Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+} else {
+  warning("rsconnect not installed; skipping writeManifest()")
+  message("rsconnect not installed; skipping writeManifest()")
+}
+
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+## Toggle: enable/disable database features (same as Lectures 1–6)
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+## Connect to database only when enabled and packages are available
+conn <- NULL
+if (use_database) {
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
+    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(),
+                               user = 'p543343_admin',
+                               password = 'Stats_Admin1',
+                               dbname = 'p543343_Statistics2',
+                               host = '91.184.19.135'),
+                silent = TRUE)
+    if (inherits(conn, "try-error")) {
+      message("Database connection failed; disabling database features.")
+      use_database <- FALSE
+      conn <- NULL
+    }
+  } else {
+    message("DBI/RMariaDB not available; disabling database features.")
+    use_database <- FALSE
+  }
+}
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
@@ -42,12 +75,21 @@ question = data$question,
 answer = data$answer
   )
 
-# write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
+  ## send to mysql when enabled
+  if (use_database && !is.null(conn)) {
+    DBI::dbWriteTable(conn, "module12", g_tibble, append = TRUE, row.names = FALSE)
+  }
 
 }
 
 options(tutorial.event_recorder = new_recorder)
+
+## Clean up DB connection on session end
+if (use_database && !is.null(conn)) {
+  onStop(function() {
+    try(DBI::dbDisconnect(conn), silent = TRUE)
+  })
+}
 ```
 
 ## Introduction
@@ -182,9 +224,7 @@ require(Rcpp)
 
 
 ```
-```{r ex11-check}
-#store
-```
+
 
 ### Check out the data set (look at data frame, get a summary)
 
@@ -197,9 +237,7 @@ require(Rcpp)
 data(ChickWeight)
 summary(ChickWeight)
 ```
-```{r ex12-check}
-#store
-```
+
 
 ### Using `lmer()` Make and save a base model
 
@@ -217,9 +255,7 @@ m.base <- lmer(weight ~ Time + (1 | Chick), data=ChickWeight, REML=F) #Unconditi
 m.0 <- lmer(weight ~ Time + Diet + (1 | Chick), data=ChickWeight, REML=F) #Fixed effects
 m.1 <- lmer(weight ~ Time * Diet + (1 | Chick), data=ChickWeight, REML=F) #Interaction
 ```
-```{r ex13-check}
-#store
-```
+
 
 
 ### Use anova() to compare all three models (you can enter all three at once)
@@ -232,9 +268,7 @@ m.1 <- lmer(weight ~ Time * Diet + (1 | Chick), data=ChickWeight, REML=F) #Inter
 ```{r ex14-hint}
 anova(m.base,m.0,m.1)
 ```
-```{r ex14-check}
-#store
-```
+
 
 
 ### Generate a summary of the best fitting model and interpret
@@ -249,9 +283,7 @@ performance::compare_performance(m.base,m.0,m.1)
 plot(performance::compare_performance(m.base,m.0,m.1))
 summary(m.1)
 ```
-```{r ex15-check}
-#store
-```
+
 
 
 ### Now add the random slopes for Time to the model and compare it to your best fitting model from before
@@ -267,10 +299,6 @@ m.t1 <- lmer(weight ~ Time * Diet + (1 + Time| Chick), data=ChickWeight, REML=F)
 anova(m.1,m.t1)
 summary(m.t1)
 ```
-```{r ex16-check}
-#store
-```
-
 
 
 
@@ -354,9 +382,7 @@ summary(m.t1)
 
 load("GrowthCurve_Examples.Rdata")
 ```
-```{r ex21-check}
-#store
-```
+
 
 ### Using TargetFix data 
 
@@ -373,9 +399,6 @@ load("GrowthCurve_Examples.Rdata")
 summary(TargetFix)
 t <- poly((unique(TargetFix$timeBin)), 3)
 TargetFix[,paste("ot", 1:3, sep="")] <- t[TargetFix$timeBin, 1:3]
-```
-```{r ex22-check}
-#store
 ```
 
 ### Run a series of unconditional models only using the increasing orthogonal polynomials and see which one fits best)
@@ -394,9 +417,6 @@ m.base2.un <- lmer(meanFix ~ ot1 + ot2 + (1+ot1 + ot2| Subject), data=TargetFix,
 m.base3.un <- lmer(meanFix ~ ot1 + ot2 + ot3 + (1 + ot1 + ot2 + ot3| Subject), data=TargetFix, REML=F)
 anova(m.base.un,m.base2.un,m.base3.un)
 summary(m.base3.un)
-```
-```{r ex23-check}
-#store
 ```
 
 
@@ -450,9 +470,6 @@ m.full <- lmer(meanFix ~ (ot1+ot2+ot3)*Condition +
 
 
 ```
-```{r ex31-check}
-#store
-```
 
 ### Generate the summary of the model and try to interpret it
 
@@ -472,9 +489,7 @@ ggplot(TargetFix, aes(Time, meanFix, color=Condition)) +
 last_plot() + stat_summary(aes(y=fitted(m.full)), fun.y=mean, geom="line")
 
 ```
-```{r ex32-check}
-#store
-```
+
 
 
 ## Reporting and Graphing

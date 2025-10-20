@@ -19,14 +19,41 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
-library(DBI)
+## DB packages conditionally used
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+## Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+} else {
+  warning("rsconnect not installed; skipping writeManifest()")
+  message("rsconnect not installed; skipping writeManifest()")
+}
+
+## Toggle: enable/disable database features
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+conn <- NULL
+if (use_database) {
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
+    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135'), silent = TRUE)
+    if (inherits(conn, "try-error")) {
+      message("Database connection failed; disabling database features.")
+      use_database <- FALSE
+      conn <- NULL
+    }
+  } else {
+    message("DBI/RMariaDB not available; disabling database features.")
+    use_database <- FALSE
+  }
+}
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
@@ -41,10 +68,20 @@ question = data$question,
 answer = data$answer
   )
 
-## send to mysql
-dbWriteTable(conn, "module6", d_tibble, append=TRUE, row.names = FALSE)}
+## send to mysql when enabled
+  if (use_database && !is.null(conn)) {
+    DBI::dbWriteTable(conn, "module6", d_tibble, append=TRUE, row.names = FALSE)
+  }
+}
 
 options(tutorial.event_recorder = new_recorder)
+
+## Clean up DB connection on session end
+if (use_database && !is.null(conn)) {
+  onStop(function() {
+    try(DBI::dbDisconnect(conn), silent = TRUE)
+  })
+}
 
 ## exercise setup
 
@@ -92,31 +129,26 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 #### 3. If you observeda-0.03 correlation between hours of daylight and mood, which are you most likely to include?
 
 ```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
+if (use_database && !is.null(conn)) {
+  output$Q1 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module6")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz1")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-output$Q1 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module6")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz1",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "Not enough information is provided.", "Correct", "Incorrect")
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Not enough information is provided.", "Correct", "Incorrect")
-
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ### Question 2

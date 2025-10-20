@@ -19,17 +19,44 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
-library(DBI)
-library(pool)
+## DB packages conditionally used
 
-pool <- dbPool(
-  drv = RMySQL::MySQL(),
-  dbname = "statistics_II",
-  host = "185.57.8.99",
-  username = "admin",
-  password = "SeamlessAdmin2022!"
-)
+## Toggle: enable/disable database features
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+if (use_database) {
+  if (!requireNamespace("DBI", quietly = TRUE) || !requireNamespace("pool", quietly = TRUE)) {
+    message("DBI/pool not available; disabling database features for plots.")
+    use_database <- FALSE
+  }
+}
+
+pool <- NULL
+if (use_database) {
+  ## Prefer RMariaDB if available, otherwise RMySQL
+  drv <- NULL
+  if (requireNamespace("RMariaDB", quietly = TRUE)) {
+    drv <- RMariaDB::MariaDB()
+  } else if (requireNamespace("RMySQL", quietly = TRUE)) {
+    drv <- RMySQL::MySQL()
+  }
+  if (!is.null(drv)) {
+    pool <- try(pool::dbPool(
+      drv = drv,
+      dbname = "statistics_II",
+      host = "185.57.8.99",
+      username = "admin",
+      password = "SeamlessAdmin2022!"
+    ), silent = TRUE)
+    if (inherits(pool, "try-error")) {
+      message("DB pool creation failed; disabling database features for plots.")
+      use_database <- FALSE
+      pool <- NULL
+    }
+  } else {
+    use_database <- FALSE
+  }
+}
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
@@ -49,9 +76,19 @@ answer = data$answer
   )
 
 ## send to mysql
-dbWriteTable(pool, "testing", d_tibble, append=TRUE, row.names = FALSE)}
+  if (use_database && !is.null(pool)) {
+    DBI::dbWriteTable(pool, "testing", d_tibble, append=TRUE, row.names = FALSE)
+  }
+}
 
 options(tutorial.event_recorder = new_recorder)
+
+## Clean up on stop
+if (use_database && !is.null(pool)) {
+  onStop(function() {
+    try(pool::poolClose(pool), silent = TRUE)
+  })
+}
 
 ```
 
@@ -73,16 +110,19 @@ question_text(
 
 ### Results: Where are you from?
 ```{r, Quiz1O, echo = FALSE}
-plotOutput("Q1")
+if (isTRUE(use_database)) {
+  plotOutput("Q1")
+}
 ```
 
 ```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q1 <- renderPlot({
+if (use_database && !is.null(pool)) {
+  output$Q1 <- renderPlot({
   
   library(ggwordcloud)
   ## Getting the data
-  data <- dbGetQuery(pool, "SELECT * FROM testing")
+    data <- DBI::dbGetQuery(pool, "SELECT * FROM testing")
   ## Cleaning the data
   answers <- subset(data, data$label == "Quiz1",)
   answers[answers==""] <- NA
@@ -104,7 +144,8 @@ output$Q1 <- renderPlot({
     geom_text_wordcloud_area() +
     scale_size_area(max_size = 24) +
     theme_minimal()
-})
+  })
+}
 ```
 
 ## Regular quizzes
@@ -125,14 +166,16 @@ output$Q1 <- renderPlot({
 ### Results: Which of the following models shows orthogonal polynomial regression with a quadratic term?
 
 ```{r, Quiz11O, echo = FALSE}
-plotOutput("Q11")
+if (isTRUE(use_database)) {
+  plotOutput("Q11")
+}
 ```
 
 ```{r, Quiz11R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q11 <- renderPlot({
-  
-  data <- dbGetQuery(pool, "SELECT * FROM testing")
+if (use_database && !is.null(pool)) {
+  output$Q11 <- renderPlot({
+    data <- DBI::dbGetQuery(pool, "SELECT * FROM testing")
   
   answers <- subset(data, data$label == "Quiz11",)
   answers[answers==""] <- NA
@@ -152,7 +195,8 @@ output$Q11 <- renderPlot({
          ) +
     geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
     xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+  })
+}
 ```
 
 ## Pictures in quizzes

@@ -19,6 +19,18 @@ library(learnr)
 library(tidyr)
 library(dplyr)
 
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+# Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+}
+
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
+
 # no quizzes here yet?
 
 

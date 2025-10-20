@@ -20,32 +20,68 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
-library(DBI)
+## DB packages conditionally used
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+## Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+} else {
+  warning("rsconnect not installed; skipping writeManifest()")
+  message("rsconnect not installed; skipping writeManifest()")
+}
+
+## Toggle: enable/disable database features
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+conn <- NULL
+if (use_database) {
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
+    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135'), silent = TRUE)
+    if (inherits(conn, "try-error")) {
+      message("Database connection failed; disabling database features.")
+      use_database <- FALSE
+      conn <- NULL
+    }
+  } else {
+    message("DBI/RMariaDB not available; disabling database features.")
+    use_database <- FALSE
+  }
+}
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-d_tibble <- tibble::tibble(
-user_id  = user_id, 
-event = event,
-label = data$label,
-correct = data$correct,
-question = data$question,
-answer = data$answer
-  )
-
-## send to mysql
-dbWriteTable(conn, "module5", d_tibble, append=TRUE, row.names = FALSE)}
+  if (use_database && !is.null(conn)) {
+    d_tibble <- tibble::tibble(
+      user_id  = user_id, 
+      event = event,
+      label = data$label,
+      correct = data$correct,
+      question = data$question,
+      answer = data$answer
+    )
+    ## send to mysql
+    DBI::dbWriteTable(conn, "module5", d_tibble, append=TRUE, row.names = FALSE)
+  }
+}
 
 options(tutorial.event_recorder = new_recorder)
+
+## Clean up DB connection on session end
+if (use_database && !is.null(conn)) {
+  onStop(function() {
+    try(DBI::dbDisconnect(conn), silent = TRUE)
+  })
+}
 
 ## exercise setup
 
@@ -104,35 +140,33 @@ HTML("  <div class='jumbotron jumbotron-fluid'>
 #### 1. Which of the following types of correlation would you use if you want to examine the relationship between x and y, while controlling for the relationship of z on both x and y?
 
 ```{r, Quiz1O, echo = FALSE}
-plotOutput("Q1")
+if (isTRUE(use_database)) {
+  plotOutput("Q1")
+}
 ```
 
 ```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q1 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module5")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz1",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q1 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module5")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz1")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Partial correlation", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "Partial correlation", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ### Question 2
@@ -152,35 +186,33 @@ output$Q1 <- renderPlot({
 #### 2. What correlation would be most appropriate for examining the relationship between ranking in a gaming competition and age, when the sample size is small?
 
 ```{r, Quiz2O, echo = FALSE}
-plotOutput("Q2")
+if (isTRUE(use_database)) {
+  plotOutput("Q2")
+}
 ```
 
 ```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q2 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module5")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz2",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q2 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module5")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz2")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Spearman correlaton", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "Spearman correlaton", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 
@@ -201,35 +233,33 @@ output$Q2 <- renderPlot({
 #### 3. Which letter is always used to specify the outcome variable in linear regression models?
 
 ```{r, Quiz3O, echo = FALSE}
-plotOutput("Q3")
+if (isTRUE(use_database)) {
+  plotOutput("Q3")
+}
 ```
 
 ```{r, Quiz3R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q3 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module5")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz3",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q3 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module5")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz3")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "y", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n/total_n)*100
+    answers_count$correct <- ifelse(answers_count$answer == "y", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage, y = answer, fill = correct)) +
+      geom_col(width=0.6) + theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 ## Linear regression

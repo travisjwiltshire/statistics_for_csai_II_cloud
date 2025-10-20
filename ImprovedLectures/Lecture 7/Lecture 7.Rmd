@@ -24,9 +24,44 @@ library(scales)
 gs4_auth()
 g_sheet <- "https://docs.google.com/spreadsheets/d/11yF_gMK87-POZVLrCwLc_E4CB59P7-dzNojLlMUwfxk/edit?usp=sharing"
 
+
+
+# Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+} else {
+  warning("rsconnect not installed; skipping writeManifest()")
+  message("rsconnect not installed; skipping writeManifest()")
+}
+
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+## Toggle: enable/disable external logging (DB/Sheets)
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1","true","yes","on")
+
 ## options
-knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+## Connect to database only when enabled and packages are available
+conn <- NULL
+if (use_database) {
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
+    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(),
+                               user = 'p543343_admin',
+                               password = 'Stats_Admin1',
+                               dbname = 'p543343_Statistics2',
+                               host = '91.184.19.135'),
+                silent = TRUE)
+    if (inherits(conn, "try-error")) {
+      message("Database connection failed; disabling database features.")
+      use_database <- FALSE
+      conn <- NULL
+    }
+  } else {
+    message("DBI/RMariaDB not available; disabling database features.")
+    use_database <- FALSE
+  }
+}
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
@@ -36,30 +71,46 @@ new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
   
 g_tibble <- tibble::tibble(
 user_id  = user_id, 
-event = event,
-label = data$label,
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
 correct = data$correct,
 question = data$question,
-answer = data$answer
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
   )
 
 # write to google sheets
-sheet_append(g_sheet, g_tibble, sheet = 1)
+if (use_database) {
+  sheet_append(g_sheet, g_tibble, sheet = 1)
+}
 
 }
 
 options(tutorial.event_recorder = new_recorder)
+
+## Ensure learnr exercise settings
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
 ```
 
 ## Introduction
 
-```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-## HEADER ###
-HTML("  <div class='jumbotron jumbotron-fluid'>
+
+  ## send to mysql when enabled
+  if (use_database && !is.null(conn)) {
+    DBI::dbWriteTable(conn, "module7", g_tibble, append = TRUE, row.names = FALSE)
+  }
     <div class='container'>
     <h2 class='mb-3' style='color:rgba(31, 56, 100, 0.85);'><u>Multiple Regression</u></h2>
     <h4 class='mb-3'>Statistics for CSAI II</h4>
     <h6 class='mb-3'>Travis J. Wiltshire, Ph.D.</h6>
+
+## Clean up DB connection on session end
+if (use_database && !is.null(conn)) {
+  onStop(function() {
+    try(DBI::dbDisconnect(conn), silent = TRUE)
+  })
+}
     </div>
   </div>")
 ```

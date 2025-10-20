@@ -19,60 +19,83 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
-library(DBI)
 library(ggwordcloud)
 
-conn = dbConnect(MariaDB(), user='p543343_admin', password='Stats_Admin1', dbname='p543343_Statistics2', host='91.184.19.135')
+## Global warning settings (-1 no warnings, 0 store and show later [default], 
+## 1 show immediately, 2 convert warnings to errors)
+options(warn = 1)
+
+## Write rsconnect manifest (safe if rsconnect not installed)
+if (requireNamespace("rsconnect", quietly = TRUE)) {
+  try(rsconnect::writeManifest(), silent = TRUE)
+} else {
+  warning("rsconnect not installed; skipping writeManifest()")
+  message("rsconnect not installed; skipping writeManifest()")
+}
+
+## Toggle: enable/disable database features
+## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.
+#Sys.setenv(LEARNR_USE_DB = "true") - uncomment to enable database features
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+## Connect to database only when enabled and packages are available
+conn <- NULL
+if (use_database) {
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
+    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(),
+                               user = 'p543343_admin',
+                               password = 'Stats_Admin1',
+                               dbname = 'p543343_Statistics2',
+                               host = '91.184.19.135'),
+                silent = TRUE)
+    if (inherits(conn, "try-error")) {
+      message("Database connection failed; disabling database features.")
+      use_database <- FALSE
+      conn <- NULL
+    }
+  } else {
+    message("DBI/RMariaDB not available; disabling database features.")
+    use_database <- FALSE
+  }
+}
+
+## Clean up DB connection on session end
+if (use_database && !is.null(conn)) {
+  onStop(function() {
+    try(DBI::dbDisconnect(conn), silent = TRUE)
+  })
+}
 
 
 ## options
 knitr::opts_chunk$set(echo = TRUE)
-tutorial_options(exercise.eval = FALSE)
+tutorial_options(exercise.eval = FALSE, exercise.checker = FALSE)
 
 ## recording data
 new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
     cat(user_id, ", ", event, ",", data$label, ", ", data$answer, ", ", data$correct, "\n", sep = "", file = "student_progress.txt", append = TRUE)
   
-d_tibble <- tibble::tibble(
-user_id  = user_id, 
-event = event,
-label = data$label,
-correct = data$correct,
-question = data$question,
-answer = data$answer
-  )
-
-## send to mysql
-dbWriteTable(conn, "module1", d_tibble, append=TRUE, row.names = FALSE)}
-
-
-tutorial_options(exercise.checker = function(
-  label,
-  user_code,
-  solution_code,
-  check_code,
-  envir_result,
-  evaluate_result,
-  envir_prep,
-  ...
-)
-  {
-  #Take all the variables that existed locally in the code block's environment
-  vars <- ls(envir = envir_result, all = TRUE)
-  for (i in 1:length(vars)){
-    #We need to make sure the following two variables are not changed:
-      #And add the local variables to the global environment, so that future code blocks can use this code.
-      assign(vars[i], get(vars[i]), envir = .GlobalEnv)
+  ## Only prepare and write to the database when enabled and connected
+  if (use_database && !is.null(conn)) {
+    d_tibble <- tibble::tibble(
+      user_id  = user_id, 
+      event = event,
+      label = data$label,
+      correct = data$correct,
+      question = data$question,
+      answer = data$answer
+    )
+    ## send to mysql
+    DBI::dbWriteTable(conn, "module1", d_tibble, append = TRUE, row.names = FALSE)
   }
+}
+
+
  
-})
 
 
 options(tutorial.event_recorder = new_recorder)
 
-
-## exercise setup
 
 
 ```
@@ -354,35 +377,37 @@ question("If I measure your knowledge of statistics before and at the end of the
 #### 1. If I measure your knowledge of statistics before and at the end of the course, and I wan't to see if you improved, what would be an appropriate test to make this comparison?
 
 ```{r, Quiz1O, echo = FALSE}
-plotOutput("Q1")
+if (isTRUE(use_database)) {
+  plotOutput("Q1")
+}
 ```
 
 ```{r, Quiz1R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q1 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz1",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q1 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module1")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz1")
+    answers[answers == ""] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "Paired-samples t-test", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n / total_n) * 100
+    answers_count$correct <- ifelse(answers_count$answer == "Paired-samples t-test", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage,
+               y = answer,
+               fill = correct)) +
+      geom_col(width = 0.6) +
+      theme_minimal() +
+      scale_fill_brewer(palette = "Paired", direction = -1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 
@@ -403,35 +428,38 @@ output$Q1 <- renderPlot({
 #### 2. What is the common goal of doing empirical work utilizing statistics in CSAI?
 
 ```{r, Quiz2O, echo = FALSE}
-plotOutput("Q2")
+if (isTRUE(use_database)) {
+  plotOutput("Q2")
+}
 ```
 
 ```{r, Quiz2R, context="server", echo = FALSE, warning = FALSE, message=FALSE, out.width="100%", fig.align = "center"}
 
-output$Q2 <- renderPlot({
-  
-  res <- dbSendQuery(conn, "SELECT * FROM module1")
-  data = dbFetch(res)
-  
-  answers <- subset(data, data$label == "Quiz2",)
-  answers[answers==""] <- NA
-  answers <- na.omit(answers)
+if (use_database && !is.null(conn)) {
+  output$Q2 <- renderPlot({
+    res <- DBI::dbSendQuery(conn, "SELECT * FROM module1")
+    data <- DBI::dbFetch(res)
+    
+    answers <- subset(data, data$label == "Quiz2")
+    answers[answers == ""
+    ] <- NA
+    answers <- na.omit(answers)
 
-  answers_count <- as.data.frame(answers %>% 
-  count(answer))
-  total_n = nrow(answers)
-  answers_count$percentage <- (answers_count$n/total_n)*100
-  answers_count$correct <- ifelse(answers_count$answer == "To control for making multiple comparisons", "Correct", "Incorrect")
+    answers_count <- as.data.frame(answers %>% count(answer))
+    total_n <- nrow(answers)
+    answers_count$percentage <- (answers_count$n / total_n) * 100
+    answers_count$correct <- ifelse(answers_count$answer == "To control for making multiple comparisons", "Correct", "Incorrect")
 
-  ggplot(answers_count,
-         aes(x = percentage,
-             y = answer,
-             fill=correct
-             )
-         ) +
-    geom_col(width=0.6) +theme_minimal() + scale_fill_brewer(palette="Paired", direction=-1)  +
-    xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
-})
+    ggplot(answers_count,
+           aes(x = percentage,
+               y = answer,
+               fill = correct)) +
+      geom_col(width = 0.6) +
+      theme_minimal() +
+      scale_fill_brewer(palette = "Paired", direction = -1) +
+      xlab("Percentage (%)") + ylab("Answer") + labs(fill = "Correct")
+  })
+}
 ```
 
 
