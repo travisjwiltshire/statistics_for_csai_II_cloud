@@ -1,0 +1,14 @@
+name: Lecture4
+title: Lecture4
+username:
+account: ovug51-travis0j0wiltshire
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6838241
+bundleId: 6234270
+url: https://travisjwiltshire.shinyapps.io/Lecture4/
+when: 1661363853.86081
+lastSyncTime: 1661363853.86081
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Lecture-4.html|student_progress.txt

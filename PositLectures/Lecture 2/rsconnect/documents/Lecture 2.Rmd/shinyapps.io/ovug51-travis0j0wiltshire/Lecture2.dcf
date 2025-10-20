@@ -1,0 +1,13 @@
+name: Lecture2
+title: Lecture2
+username:
+account: ovug51-travis0j0wiltshire
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6836578
+bundleId: 6274065
+url: https://travisjwiltshire.shinyapps.io/Lecture2/
+when: 1662477108.57371
+lastSyncTime: 1662477108.57371
+asMultiple: FALSE
+asStatic: FALSE

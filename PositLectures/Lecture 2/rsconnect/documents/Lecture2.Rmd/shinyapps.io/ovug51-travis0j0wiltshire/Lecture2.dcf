@@ -1,0 +1,14 @@
+name: Lecture2
+title:
+username:
+account: ovug51-travis0j0wiltshire
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6836578
+bundleId: 6274376
+url: https://travisjwiltshire.shinyapps.io/Lecture2/
+when: 1662481240.51383
+lastSyncTime: 1662481240.51383
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Lecture 2.Rmd
