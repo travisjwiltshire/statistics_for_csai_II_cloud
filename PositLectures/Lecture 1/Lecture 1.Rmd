@@ -22,7 +22,6 @@ library(scales)
 library(DBI)
 library(RPostgres)
 
-
 ## Global warning settings (-1 no warnings, 0 store and show later [default],
 ## 1 show immediately, 2 convert warnings to errors)
 options(warn = 1)
