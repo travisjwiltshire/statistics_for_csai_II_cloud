@@ -1006,13 +1006,11 @@ new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
       question = data$question,
       answer = data$answer
     )
-    DBI::dbWriteTable(conn, "statistics2_module1", d_tibble, append = TRUE, row.names = FALSE)
+    DBI::dbWriteTable(conn, DBI::Id(schema = "public", table = "statistics2_module1"), d_tibble, append = TRUE, row.names = FALSE)
   }
 }
 
 options(tutorial.event_recorder = new_recorder)
-
-## EXCERCISE SETUP
 
 
 </script>
@@ -1039,21 +1037,21 @@ session$onSessionEnded(function() {
  
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("If I measure your knowledge of statistics before and at the end of the course, and I wan’t to see if you improved, what would be an appropriate test to make this comparison?", html = TRUE, class = c("html", 
-"character")), answers = list(structure(list(id = "lnr_ans_13c8988", 
+"character")), answers = list(structure(list(id = "lnr_ans_8c30eb7", 
     option = "Factorial ANOVA", value = "Factorial ANOVA", label = structure("Factorial ANOVA", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_c575f51", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_2fdcde6", 
     option = "Paired-samples t-test", value = "Paired-samples t-test", 
     label = structure("Paired-samples t-test", html = TRUE, class = c("html", 
     "character")), correct = TRUE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_119a35c", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_5e463fc", 
     option = "Chi-square", value = "Chi-square", label = structure("Chi-square", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_9fb1ef0", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_f455447", 
     option = "Independent samples t-test", value = "Independent samples t-test", 
     label = structure("Independent samples t-test", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_54fb6e7", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_57b965d", 
     option = "Correlation", value = "Correlation", label = structure("Correlation", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
 "tutorial_quiz_answer"))), button_labels = list(submit = structure("<span data-i18n=\"button.questionsubmit\">Submit Answer<\u002fspan>", html = TRUE, class = c("html", 
@@ -1063,7 +1061,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", 
 "character")), message = NULL, post_message = NULL), ids = list(
     answer = "Quiz1-answer", question = "Quiz1"), loading = NULL, 
-    random_answer_order = FALSE, allow_retry = TRUE, seed = 39599656.98156, 
+    random_answer_order = FALSE, allow_retry = TRUE, seed = 353603908.83534, 
     options = list()), class = c("learnr_radio", "tutorial_question"
 )), session = session)
 </script>
@@ -1099,15 +1097,15 @@ output$Q1 <- renderPlot({
  
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz2", question = structure("When would you apply a Bonferonni correction?", html = TRUE, class = c("html", 
-"character")), answers = list(structure(list(id = "lnr_ans_e2e8337", 
+"character")), answers = list(structure(list(id = "lnr_ans_e41e8eb", 
     option = "The dependent variable is non-normal", value = "The dependent variable is non-normal", 
     label = structure("The dependent variable is non-normal", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_561fba8", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_85617e8", 
     option = "The independent variable is highly skewed", value = "The independent variable is highly skewed", 
     label = structure("The independent variable is highly skewed", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
-"tutorial_quiz_answer")), structure(list(id = "lnr_ans_4b1862f", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_afe8809", 
     option = "To control for making multiple comparisons", value = "To control for making multiple comparisons", 
     label = structure("To control for making multiple comparisons", html = TRUE, class = c("html", 
     "character")), correct = TRUE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
@@ -1118,7 +1116,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", 
 "character")), message = NULL, post_message = NULL), ids = list(
     answer = "Quiz2-answer", question = "Quiz2"), loading = NULL, 
-    random_answer_order = FALSE, allow_retry = TRUE, seed = 1404956666.84577, 
+    random_answer_order = FALSE, allow_retry = TRUE, seed = 63224137.970559, 
     options = list()), class = c("learnr_radio", "tutorial_question"
 )), session = session)
 </script>
@@ -1198,13 +1196,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex11", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex11", 
-    code = "dbinom(x=4,size=20, prob=1/6)\n", opts = list(label = "\"ex11\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex11", code = "dbinom(x=4,size=20, prob=1/6)\n", 
+        opts = list(label = "\"ex11\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex11-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1275,33 +1272,34 @@ learnr:::store_exercise_cache(structure(list(label = "ex12", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex12", 
-    code = "\n", opts = list(label = "\"ex12\"", exercise = "TRUE"), 
-    engine = "r")), code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
-    label = "ex12-check")), solution = NULL, tests = NULL, options = list(
-    eval = FALSE, echo = TRUE, results = "markup", tidy = FALSE, 
-    tidy.opts = NULL, collapse = FALSE, prompt = FALSE, comment = NA, 
-    highlight = FALSE, size = "normalsize", background = "#F7F7F7", 
-    strip.white = TRUE, cache = 0, cache.path = "Lecture-1_cache/html/", 
-    cache.vars = NULL, cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
-    cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
-    fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
-    dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
-    fig.width = 6.5, fig.height = 4, fig.env = "figure", fig.cap = NULL, 
-    fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, fig.pos = "", 
-    out.width = 624, out.height = NULL, out.extra = NULL, fig.retina = 2, 
-    external = TRUE, sanitize = FALSE, interval = 1, aniopts = "controls,loop", 
-    warning = TRUE, error = FALSE, message = TRUE, render = NULL, 
-    ref.label = NULL, child = NULL, engine = "r", split = FALSE, 
-    include = TRUE, purl = TRUE, max.print = 1000, exercise.eval = FALSE, 
-    exercise.checker = "FALSE", label = "ex12", exercise = TRUE, 
-    code = c("", ""), out.width.px = 624, out.height.px = 384, 
-    params.src = "ex12, exercise=TRUE", fig.num = 0L, exercise.df_print = "paged"), 
-    engine = "r", version = "4"), class = c("r", "tutorial_exercise"
-)))
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex12", code = "\n", 
+        opts = list(label = "\"ex12\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
+        label = "ex12-check")), solution = NULL, tests = NULL, 
+    options = list(eval = FALSE, echo = TRUE, results = "markup", 
+        tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
+        comment = NA, highlight = FALSE, size = "normalsize", 
+        background = "#F7F7F7", strip.white = TRUE, cache = 0, 
+        cache.path = "Lecture-1_cache/html/", cache.vars = NULL, 
+        cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
+        cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
+        fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
+        dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
+        fig.width = 6.5, fig.height = 4, fig.env = "figure", 
+        fig.cap = NULL, fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, 
+        fig.pos = "", out.width = 624, out.height = NULL, out.extra = NULL, 
+        fig.retina = 2, external = TRUE, sanitize = FALSE, interval = 1, 
+        aniopts = "controls,loop", warning = TRUE, error = FALSE, 
+        message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
+        engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
+        max.print = 1000, exercise.eval = FALSE, exercise.checker = "FALSE", 
+        label = "ex12", exercise = TRUE, code = c("", ""), out.width.px = 624, 
+        out.height.px = 384, params.src = "ex12, exercise=TRUE", 
+        fig.num = 0L, exercise.df_print = "paged"), engine = "r", 
+    version = "4"), class = c("r", "tutorial_exercise")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1350,33 +1348,34 @@ learnr:::store_exercise_cache(structure(list(label = "ex13", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex13", 
-    code = "\n", opts = list(label = "\"ex13\"", exercise = "TRUE"), 
-    engine = "r")), code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
-    label = "ex13-check")), solution = NULL, tests = NULL, options = list(
-    eval = FALSE, echo = TRUE, results = "markup", tidy = FALSE, 
-    tidy.opts = NULL, collapse = FALSE, prompt = FALSE, comment = NA, 
-    highlight = FALSE, size = "normalsize", background = "#F7F7F7", 
-    strip.white = TRUE, cache = 0, cache.path = "Lecture-1_cache/html/", 
-    cache.vars = NULL, cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
-    cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
-    fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
-    dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
-    fig.width = 6.5, fig.height = 4, fig.env = "figure", fig.cap = NULL, 
-    fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, fig.pos = "", 
-    out.width = 624, out.height = NULL, out.extra = NULL, fig.retina = 2, 
-    external = TRUE, sanitize = FALSE, interval = 1, aniopts = "controls,loop", 
-    warning = TRUE, error = FALSE, message = TRUE, render = NULL, 
-    ref.label = NULL, child = NULL, engine = "r", split = FALSE, 
-    include = TRUE, purl = TRUE, max.print = 1000, exercise.eval = FALSE, 
-    exercise.checker = "FALSE", label = "ex13", exercise = TRUE, 
-    code = c("", ""), out.width.px = 624, out.height.px = 384, 
-    params.src = "ex13, exercise=TRUE", fig.num = 0L, exercise.df_print = "paged"), 
-    engine = "r", version = "4"), class = c("r", "tutorial_exercise"
-)))
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex13", code = "\n", 
+        opts = list(label = "\"ex13\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
+        label = "ex13-check")), solution = NULL, tests = NULL, 
+    options = list(eval = FALSE, echo = TRUE, results = "markup", 
+        tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
+        comment = NA, highlight = FALSE, size = "normalsize", 
+        background = "#F7F7F7", strip.white = TRUE, cache = 0, 
+        cache.path = "Lecture-1_cache/html/", cache.vars = NULL, 
+        cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
+        cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
+        fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
+        dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
+        fig.width = 6.5, fig.height = 4, fig.env = "figure", 
+        fig.cap = NULL, fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, 
+        fig.pos = "", out.width = 624, out.height = NULL, out.extra = NULL, 
+        fig.retina = 2, external = TRUE, sanitize = FALSE, interval = 1, 
+        aniopts = "controls,loop", warning = TRUE, error = FALSE, 
+        message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
+        engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
+        max.print = 1000, exercise.eval = FALSE, exercise.checker = "FALSE", 
+        label = "ex13", exercise = TRUE, code = c("", ""), out.width.px = 624, 
+        out.height.px = 384, params.src = "ex13, exercise=TRUE", 
+        fig.num = 0L, exercise.df_print = "paged"), engine = "r", 
+    version = "4"), class = c("r", "tutorial_exercise")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1425,33 +1424,34 @@ learnr:::store_exercise_cache(structure(list(label = "ex14", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex14", 
-    code = "\n", opts = list(label = "\"ex14\"", exercise = "TRUE"), 
-    engine = "r")), code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
-    label = "ex14-check")), solution = NULL, tests = NULL, options = list(
-    eval = FALSE, echo = TRUE, results = "markup", tidy = FALSE, 
-    tidy.opts = NULL, collapse = FALSE, prompt = FALSE, comment = NA, 
-    highlight = FALSE, size = "normalsize", background = "#F7F7F7", 
-    strip.white = TRUE, cache = 0, cache.path = "Lecture-1_cache/html/", 
-    cache.vars = NULL, cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
-    cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
-    fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
-    dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
-    fig.width = 6.5, fig.height = 4, fig.env = "figure", fig.cap = NULL, 
-    fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, fig.pos = "", 
-    out.width = 624, out.height = NULL, out.extra = NULL, fig.retina = 2, 
-    external = TRUE, sanitize = FALSE, interval = 1, aniopts = "controls,loop", 
-    warning = TRUE, error = FALSE, message = TRUE, render = NULL, 
-    ref.label = NULL, child = NULL, engine = "r", split = FALSE, 
-    include = TRUE, purl = TRUE, max.print = 1000, exercise.eval = FALSE, 
-    exercise.checker = "FALSE", label = "ex14", exercise = TRUE, 
-    code = c("", ""), out.width.px = 624, out.height.px = 384, 
-    params.src = "ex14, exercise=TRUE", fig.num = 0L, exercise.df_print = "paged"), 
-    engine = "r", version = "4"), class = c("r", "tutorial_exercise"
-)))
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex14", code = "\n", 
+        opts = list(label = "\"ex14\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
+        label = "ex14-check")), solution = NULL, tests = NULL, 
+    options = list(eval = FALSE, echo = TRUE, results = "markup", 
+        tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
+        comment = NA, highlight = FALSE, size = "normalsize", 
+        background = "#F7F7F7", strip.white = TRUE, cache = 0, 
+        cache.path = "Lecture-1_cache/html/", cache.vars = NULL, 
+        cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
+        cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
+        fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
+        dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
+        fig.width = 6.5, fig.height = 4, fig.env = "figure", 
+        fig.cap = NULL, fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, 
+        fig.pos = "", out.width = 624, out.height = NULL, out.extra = NULL, 
+        fig.retina = 2, external = TRUE, sanitize = FALSE, interval = 1, 
+        aniopts = "controls,loop", warning = TRUE, error = FALSE, 
+        message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
+        engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
+        max.print = 1000, exercise.eval = FALSE, exercise.checker = "FALSE", 
+        label = "ex14", exercise = TRUE, code = c("", ""), out.width.px = 624, 
+        out.height.px = 384, params.src = "ex14, exercise=TRUE", 
+        fig.num = 0L, exercise.df_print = "paged"), engine = "r", 
+    version = "4"), class = c("r", "tutorial_exercise")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1500,13 +1500,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex15", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex15", 
-    code = "# Your code here\n", opts = list(label = "\"ex15\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex15", code = "# Your code here\n", 
+        opts = list(label = "\"ex15\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex15-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1577,13 +1576,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex16", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex16", 
-    code = "# Your code here\n", opts = list(label = "\"ex16\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex16", code = "# Your code here\n", 
+        opts = list(label = "\"ex16\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex16-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1654,13 +1652,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex17", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"statistics2_module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex17", 
-    code = "# Your code here\n", opts = list(label = "\"ex17\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex17", code = "# Your code here\n", 
+        opts = list(label = "\"ex17\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex17-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
