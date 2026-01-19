@@ -19,8 +19,8 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
 library(DBI)
+library(RPostgres)
 
 ## Global warning settings (-1 no warnings, 0 store and show later [default],
 ## 1 show immediately, 2 convert warnings to errors)
@@ -28,35 +28,49 @@ options(warn = 1)
 
 ## Toggle: enable/disable database features
 ## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.
-# Sys.setenv(LEARNR_USE_DB = "true")
+Sys.setenv(LEARNR_USE_DB = "true")
 use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
 
-## Connect to database only when enabled and packages are available
+## Connect to PostgreSQL only when enabled and packages are available
 conn <- NULL
 if (use_database) {
-  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
-    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(),
-                               user = 'p543343_admin',
-                               password = 'Stats_Admin1',
-                               dbname = 'p543343_Statistics2',
-                               host = '91.184.19.135'),
-                silent = TRUE)
-    if (inherits(conn, "try-error")) {
-      message("Database connection failed; disabling database features.")
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RPostgres", quietly = TRUE)) {
+
+    # Read DB settings from docker-compose environment variables
+    db_host <- Sys.getenv("STUDENT_DB_HOST")
+    db_port <- Sys.getenv("STUDENT_DB_PORT")
+    db_name <- Sys.getenv("STUDENT_DB_NAME")
+    db_user <- Sys.getenv("STUDENT_DB_USER")
+    db_pass <- Sys.getenv("STUDENT_DB_PASSWORD")  # no quotes in getenv()
+
+    # Basic validation (avoid attempting a connection with empty settings)
+    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {
+      message("Database env vars missing/empty; disabling database features.")
       use_database <- FALSE
-      conn <- NULL
+    } else {
+      conn <- try(
+        DBI::dbConnect(
+          RPostgres::Postgres(),
+          host = db_host,
+          port = as.integer(db_port),
+          dbname = db_name,
+          user = db_user,
+          password = db_pass
+        ),
+        silent = TRUE
+      )
+
+      if (inherits(conn, "try-error")) {
+        message("Database connection failed; disabling database features.")
+        use_database <- FALSE
+        conn <- NULL
+      }
     }
+
   } else {
-    message("DBI/RMariaDB not available; disabling database features.")
+    message("DBI/RPostgres not available; disabling database features.")
     use_database <- FALSE
   }
-}
-
-## Clean up DB connection on session end
-if (use_database && !is.null(conn)) {
-  onStop(function() {
-    try(DBI::dbDisconnect(conn), silent = TRUE)
-  })
 }
 
 ## options
@@ -85,13 +99,11 @@ new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
       question = data$question,
       answer = data$answer
     )
-    DBI::dbWriteTable(conn, "module1", d_tibble, append = TRUE, row.names = FALSE)
+    DBI::dbWriteTable(conn, DBI::Id(schema = "public", table = "statistics2_module1"), d_tibble, append = TRUE, row.names = FALSE)
   }
 }
 
 options(tutorial.event_recorder = new_recorder)
-
-## EXCERCISE SETUP
 
 
 ```
@@ -379,7 +391,7 @@ plotOutput("Q1")
 output$Q1 <- renderPlot({
   if (!(use_database && !is.null(conn))) return(NULL)
   
-  data <- DBI::dbGetQuery(conn, "SELECT * FROM module1")
+  data <- DBI::dbGetQuery(conn, "SELECT * FROM statistics2_module1")
   #data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz1",)
@@ -429,7 +441,7 @@ plotOutput("Q2")
 output$Q2 <- renderPlot({
   if (!(use_database && !is.null(conn))) return(NULL)
   
-  data <- DBI::dbGetQuery(conn, "SELECT * FROM module1")
+  data <- DBI::dbGetQuery(conn, "SELECT * FROM statistics2_module1")
   
   answers <- subset(data, data$label == "Quiz2",)
   answers[answers==""] <- NA
@@ -477,7 +489,6 @@ output$Q2 <- renderPlot({
 
 <img src="images/probability.png" 
      style="max-width: 100%;" />
-
 
 
 

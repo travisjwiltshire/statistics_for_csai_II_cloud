@@ -925,8 +925,9 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(RMariaDB)
 library(DBI)
+library(RPostgres)
+
 
 ## Global warning settings (-1 no warnings, 0 store and show later [default],
 ## 1 show immediately, 2 convert warnings to errors)
@@ -934,35 +935,49 @@ options(warn = 1)
 
 ## Toggle: enable/disable database features
 ## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.
-# Sys.setenv(LEARNR_USE_DB = "true")
+Sys.setenv(LEARNR_USE_DB = "true")
 use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
 
-## Connect to database only when enabled and packages are available
+## Connect to PostgreSQL only when enabled and packages are available
 conn <- NULL
 if (use_database) {
-  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RMariaDB", quietly = TRUE)) {
-    conn <- try(DBI::dbConnect(RMariaDB::MariaDB(),
-                               user = 'p543343_admin',
-                               password = 'Stats_Admin1',
-                               dbname = 'p543343_Statistics2',
-                               host = '91.184.19.135'),
-                silent = TRUE)
-    if (inherits(conn, "try-error")) {
-      message("Database connection failed; disabling database features.")
+  if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RPostgres", quietly = TRUE)) {
+
+    # Read DB settings from docker-compose environment variables
+    db_host <- Sys.getenv("STUDENT_DB_HOST")
+    db_port <- Sys.getenv("STUDENT_DB_PORT")
+    db_name <- Sys.getenv("STUDENT_DB_NAME")
+    db_user <- Sys.getenv("STUDENT_DB_USER")
+    db_pass <- Sys.getenv("STUDENT_DB_PASSWORD")  # no quotes in getenv()
+
+    # Basic validation (avoid attempting a connection with empty settings)
+    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {
+      message("Database env vars missing/empty; disabling database features.")
       use_database <- FALSE
-      conn <- NULL
+    } else {
+      conn <- try(
+        DBI::dbConnect(
+          RPostgres::Postgres(),
+          host = db_host,
+          port = as.integer(db_port),
+          dbname = db_name,
+          user = db_user,
+          password = db_pass
+        ),
+        silent = TRUE
+      )
+
+      if (inherits(conn, "try-error")) {
+        message("Database connection failed; disabling database features.")
+        use_database <- FALSE
+        conn <- NULL
+      }
     }
+
   } else {
-    message("DBI/RMariaDB not available; disabling database features.")
+    message("DBI/RPostgres not available; disabling database features.")
     use_database <- FALSE
   }
-}
-
-## Clean up DB connection on session end
-if (use_database && !is.null(conn)) {
-  onStop(function() {
-    try(DBI::dbDisconnect(conn), silent = TRUE)
-  })
 }
 
 ## options
@@ -991,13 +1006,11 @@ new_recorder <- function(tutorial_id, tutorial_version, user_id, event, data) {
       question = data$question,
       answer = data$answer
     )
-    DBI::dbWriteTable(conn, "module1", d_tibble, append = TRUE, row.names = FALSE)
+    DBI::dbWriteTable(conn, DBI::Id(schema = "public", table = "statistics2_module1"), d_tibble, append = TRUE, row.names = FALSE)
   }
 }
 
 options(tutorial.event_recorder = new_recorder)
-
-## EXCERCISE SETUP
 
 
 </script>
@@ -1024,6 +1037,7 @@ session$onSessionEnded(function() {
  
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz1", question = structure("If I measure your knowledge of statistics before and at the end of the course, and I wan’t to see if you improved, what would be an appropriate test to make this comparison?", html = TRUE, class = c("html", 
+<<<<<<< HEAD
 "character")), answers = list(structure(list(id = "lnr_ans_ad2d7a1", 
     option = "Factorial ANOVA", value = "Factorial ANOVA", label = structure("Factorial ANOVA", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
@@ -1039,6 +1053,23 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
     label = structure("Independent samples t-test", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
 "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9fef27d", 
+=======
+"character")), answers = list(structure(list(id = "lnr_ans_d860c67", 
+    option = "Factorial ANOVA", value = "Factorial ANOVA", label = structure("Factorial ANOVA", html = TRUE, class = c("html", 
+    "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_eca94e3", 
+    option = "Paired-samples t-test", value = "Paired-samples t-test", 
+    label = structure("Paired-samples t-test", html = TRUE, class = c("html", 
+    "character")), correct = TRUE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_4b52719", 
+    option = "Chi-square", value = "Chi-square", label = structure("Chi-square", html = TRUE, class = c("html", 
+    "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_5cb1b63", 
+    option = "Independent samples t-test", value = "Independent samples t-test", 
+    label = structure("Independent samples t-test", html = TRUE, class = c("html", 
+    "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_618a41c", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
     option = "Correlation", value = "Correlation", label = structure("Correlation", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
 "tutorial_quiz_answer"))), button_labels = list(submit = structure("<span data-i18n=\"button.questionsubmit\">Submit Answer<\u002fspan>", html = TRUE, class = c("html", 
@@ -1048,7 +1079,11 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", 
 "character")), message = NULL, post_message = NULL), ids = list(
     answer = "Quiz1-answer", question = "Quiz1"), loading = NULL, 
+<<<<<<< HEAD
     random_answer_order = FALSE, allow_retry = TRUE, seed = 2097057278.02348, 
+=======
+    random_answer_order = FALSE, allow_retry = TRUE, seed = 998037665.035252, 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
     options = list()), class = c("learnr_radio", "tutorial_question"
 )), session = session)
 </script>
@@ -1058,7 +1093,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 output$Q1 <- renderPlot({
   if (!(use_database && !is.null(conn))) return(NULL)
   
-  data <- DBI::dbGetQuery(conn, "SELECT * FROM module1")
+  data <- DBI::dbGetQuery(conn, "SELECT * FROM statistics2_module1")
   #data = dbFetch(res)
   
   answers <- subset(data, data$label == "Quiz1",)
@@ -1084,6 +1119,7 @@ output$Q1 <- renderPlot({
  
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "Quiz2", question = structure("When would you apply a Bonferonni correction?", html = TRUE, class = c("html", 
+<<<<<<< HEAD
 "character")), answers = list(structure(list(id = "lnr_ans_8ba0e00", 
     option = "The dependent variable is non-normal", value = "The dependent variable is non-normal", 
     label = structure("The dependent variable is non-normal", html = TRUE, class = c("html", 
@@ -1093,6 +1129,17 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
     label = structure("The independent variable is highly skewed", html = TRUE, class = c("html", 
     "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
 "tutorial_quiz_answer")), structure(list(id = "lnr_ans_f1ecb4", 
+=======
+"character")), answers = list(structure(list(id = "lnr_ans_fdb0545", 
+    option = "The dependent variable is non-normal", value = "The dependent variable is non-normal", 
+    label = structure("The dependent variable is non-normal", html = TRUE, class = c("html", 
+    "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_435c61a", 
+    option = "The independent variable is highly skewed", value = "The independent variable is highly skewed", 
+    label = structure("The independent variable is highly skewed", html = TRUE, class = c("html", 
+    "character")), correct = FALSE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
+"tutorial_quiz_answer")), structure(list(id = "lnr_ans_91d94f5", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
     option = "To control for making multiple comparisons", value = "To control for making multiple comparisons", 
     label = structure("To control for making multiple comparisons", html = TRUE, class = c("html", 
     "character")), correct = TRUE, message = NULL, type = "literal"), class = c("tutorial_question_answer", 
@@ -1103,7 +1150,11 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 "character")), incorrect = structure("Hint: Try again, you can pick another answer!", html = TRUE, class = c("html", 
 "character")), message = NULL, post_message = NULL), ids = list(
     answer = "Quiz2-answer", question = "Quiz2"), loading = NULL, 
+<<<<<<< HEAD
     random_answer_order = FALSE, allow_retry = TRUE, seed = 581582073.72918, 
+=======
+    random_answer_order = FALSE, allow_retry = TRUE, seed = 192656198.910287, 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
     options = list()), class = c("learnr_radio", "tutorial_question"
 )), session = session)
 </script>
@@ -1114,7 +1165,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 output$Q2 <- renderPlot({
   if (!(use_database && !is.null(conn))) return(NULL)
   
-  data <- DBI::dbGetQuery(conn, "SELECT * FROM module1")
+  data <- DBI::dbGetQuery(conn, "SELECT * FROM statistics2_module1")
   
   answers <- subset(data, data$label == "Quiz2",)
   answers[answers==""] <- NA
@@ -1148,9 +1199,11 @@ output$`tutorial-exercise-ex11-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex11", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1165,6 +1218,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex11", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1176,13 +1251,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex11", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex11", 
-    code = "dbinom(x=4,size=20, prob=1/6)\n", opts = list(label = "\"ex11\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex11", code = "dbinom(x=4,size=20, prob=1/6)\n", 
+        opts = list(label = "\"ex11\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex11-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1218,9 +1292,11 @@ output$`tutorial-exercise-ex12-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex12", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1235,6 +1311,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex12", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1246,33 +1344,34 @@ learnr:::store_exercise_cache(structure(list(label = "ex12", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex12", 
-    code = "\n", opts = list(label = "\"ex12\"", exercise = "TRUE"), 
-    engine = "r")), code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
-    label = "ex12-check")), solution = NULL, tests = NULL, options = list(
-    eval = FALSE, echo = TRUE, results = "markup", tidy = FALSE, 
-    tidy.opts = NULL, collapse = FALSE, prompt = FALSE, comment = NA, 
-    highlight = FALSE, size = "normalsize", background = "#F7F7F7", 
-    strip.white = TRUE, cache = 0, cache.path = "Lecture-1_cache/html/", 
-    cache.vars = NULL, cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
-    cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
-    fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
-    dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
-    fig.width = 6.5, fig.height = 4, fig.env = "figure", fig.cap = NULL, 
-    fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, fig.pos = "", 
-    out.width = 624, out.height = NULL, out.extra = NULL, fig.retina = 2, 
-    external = TRUE, sanitize = FALSE, interval = 1, aniopts = "controls,loop", 
-    warning = TRUE, error = FALSE, message = TRUE, render = NULL, 
-    ref.label = NULL, child = NULL, engine = "r", split = FALSE, 
-    include = TRUE, purl = TRUE, max.print = 1000, exercise.eval = FALSE, 
-    exercise.checker = "FALSE", label = "ex12", exercise = TRUE, 
-    code = c("", ""), out.width.px = 624, out.height.px = 384, 
-    params.src = "ex12, exercise=TRUE", fig.num = 0L, exercise.df_print = "paged"), 
-    engine = "r", version = "4"), class = c("r", "tutorial_exercise"
-)))
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex12", code = "\n", 
+        opts = list(label = "\"ex12\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
+        label = "ex12-check")), solution = NULL, tests = NULL, 
+    options = list(eval = FALSE, echo = TRUE, results = "markup", 
+        tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
+        comment = NA, highlight = FALSE, size = "normalsize", 
+        background = "#F7F7F7", strip.white = TRUE, cache = 0, 
+        cache.path = "Lecture-1_cache/html/", cache.vars = NULL, 
+        cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
+        cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
+        fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
+        dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
+        fig.width = 6.5, fig.height = 4, fig.env = "figure", 
+        fig.cap = NULL, fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, 
+        fig.pos = "", out.width = 624, out.height = NULL, out.extra = NULL, 
+        fig.retina = 2, external = TRUE, sanitize = FALSE, interval = 1, 
+        aniopts = "controls,loop", warning = TRUE, error = FALSE, 
+        message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
+        engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
+        max.print = 1000, exercise.eval = FALSE, exercise.checker = "FALSE", 
+        label = "ex12", exercise = TRUE, code = c("", ""), out.width.px = 624, 
+        out.height.px = 384, params.src = "ex12, exercise=TRUE", 
+        fig.num = 0L, exercise.df_print = "paged"), engine = "r", 
+    version = "4"), class = c("r", "tutorial_exercise")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1286,9 +1385,11 @@ output$`tutorial-exercise-ex13-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex13", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1303,6 +1404,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex13", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1314,33 +1437,34 @@ learnr:::store_exercise_cache(structure(list(label = "ex13", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex13", 
-    code = "\n", opts = list(label = "\"ex13\"", exercise = "TRUE"), 
-    engine = "r")), code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
-    label = "ex13-check")), solution = NULL, tests = NULL, options = list(
-    eval = FALSE, echo = TRUE, results = "markup", tidy = FALSE, 
-    tidy.opts = NULL, collapse = FALSE, prompt = FALSE, comment = NA, 
-    highlight = FALSE, size = "normalsize", background = "#F7F7F7", 
-    strip.white = TRUE, cache = 0, cache.path = "Lecture-1_cache/html/", 
-    cache.vars = NULL, cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
-    cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
-    fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
-    dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
-    fig.width = 6.5, fig.height = 4, fig.env = "figure", fig.cap = NULL, 
-    fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, fig.pos = "", 
-    out.width = 624, out.height = NULL, out.extra = NULL, fig.retina = 2, 
-    external = TRUE, sanitize = FALSE, interval = 1, aniopts = "controls,loop", 
-    warning = TRUE, error = FALSE, message = TRUE, render = NULL, 
-    ref.label = NULL, child = NULL, engine = "r", split = FALSE, 
-    include = TRUE, purl = TRUE, max.print = 1000, exercise.eval = FALSE, 
-    exercise.checker = "FALSE", label = "ex13", exercise = TRUE, 
-    code = c("", ""), out.width.px = 624, out.height.px = 384, 
-    params.src = "ex13, exercise=TRUE", fig.num = 0L, exercise.df_print = "paged"), 
-    engine = "r", version = "4"), class = c("r", "tutorial_exercise"
-)))
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex13", code = "\n", 
+        opts = list(label = "\"ex13\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
+        label = "ex13-check")), solution = NULL, tests = NULL, 
+    options = list(eval = FALSE, echo = TRUE, results = "markup", 
+        tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
+        comment = NA, highlight = FALSE, size = "normalsize", 
+        background = "#F7F7F7", strip.white = TRUE, cache = 0, 
+        cache.path = "Lecture-1_cache/html/", cache.vars = NULL, 
+        cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
+        cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
+        fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
+        dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
+        fig.width = 6.5, fig.height = 4, fig.env = "figure", 
+        fig.cap = NULL, fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, 
+        fig.pos = "", out.width = 624, out.height = NULL, out.extra = NULL, 
+        fig.retina = 2, external = TRUE, sanitize = FALSE, interval = 1, 
+        aniopts = "controls,loop", warning = TRUE, error = FALSE, 
+        message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
+        engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
+        max.print = 1000, exercise.eval = FALSE, exercise.checker = "FALSE", 
+        label = "ex13", exercise = TRUE, code = c("", ""), out.width.px = 624, 
+        out.height.px = 384, params.src = "ex13, exercise=TRUE", 
+        fig.num = 0L, exercise.df_print = "paged"), engine = "r", 
+    version = "4"), class = c("r", "tutorial_exercise")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1354,9 +1478,11 @@ output$`tutorial-exercise-ex14-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex14", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1371,6 +1497,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex14", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1382,33 +1530,34 @@ learnr:::store_exercise_cache(structure(list(label = "ex14", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex14", 
-    code = "\n", opts = list(label = "\"ex14\"", exercise = "TRUE"), 
-    engine = "r")), code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
-    label = "ex14-check")), solution = NULL, tests = NULL, options = list(
-    eval = FALSE, echo = TRUE, results = "markup", tidy = FALSE, 
-    tidy.opts = NULL, collapse = FALSE, prompt = FALSE, comment = NA, 
-    highlight = FALSE, size = "normalsize", background = "#F7F7F7", 
-    strip.white = TRUE, cache = 0, cache.path = "Lecture-1_cache/html/", 
-    cache.vars = NULL, cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
-    cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
-    fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
-    dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
-    fig.width = 6.5, fig.height = 4, fig.env = "figure", fig.cap = NULL, 
-    fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, fig.pos = "", 
-    out.width = 624, out.height = NULL, out.extra = NULL, fig.retina = 2, 
-    external = TRUE, sanitize = FALSE, interval = 1, aniopts = "controls,loop", 
-    warning = TRUE, error = FALSE, message = TRUE, render = NULL, 
-    ref.label = NULL, child = NULL, engine = "r", split = FALSE, 
-    include = TRUE, purl = TRUE, max.print = 1000, exercise.eval = FALSE, 
-    exercise.checker = "FALSE", label = "ex14", exercise = TRUE, 
-    code = c("", ""), out.width.px = 624, out.height.px = 384, 
-    params.src = "ex14, exercise=TRUE", fig.num = 0L, exercise.df_print = "paged"), 
-    engine = "r", version = "4"), class = c("r", "tutorial_exercise"
-)))
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex14", code = "\n", 
+        opts = list(label = "\"ex14\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
+        label = "ex14-check")), solution = NULL, tests = NULL, 
+    options = list(eval = FALSE, echo = TRUE, results = "markup", 
+        tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
+        comment = NA, highlight = FALSE, size = "normalsize", 
+        background = "#F7F7F7", strip.white = TRUE, cache = 0, 
+        cache.path = "Lecture-1_cache/html/", cache.vars = NULL, 
+        cache.lazy = TRUE, dependson = NULL, autodep = FALSE, 
+        cache.rebuild = FALSE, fig.keep = "high", fig.show = "asis", 
+        fig.align = "default", fig.path = "Lecture-1_files/figure-html/", 
+        dev = "png", dev.args = NULL, dpi = 192, fig.ext = "png", 
+        fig.width = 6.5, fig.height = 4, fig.env = "figure", 
+        fig.cap = NULL, fig.scap = NULL, fig.lp = "fig:", fig.subcap = NULL, 
+        fig.pos = "", out.width = 624, out.height = NULL, out.extra = NULL, 
+        fig.retina = 2, external = TRUE, sanitize = FALSE, interval = 1, 
+        aniopts = "controls,loop", warning = TRUE, error = FALSE, 
+        message = TRUE, render = NULL, ref.label = NULL, child = NULL, 
+        engine = "r", split = FALSE, include = TRUE, purl = TRUE, 
+        max.print = 1000, exercise.eval = FALSE, exercise.checker = "FALSE", 
+        label = "ex14", exercise = TRUE, code = c("", ""), out.width.px = 624, 
+        out.height.px = 384, params.src = "ex14, exercise=TRUE", 
+        fig.num = 0L, exercise.df_print = "paged"), engine = "r", 
+    version = "4"), class = c("r", "tutorial_exercise")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -1422,9 +1571,11 @@ output$`tutorial-exercise-ex15-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex15", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1439,6 +1590,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex15", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1450,13 +1623,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex15", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex15", 
-    code = "# Your code here\n", opts = list(label = "\"ex15\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex15", code = "# Your code here\n", 
+        opts = list(label = "\"ex15\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex15-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1492,9 +1664,11 @@ output$`tutorial-exercise-ex16-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex16", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1509,6 +1683,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex16", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1520,13 +1716,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex16", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex16", 
-    code = "# Your code here\n", opts = list(label = "\"ex16\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex16", code = "# Your code here\n", 
+        opts = list(label = "\"ex16\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex16-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1562,9 +1757,11 @@ output$`tutorial-exercise-ex17-output` <- renderUI({
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::store_exercise_cache(structure(list(label = "ex17", global_setup = structure(c("## libraries", 
 "library(learnr)", "library(tidyr)", "library(dplyr)", "library(ggplot2)", 
-"library(scales)", "library(RMariaDB)", "library(DBI)", "", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
+"library(scales)", "library(DBI)", "library(RPostgres)", "", 
+"", "## Global warning settings (-1 no warnings, 0 store and show later [default],", 
 "## 1 show immediately, 2 convert warnings to errors)", "options(warn = 1)", 
 "", "## Toggle: enable/disable database features", "## Set environment variable LEARNR_USE_DB=true to enable, or set here directly.", 
+<<<<<<< HEAD
 "# Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
 "", "## Connect to database only when enabled and packages are available", 
 "conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RMariaDB\", quietly = TRUE)) {", 
@@ -1579,6 +1776,28 @@ learnr:::store_exercise_cache(structure(list(label = "ex17", global_setup = stru
 "if (use_database && !is.null(conn)) {", "  onStop(function() {", 
 "    try(DBI::dbDisconnect(conn), silent = TRUE)", "  })", "}", 
 "", "## options", "knitr::opts_chunk$set(echo = TRUE)", "tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+=======
+"Sys.setenv(LEARNR_USE_DB = \"true\")", "use_database <- tolower(Sys.getenv(\"LEARNR_USE_DB\", \"false\")) %in% c(\"1\", \"true\", \"yes\", \"on\")", 
+"", "## Connect to PostgreSQL only when enabled and packages are available", 
+"conn <- NULL", "if (use_database) {", "  if (requireNamespace(\"DBI\", quietly = TRUE) && requireNamespace(\"RPostgres\", quietly = TRUE)) {", 
+"", "    # Read DB settings from docker-compose environment variables", 
+"    db_host <- Sys.getenv(\"STUDENT_DB_HOST\")", "    db_port <- Sys.getenv(\"STUDENT_DB_PORT\")", 
+"    db_name <- Sys.getenv(\"STUDENT_DB_NAME\")", "    db_user <- Sys.getenv(\"STUDENT_DB_USER\")", 
+"    db_pass <- Sys.getenv(\"STUDENT_DB_PASSWORD\")  # no quotes in getenv()", 
+"", "    # Basic validation (avoid attempting a connection with empty settings)", 
+"    if (any(nzchar(c(db_host, db_port, db_name, db_user, db_pass)) == FALSE)) {", 
+"      message(\"Database env vars missing/empty; disabling database features.\")", 
+"      use_database <- FALSE", "    } else {", "      conn <- try(", 
+"        DBI::dbConnect(", "          RPostgres::Postgres(),", 
+"          host = db_host,", "          port = as.integer(db_port),", 
+"          dbname = db_name,", "          user = db_user,", "          password = db_pass", 
+"        ),", "        silent = TRUE", "      )", "", "      if (inherits(conn, \"try-error\")) {", 
+"        message(\"Database connection failed; disabling database features.\")", 
+"        use_database <- FALSE", "        conn <- NULL", "      }", 
+"    }", "", "  } else {", "    message(\"DBI/RPostgres not available; disabling database features.\")", 
+"    use_database <- FALSE", "  }", "}", "", "## options", "knitr::opts_chunk$set(echo = TRUE)", 
+"tutorial_options(exercise.eval = FALSE, exercise.checker=FALSE)", 
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 "", "## recording data", "## Write rsconnect manifest (safe if rsconnect not installed)", 
 "if (requireNamespace(\"rsconnect\", quietly = TRUE)) {", "  try(rsconnect::writeManifest(), silent = TRUE)", 
 "} else {", "  warning(\"rsconnect not installed; skipping writeManifest()\")", 
@@ -1590,13 +1809,12 @@ learnr:::store_exercise_cache(structure(list(label = "ex17", global_setup = stru
 "  if (use_database && !is.null(conn)) {", "    d_tibble <- tibble::tibble(", 
 "      user_id  = user_id,", "      event = event,", "      label = data$label,", 
 "      correct = data$correct,", "      question = data$question,", 
-"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, \"module1\", d_tibble, append = TRUE, row.names = FALSE)", 
+"      answer = data$answer", "    )", "    DBI::dbWriteTable(conn, DBI::Id(schema = \"public\", table = \"statistics2_module1\"), d_tibble, append = TRUE, row.names = FALSE)", 
 "  }", "}", "", "options(tutorial.event_recorder = new_recorder)", 
-"", "## EXCERCISE SETUP", "", ""), chunk_opts = list(label = "setup", 
-    include = FALSE)), setup = NULL, chunks = list(list(label = "ex17", 
-    code = "# Your code here\n", opts = list(label = "\"ex17\"", 
-        exercise = "TRUE"), engine = "r")), code_check = NULL, 
-    error_check = NULL, check = structure("#store", chunk_opts = list(
+"", ""), chunk_opts = list(label = "setup", include = FALSE)), 
+    setup = NULL, chunks = list(list(label = "ex17", code = "# Your code here\n", 
+        opts = list(label = "\"ex17\"", exercise = "TRUE"), engine = "r")), 
+    code_check = NULL, error_check = NULL, check = structure("#store", chunk_opts = list(
         label = "ex17-check")), solution = NULL, tests = NULL, 
     options = list(eval = FALSE, echo = TRUE, results = "markup", 
         tidy = FALSE, tidy.opts = NULL, collapse = FALSE, prompt = FALSE, 
@@ -1628,7 +1846,11 @@ learnr:::store_exercise_cache(structure(list(label = "ex17", global_setup = stru
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
+<<<<<<< HEAD
 {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70]}},"value":[{"type":"character","attributes":{},"value":["backports","base","bit","bit64","bslib","cachem","checkmate","cli","commonmark","compiler","datasets","DBI","digest","dplyr","ellipsis","evaluate","farver","fastmap","fontawesome","generics","ggplot2","glue","graphics","grDevices","grid","gtable","hms","htmltools","htmlwidgets","httpuv","jquerylib","jsonlite","knitr","later","learnr","lifecycle","litedown","magrittr","markdown","methods","mime","pillar","pkgconfig","promises","purrr","R6","RColorBrewer","Rcpp","renv","rlang","RMariaDB","rmarkdown","rprojroot","rsconnect","rstudioapi","S7","sass","scales","shiny","stats","tibble","tidyr","tidyselect","tools","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["1.5.0","4.2.2","4.6.0","4.6.0-1","0.9.0","1.1.0","2.3.3","3.6.5","2.0.0","4.2.2","4.2.2","1.2.3","0.6.37","1.1.4","0.3.2","1.0.5","2.1.2","1.2.0","0.5.3","0.1.4","4.0.0","1.8.0","4.2.2","4.2.2","4.2.2","0.3.6","1.1.3","0.5.8.1","1.6.4","1.6.16","0.1.4","2.0.0","1.50","1.4.4","0.11.5","1.0.4","0.7","2.0.4","2.0","4.2.2","0.13","1.11.1","2.0.3","1.3.3","1.1.0","2.6.1","1.1-3","1.1.0","1.1.5","1.1.6","1.3.4","2.30","2.1.1","1.5.1","0.17.1","0.2.0","0.4.10","1.4.0","1.11.1","4.2.2","3.3.0","1.3.1","1.2.1","4.2.2","4.2.2","0.6.5","3.0.2","0.53","1.8-4","2.3.10"]}]}]}
+=======
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70]}},"value":[{"type":"character","attributes":{},"value":["backports","base","bit","bit64","blob","bslib","cachem","checkmate","cli","colorspace","commonmark","compiler","datasets","DBI","digest","dplyr","ellipsis","evaluate","fastmap","fontawesome","generics","ggplot2","glue","graphics","grDevices","grid","gtable","hms","htmltools","htmlwidgets","httpuv","jquerylib","jsonlite","knitr","later","learnr","lifecycle","litedown","magrittr","markdown","methods","mime","munsell","pillar","pkgconfig","promises","purrr","R6","Rcpp","renv","rlang","rmarkdown","RPostgres","rprojroot","rsconnect","rstudioapi","sass","scales","shiny","stats","tibble","tidyr","tidyselect","tools","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["1.5.0","4.4.2","4.6.0","4.6.0-1","1.2.4","0.8.0","1.1.0","2.3.2","3.6.3","2.1-1","2.0.0","4.4.2","4.4.2","1.2.3","0.6.37","1.1.4","0.3.2","1.0.3","1.2.0","0.5.3","0.1.3","3.5.1","1.8.0","4.4.2","4.4.2","4.4.2","0.3.6","1.1.3","0.5.8.1","1.6.4","1.6.16","0.1.4","1.8.9","1.50","1.4.2","0.11.5","1.0.4","0.7","2.0.3","2.0","4.4.2","0.12","0.5.1","1.10.1","2.0.3","1.3.3","1.0.2","2.5.1","1.0.13-1","1.1.5","1.1.4","2.29","1.4.8","2.1.1","1.5.1","0.17.1","0.4.9","1.3.0","1.11.1","4.4.2","3.2.1","1.3.1","1.2.1","4.4.2","4.4.2","0.6.5","3.0.2","0.53","1.8-4","2.3.10"]}]}]}
+>>>>>>> 4f6821e62a95a8aad720b96c6bd9dc9be7ac108a
 </script>
 <!--/html_preserve-->
 </div>
