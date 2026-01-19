@@ -1,7 +1,10 @@
 {
   "version": 1,
   "locale": "en_NL",
-  "platform": "4.4.2",
+  "environment": {
+    "r": {
+        "requires": ">=4.4.0,<4.4.3"
+    },
   "metadata": {
     "appmode": "rmd-shiny",
     "primary_rmd": "Lecture 1.Rmd",
