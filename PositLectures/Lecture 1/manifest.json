@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "locale": "en_GB",
+  "locale": "en_SI",
   "platform": "4.2.2",
   "metadata": {
     "appmode": "rmd-shiny",
@@ -154,8 +154,14 @@
         "Maintainer": "Kirill Müller <kirill@cynkra.com>",
         "Repository": "CRAN",
         "Date/Publication": "2025-02-25 07:30:02 UTC",
-        "Built": "R 4.4.3; x86_64-w64-mingw32; 2026-01-16 03:41:11 UTC; windows",
-        "Archs": "x64"
+        "Built": "R 4.2.2; x86_64-w64-mingw32; 2026-01-19 18:46:28 UTC; windows",
+        "ExperimentalWindowsRuntime": "ucrt",
+        "Archs": "x64",
+        "RemoteType": "standard",
+        "RemotePkgRef": "RPostgres",
+        "RemoteRef": "RPostgres",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.4.8"
       }
     },
     "Rcpp": {
@@ -2963,13 +2969,13 @@
       "checksum": "9368af3b52d54d222e50bbee5665a9e5"
     },
     "Lecture-1.html": {
-      "checksum": "d5cf344fda53d8bccd415982ede6a884"
+      "checksum": "4de8588ba64e0ed72dac7266615c54d8"
     },
     "Lecture 1.Rmd": {
-      "checksum": "b71fb1ba4206292e30cb8a390d8884c2"
+      "checksum": "b4a0c7eff478cf58505dfb2176b0b18b"
     },
     "student_progress.txt": {
-      "checksum": "d1bb6abf0142f1fdbce973a778eea224"
+      "checksum": "ae5fd72790cec97f948c7813d34b491b"
     }
   },
   "users": null
