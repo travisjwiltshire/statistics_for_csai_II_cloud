@@ -1,0 +1,79 @@
+---
+title: "Database Test"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+## libraries
+library(learnr)
+library(DBI)
+library(RPostgres)
+
+options(warn = 1)
+
+Sys.setenv(LEARNR_USE_DB = "true")
+use_database <- tolower(Sys.getenv("LEARNR_USE_DB", "false")) %in% c("1", "true", "yes", "on")
+
+conn <- NULL
+if (use_database) {
+  db_host <- Sys.getenv("STUDENT_DB_HOST")
+  db_port <- Sys.getenv("STUDENT_DB_PORT")
+  db_name <- Sys.getenv("STUDENT_DB_NAME")
+  db_user <- Sys.getenv("STUDENT_DB_USER")
+  db_pass <- Sys.getenv("STUDENT_DB_PASSWORD")
+
+  if (all(nzchar(c(db_host, db_port, db_name, db_user, db_pass)))) {
+    conn <- try(
+      DBI::dbConnect(
+        RPostgres::Postgres(),
+        host = db_host,
+        port = as.integer(db_port),
+        dbname = db_name,
+        user = db_user,
+        password = db_pass
+      ),
+      silent = TRUE
+    )
+  } else {
+    use_database <- FALSE
+  }
+}
+
+rsconnect::writeManifest()
+```
+
+
+```{r}
+if (!use_database) {
+  cat("❌ Database disabled or environment variables missing.")
+} else if (inherits(conn, "try-error")) {
+  cat("❌ Database connection failed.")
+} else {
+  cat("✅ Database connected successfully.")
+}
+
+```
+
+
+```{r}
+if (use_database && !inherits(conn, "try-error")) {
+  DBI::dbGetQuery(conn, "SELECT 1 AS test_value;")
+} else {
+  NULL
+}
+
+```
+
+```{r}
+if (!is.null(conn)) {
+  try(DBI::dbDisconnect(conn), silent = TRUE)
+}
+
+```
+
+
+
