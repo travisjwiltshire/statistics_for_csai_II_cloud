@@ -68,13 +68,6 @@ if (use_database && !inherits(conn, "try-error")) {
 
 ```
 
-```{r}
-if (!is.null(conn)) {
-  try(DBI::dbDisconnect(conn), silent = TRUE)
-}
-
-```
-
 
 ```{r}
 ## ---- db-read-write-test ----
@@ -103,18 +96,11 @@ if (use_database && !inherits(conn, "try-error")) {
 
   print(result)
 
-  # 3. Cleanup (DELETE test row)
-  DBI::dbExecute(
-    conn,
-    "
-    DELETE FROM statistics2_module1
-    WHERE user_id = '_test_user_';
-    "
-  )
 
 } else {
   cat("❌ Database not available — read/write test skipped.")
 }
 
 ```
+
 
