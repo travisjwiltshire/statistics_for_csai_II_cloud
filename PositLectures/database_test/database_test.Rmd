@@ -76,4 +76,45 @@ if (!is.null(conn)) {
 ```
 
 
+```{r}
+## ---- db-read-write-test ----
+if (use_database && !inherits(conn, "try-error")) {
+
+  # 1. Write test (INSERT)
+  DBI::dbExecute(
+    conn,
+    "
+    INSERT INTO statistics2_module1
+      (user_id, event, label, correct, question, answer)
+    VALUES
+      ('_test_user_', 'test_event', 'test_label', 'TRUE', 'test_question', 'test_answer');
+    "
+  )
+
+  # 2. Read test (SELECT)
+  result <- DBI::dbGetQuery(
+    conn,
+    "
+    SELECT *
+    FROM statistics2_module1
+    WHERE user_id = '_test_user_';
+    "
+  )
+
+  print(result)
+
+  # 3. Cleanup (DELETE test row)
+  DBI::dbExecute(
+    conn,
+    "
+    DELETE FROM statistics2_module1
+    WHERE user_id = '_test_user_';
+    "
+  )
+
+} else {
+  cat("❌ Database not available — read/write test skipped.")
+}
+
+```
 
